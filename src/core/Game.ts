@@ -1,4 +1,4 @@
-import { createGameConfig, RuntimeGameConfig } from "../data/gameConfig";
+import { createGameConfig, RenderMode, RuntimeGameConfig } from "../data/gameConfig";
 import { CoinSpawner } from "../gameplay/CoinSpawner";
 import { ComboTracker } from "../gameplay/ComboTracker";
 import { BoardItem, DroppedItemResult } from "../gameplay/entities/BoardItem";
@@ -6,6 +6,7 @@ import { Coin } from "../gameplay/entities/Coin";
 import { Pusher } from "../gameplay/entities/Pusher";
 import { RewardBlock } from "../gameplay/entities/RewardBlock";
 import { RewardSpawner } from "../gameplay/RewardSpawner";
+import { PusherRig3D } from "../gameplay3d/PusherRig3D";
 import {
   onDropResolved,
   spawnReward
@@ -23,15 +24,19 @@ import { EventBus, GAME_EVENTS } from "./EventBus";
 import { GameLoop } from "./GameLoop";
 import { GameState } from "./GameState";
 import { CanvasSceneRenderer } from "./render/CanvasSceneRenderer";
+import { SceneRenderer3D } from "./render3d/SceneRenderer3D";
 
 export class Game {
   private readonly adapter: MiniGameAdapter;
   private readonly config: RuntimeGameConfig;
+  private readonly renderMode: RenderMode;
   private readonly eventBus: EventBus;
   private readonly state: GameState;
   private readonly loop: GameLoop;
   private readonly sceneRenderer: CanvasSceneRenderer;
+  private readonly sceneRenderer3D: SceneRenderer3D | null;
   private readonly pusher: Pusher;
+  private readonly pusher3D: PusherRig3D | null;
   private readonly physicsWorld: PhysicsWorld;
   private readonly coinSpawner: CoinSpawner;
   private readonly rewardSpawner: RewardSpawner;
@@ -46,6 +51,7 @@ export class Game {
   constructor(adapter: MiniGameAdapter = createMiniGameAdapter()) {
     this.adapter = adapter;
     this.config = createGameConfig(this.adapter.screen);
+    this.renderMode = this.config.renderMode;
     this.eventBus = new EventBus();
     this.state = new GameState();
     this.state.applyLoadedData(loadGame());
@@ -57,7 +63,11 @@ export class Game {
     this.comboTracker = new ComboTracker(this.config.combo);
     this.feedbackOverlay = new DropFeedbackOverlay(this.config);
     this.sceneRenderer = new CanvasSceneRenderer(this.config);
+    this.sceneRenderer3D =
+      this.renderMode === "prototype3d" ? new SceneRenderer3D(this.config) : null;
     this.hud = new Hud(this.config.ui.hud, this.config.ui.hintText, this.config.colors);
+    this.pusher3D =
+      this.renderMode === "prototype3d" ? new PusherRig3D(this.config.threeD.pusher) : null;
     this.coinButton = new Button(this.config.ui.coinButton, this.config.colors, () => {
       this.handleSpawnCoin();
     });
@@ -69,7 +79,13 @@ export class Game {
 
     this.registerEvents();
     this.registerInput();
-    this.bootstrapRewardBlocks();
+    if (this.renderMode === "legacy2d") {
+      this.bootstrapRewardBlocks();
+    } else {
+      this.state.setStatusText(
+        "3D 第一阶段骨架已重置：当前只验证机舱盒体与整块推板"
+      );
+    }
     this.syncSceneCounts();
   }
 
@@ -92,6 +108,13 @@ export class Game {
     this.adapter.onTouchStart((point: Point) => {
       const handledByUi = this.coinButton.handleTouch(point);
       if (!handledByUi) {
+        if (this.renderMode === "prototype3d") {
+          this.state.setStatusText(
+            "3D 第一阶段仅验证盒体、平台、后墙开口与整块推板"
+          );
+          return;
+        }
+
         this.state.setStatusText(
           "\u70b9\u51fb\u6295\u5e01\u6309\u94ae\uff0c\u628a\u786c\u5e01\u548c\u5956\u52b1\u7269\u4e00\u8d77\u63a8\u5411\u524d\u6cbf"
         );
@@ -107,6 +130,13 @@ export class Game {
   }
 
   private handleSpawnCoin(): void {
+    if (this.renderMode === "prototype3d") {
+      this.state.setStatusText(
+        "3D 硬币与奖励尚未接入：当前只看机舱骨架"
+      );
+      return;
+    }
+
     const coin = this.coinSpawner.spawn();
     this.coins.push(coin);
     this.syncSceneCounts();
@@ -115,6 +145,11 @@ export class Game {
   }
 
   private readonly update = (deltaSeconds: number): void => {
+    if (this.renderMode === "prototype3d") {
+      this.update3DPrototype(deltaSeconds);
+      return;
+    }
+
     this.pusher.update(deltaSeconds);
     this.comboTracker.update(deltaSeconds);
     this.feedbackOverlay.update(deltaSeconds);
@@ -137,11 +172,22 @@ export class Game {
   private readonly render = (): void => {
     const context = this.adapter.context;
     context.clearRect(0, 0, this.config.screen.width, this.config.screen.height);
-    this.sceneRenderer.render(context, this.pusher, this.getBoardItems());
+    if (this.renderMode === "prototype3d" && this.sceneRenderer3D && this.pusher3D) {
+      this.sceneRenderer3D.render(context, this.pusher3D);
+    } else {
+      this.sceneRenderer.render(context, this.pusher, this.getBoardItems());
+    }
     this.feedbackOverlay.render(context);
     this.hud.render(context, this.state.getSnapshot());
     this.coinButton.render(context);
   };
+
+  private update3DPrototype(deltaSeconds: number): void {
+    this.pusher3D?.update(deltaSeconds);
+    this.feedbackOverlay.update(deltaSeconds);
+    this.state.setComboCount(0);
+    this.syncSceneCounts();
+  }
 
   private handleDropResolution(physicsResult: PhysicsStepResult): void {
     const comboResult = this.comboTracker.registerDrop(physicsResult.droppedItems.length);

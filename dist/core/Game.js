@@ -6,6 +6,7 @@ const CoinSpawner_1 = require("../gameplay/CoinSpawner");
 const ComboTracker_1 = require("../gameplay/ComboTracker");
 const Pusher_1 = require("../gameplay/entities/Pusher");
 const RewardSpawner_1 = require("../gameplay/RewardSpawner");
+const PusherRig3D_1 = require("../gameplay3d/PusherRig3D");
 const RewardSystem_1 = require("../gameplay/rewards/RewardSystem");
 const miniGameAdapter_1 = require("../platform/miniGameAdapter");
 const PhysicsWorld_1 = require("../physics/PhysicsWorld");
@@ -19,12 +20,17 @@ const EventBus_1 = require("./EventBus");
 const GameLoop_1 = require("./GameLoop");
 const GameState_1 = require("./GameState");
 const CanvasSceneRenderer_1 = require("./render/CanvasSceneRenderer");
+const SceneRenderer3D_1 = require("./render3d/SceneRenderer3D");
 class Game {
     constructor(adapter = (0, miniGameAdapter_1.createMiniGameAdapter)()) {
         this.coins = [];
         this.rewardBlocks = [];
         this.rewardReplenishTimer = 0;
         this.update = (deltaSeconds) => {
+            if (this.renderMode === "prototype3d") {
+                this.update3DPrototype(deltaSeconds);
+                return;
+            }
             this.pusher.update(deltaSeconds);
             this.comboTracker.update(deltaSeconds);
             this.feedbackOverlay.update(deltaSeconds);
@@ -39,13 +45,19 @@ class Game {
         this.render = () => {
             const context = this.adapter.context;
             context.clearRect(0, 0, this.config.screen.width, this.config.screen.height);
-            this.sceneRenderer.render(context, this.pusher, this.getBoardItems());
+            if (this.renderMode === "prototype3d" && this.sceneRenderer3D && this.pusher3D) {
+                this.sceneRenderer3D.render(context, this.pusher3D);
+            }
+            else {
+                this.sceneRenderer.render(context, this.pusher, this.getBoardItems());
+            }
             this.feedbackOverlay.render(context);
             this.hud.render(context, this.state.getSnapshot());
             this.coinButton.render(context);
         };
         this.adapter = adapter;
         this.config = (0, gameConfig_1.createGameConfig)(this.adapter.screen);
+        this.renderMode = this.config.renderMode;
         this.eventBus = new EventBus_1.EventBus();
         this.state = new GameState_1.GameState();
         this.state.applyLoadedData((0, SaveService_1.loadGame)());
@@ -56,7 +68,11 @@ class Game {
         this.comboTracker = new ComboTracker_1.ComboTracker(this.config.combo);
         this.feedbackOverlay = new DropFeedbackOverlay_1.DropFeedbackOverlay(this.config);
         this.sceneRenderer = new CanvasSceneRenderer_1.CanvasSceneRenderer(this.config);
+        this.sceneRenderer3D =
+            this.renderMode === "prototype3d" ? new SceneRenderer3D_1.SceneRenderer3D(this.config) : null;
         this.hud = new Hud_1.Hud(this.config.ui.hud, this.config.ui.hintText, this.config.colors);
+        this.pusher3D =
+            this.renderMode === "prototype3d" ? new PusherRig3D_1.PusherRig3D(this.config.threeD.pusher) : null;
         this.coinButton = new Button_1.Button(this.config.ui.coinButton, this.config.colors, () => {
             this.handleSpawnCoin();
         });
@@ -66,7 +82,12 @@ class Game {
         });
         this.registerEvents();
         this.registerInput();
-        this.bootstrapRewardBlocks();
+        if (this.renderMode === "legacy2d") {
+            this.bootstrapRewardBlocks();
+        }
+        else {
+            this.state.setStatusText("3D 第一阶段骨架已重置：当前只验证机舱盒体与整块推板");
+        }
         this.syncSceneCounts();
     }
     start() {
@@ -85,6 +106,10 @@ class Game {
         this.adapter.onTouchStart((point) => {
             const handledByUi = this.coinButton.handleTouch(point);
             if (!handledByUi) {
+                if (this.renderMode === "prototype3d") {
+                    this.state.setStatusText("3D 第一阶段仅验证盒体、平台、后墙开口与整块推板");
+                    return;
+                }
                 this.state.setStatusText("\u70b9\u51fb\u6295\u5e01\u6309\u94ae\uff0c\u628a\u786c\u5e01\u548c\u5956\u52b1\u7269\u4e00\u8d77\u63a8\u5411\u524d\u6cbf");
             }
         });
@@ -96,11 +121,22 @@ class Game {
         }
     }
     handleSpawnCoin() {
+        if (this.renderMode === "prototype3d") {
+            this.state.setStatusText("3D 硬币与奖励尚未接入：当前只看机舱骨架");
+            return;
+        }
         const coin = this.coinSpawner.spawn();
         this.coins.push(coin);
         this.syncSceneCounts();
         this.eventBus.emit(EventBus_1.GAME_EVENTS.COIN_SPAWNED, { coinId: coin.id });
         (0, AudioService_1.playSound)("coin-drop");
+    }
+    update3DPrototype(deltaSeconds) {
+        var _a;
+        (_a = this.pusher3D) === null || _a === void 0 ? void 0 : _a.update(deltaSeconds);
+        this.feedbackOverlay.update(deltaSeconds);
+        this.state.setComboCount(0);
+        this.syncSceneCounts();
     }
     handleDropResolution(physicsResult) {
         const comboResult = this.comboTracker.registerDrop(physicsResult.droppedItems.length);

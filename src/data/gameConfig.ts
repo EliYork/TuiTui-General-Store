@@ -1,6 +1,8 @@
 import { RewardBlockType } from "../gameplay/entities/RewardBlock";
 import { Size } from "../utils/math";
 
+export type RenderMode = "legacy2d" | "prototype3d";
+
 interface RewardTypeConfig {
   type: RewardBlockType;
   weight: number;
@@ -12,6 +14,7 @@ interface RewardTypeConfig {
 }
 
 export interface RuntimeGameConfig {
+  renderMode: RenderMode;
   screen: Size;
   colors: {
     background: string;
@@ -116,6 +119,52 @@ export interface RuntimeGameConfig {
     exitWidth: number;
     exitDepth: number;
     exitHeight: number;
+  };
+  threeD: {
+    viewport: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+    camera: {
+      positionX: number;
+      positionY: number;
+      positionZ: number;
+      targetX: number;
+      targetY: number;
+      targetZ: number;
+      fovDegrees: number;
+      near: number;
+    };
+    light: {
+      directionX: number;
+      directionY: number;
+      directionZ: number;
+      ambient: number;
+      diffuse: number;
+    };
+    cabinet: {
+      width: number;
+      height: number;
+      depth: number;
+      wallThickness: number;
+      ceilingThickness: number;
+      platformFrontZ: number;
+      dropWellDepth: number;
+      rearOpeningWidth: number;
+      rearOpeningHeight: number;
+      rearOpeningInsetDepth: number;
+    };
+    pusher: {
+      width: number;
+      height: number;
+      depth: number;
+      retractFrontZ: number;
+      extendFrontZ: number;
+      baseY: number;
+      cycleSeconds: number;
+    };
   };
   pseudo3d: {
     centerX: number;
@@ -256,6 +305,8 @@ const DESIGN_SIZE = {
   height: 667
 };
 
+const DEFAULT_RENDER_MODE: RenderMode = "prototype3d";
+
 export function createGameConfig(screen: Size): RuntimeGameConfig {
   const scaleX = screen.width / DESIGN_SIZE.width;
   const scaleY = screen.height / DESIGN_SIZE.height;
@@ -303,8 +354,28 @@ export function createGameConfig(screen: Size): RuntimeGameConfig {
   const slotOpeningY = slotPanelY + sy(10);
   const slotExitDepth = backWallY + sy(8);
   const slotExitHeight = sy(74);
+  const threeDViewportX = tableLeft;
+  const threeDViewportY = tableTop + sy(6);
+  const threeDViewportWidth = tableRight - tableLeft;
+  const threeDViewportHeight = tableBottom - threeDViewportY + sy(18);
+  const threeDCabinetWidth = Math.max(playfieldWidth + sx(8), sx(178));
+  const threeDCabinetHeight = sy(132);
+  const threeDCabinetDepth = sy(190);
+  const threeDWallThickness = sx(12);
+  const threeDCeilingThickness = sy(8);
+  const threeDPlatformFrontZ = sy(50);
+  const threeDDropWellDepth = sy(40);
+  const threeDPusherWidth = threeDCabinetWidth - threeDWallThickness * 2 - sx(6);
+  const threeDPusherHeight = sy(18);
+  const threeDPusherDepth = sy(92);
+  const threeDRearOpeningWidth = threeDPusherWidth + sx(12);
+  const threeDRearOpeningHeight = threeDPusherHeight + sy(12);
+  const threeDRearOpeningInsetDepth = sy(28);
+  const threeDPusherRetractFrontZ = threeDCabinetDepth - threeDPusherDepth + sy(6);
+  const threeDPusherExtendFrontZ = threeDPlatformFrontZ + sy(20);
 
   return {
+    renderMode: DEFAULT_RENDER_MODE,
     screen,
     colors: {
       background: "#09111d",
@@ -409,6 +480,52 @@ export function createGameConfig(screen: Size): RuntimeGameConfig {
       exitWidth: sx(26),
       exitDepth: slotExitDepth,
       exitHeight: slotExitHeight
+    },
+    threeD: {
+      viewport: {
+        x: threeDViewportX,
+        y: threeDViewportY,
+        width: threeDViewportWidth,
+        height: threeDViewportHeight
+      },
+      camera: {
+        positionX: 0,
+        positionY: threeDCabinetHeight * 0.85,
+        positionZ: -threeDCabinetDepth * 2.9,
+        targetX: 0,
+        targetY: threeDCabinetHeight * 0.06,
+        targetZ: threeDCabinetDepth * 0.62,
+        fovDegrees: 29,
+        near: 1
+      },
+      light: {
+        directionX: -0.14,
+        directionY: 0.96,
+        directionZ: -0.22,
+        ambient: 0.93,
+        diffuse: 0.07
+      },
+      cabinet: {
+        width: threeDCabinetWidth,
+        height: threeDCabinetHeight,
+        depth: threeDCabinetDepth,
+        wallThickness: threeDWallThickness,
+        ceilingThickness: threeDCeilingThickness,
+        platformFrontZ: threeDPlatformFrontZ,
+        dropWellDepth: threeDDropWellDepth,
+        rearOpeningWidth: threeDRearOpeningWidth,
+        rearOpeningHeight: threeDRearOpeningHeight,
+        rearOpeningInsetDepth: threeDRearOpeningInsetDepth
+      },
+      pusher: {
+        width: threeDPusherWidth,
+        height: threeDPusherHeight,
+        depth: threeDPusherDepth,
+        retractFrontZ: threeDPusherRetractFrontZ,
+        extendFrontZ: threeDPusherExtendFrontZ,
+        baseY: 0,
+        cycleSeconds: 2
+      }
     },
     pseudo3d: {
       centerX: screen.width / 2,
