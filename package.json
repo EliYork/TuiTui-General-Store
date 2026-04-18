@@ -1,0 +1,21 @@
+{
+  "name": "wx-mini-coin-pusher-stage1",
+  "version": "0.1.0",
+  "private": true,
+  "description": "微信小游戏 2D 推币机第一阶段骨架",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -w -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "main": "game.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
