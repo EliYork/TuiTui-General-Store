@@ -286,7 +286,9 @@ function createGameConfig(screen) {
             pairWakeOverlap: sx(2),
             maxHorizontalSpeed: sx(132),
             maxVerticalSpeed: sy(420),
-            frontWallZ: sx(6)
+            frontWallZ: sx(6),
+            frontDropTriggerSlack: sx(2),
+            frontDropResolveDepth: sy(12)
         },
         pseudo3d: {
             centerX: screen.width / 2,

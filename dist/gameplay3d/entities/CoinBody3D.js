@@ -7,6 +7,7 @@ class CoinBody3D {
         this.id = id;
         this.radius = radius;
         this.thickness = thickness;
+        this.isDropped = false;
         this.isGrounded = false;
         this.isSleeping = false;
         this.supportVelocityZ = 0;
@@ -18,6 +19,21 @@ class CoinBody3D {
     }
     get halfThickness() {
         return this.thickness / 2;
+    }
+    markDropped() {
+        this.isDropped = true;
+    }
+    buildDropResult() {
+        return {
+            id: this.id,
+            kind: "coin",
+            rewardAmount: 1,
+            feedbackText: "+1",
+            position: {
+                x: this.position.x,
+                y: this.position.z
+            }
+        };
     }
     getRenderState() {
         const displayNormal = this.normal.y >= 0

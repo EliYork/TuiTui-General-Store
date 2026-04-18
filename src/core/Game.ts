@@ -217,15 +217,20 @@ export class Game {
 
   private update3DPrototype(deltaSeconds: number): void {
     this.pusher3D?.update(deltaSeconds);
+    this.comboTracker.update(deltaSeconds);
+    this.feedbackOverlay.update(deltaSeconds);
     if (this.physicsWorld3D && this.pusher3D) {
-      this.physicsWorld3D.updateCoins(
+      const physicsResult = this.physicsWorld3D.updateCoins(
         this.coins3D,
         this.pusher3D.getState(),
         deltaSeconds
       );
+
+      if (physicsResult.droppedItems.length > 0) {
+        this.handleDropResolution(physicsResult);
+      }
     }
-    this.feedbackOverlay.update(deltaSeconds);
-    this.state.setComboCount(0);
+    this.state.setComboCount(this.comboTracker.getCurrentCombo());
     this.syncSceneCounts();
   }
 
@@ -309,6 +314,11 @@ export class Game {
     const droppedKeySet = new Set(
       droppedItems.map((item) => `${item.kind}:${item.id}`)
     );
+    const droppedCoinIdSet = new Set(
+      droppedItems
+        .filter((item) => item.kind === "coin")
+        .map((item) => item.id)
+    );
 
     for (let index = this.coins.length - 1; index >= 0; index -= 1) {
       const coin = this.coins[index];
@@ -317,6 +327,15 @@ export class Game {
       }
 
       this.coins.splice(index, 1);
+    }
+
+    for (let index = this.coins3D.length - 1; index >= 0; index -= 1) {
+      const coin = this.coins3D[index];
+      if (!droppedCoinIdSet.has(coin.id)) {
+        continue;
+      }
+
+      this.coins3D.splice(index, 1);
     }
 
     for (let index = this.rewardBlocks.length - 1; index >= 0; index -= 1) {

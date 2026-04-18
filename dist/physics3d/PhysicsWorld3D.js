@@ -11,8 +11,12 @@ class PhysicsWorld3D {
         this.physics = this.config.physics3d;
     }
     updateCoins(coins, pusher, deltaSeconds) {
+        const droppedItems = [];
         if (coins.length === 0) {
-            return;
+            return {
+                droppedItems,
+                totalReward: 0
+            };
         }
         const stepCount = Math.max(1, Math.ceil(deltaSeconds / this.physics.maxStepSeconds));
         const stepDelta = deltaSeconds / stepCount;
@@ -27,10 +31,18 @@ class PhysicsWorld3D {
             this.resolveCoinSupports(coins, pusher, stepDelta);
             this.resolvePusherFrontFaceContacts(coins, pusher, stepDelta);
             this.resolveBounds(coins, pusher);
+            this.collectDroppedCoins(coins, droppedItems);
         }
+        return {
+            droppedItems,
+            totalReward: droppedItems.reduce((sum, item) => sum + item.rewardAmount, 0)
+        };
     }
     integrateCoins(coins, deltaSeconds) {
         for (const coin of coins) {
+            if (coin.isDropped) {
+                continue;
+            }
             const wasGrounded = coin.isGrounded;
             coin.isGrounded = false;
             coin.supportVelocityZ = 0;
@@ -92,6 +104,9 @@ class PhysicsWorld3D {
     }
     resolveCoinSupports(coins, pusher, deltaSeconds) {
         for (const coin of coins) {
+            if (coin.isDropped) {
+                continue;
+            }
             const support = this.getSupportPlane(coin, pusher);
             const minCenterY = support.height + this.getVerticalExtent(coin);
             const supportContactSlop = 0.5;
@@ -114,11 +129,7 @@ class PhysicsWorld3D {
             }
             const horizontalBlend = 1 - Math.exp(-this.physics.groundFriction * deltaSeconds);
             coin.velocity.x = (0, math_1.lerp)(coin.velocity.x, support.surfaceVelocityX, horizontalBlend);
-            const surfaceFriction = support.surfaceVelocityZ < 0
-                ? this.physics.pusherCarry
-                : support.surfaceVelocityZ > 0
-                    ? this.physics.pusherCarry * 0.18
-                    : this.physics.groundFriction;
+            const surfaceFriction = this.getSupportSurfaceFriction(support);
             const depthBlend = 1 - Math.exp(-surfaceFriction * deltaSeconds);
             coin.velocity.z = (0, math_1.lerp)(coin.velocity.z, support.surfaceVelocityZ, depthBlend);
             this.applyContactStabilization(coin, support, deltaSeconds);
@@ -186,7 +197,7 @@ class PhysicsWorld3D {
             return {
                 height: Math.max(support.height, pusher.topY),
                 surfaceVelocityX: 0,
-                surfaceVelocityZ: pusher.velocityZ < 0 ? pusher.velocityZ : pusher.velocityZ * 0.1,
+                surfaceVelocityZ: this.getPusherCarryVelocity(coin, pusher, "hidden"),
                 kind: "hidden"
             };
         }
@@ -196,7 +207,7 @@ class PhysicsWorld3D {
         return {
             height: Math.max(support.height, pusher.topY),
             surfaceVelocityX: 0,
-            surfaceVelocityZ: pusher.velocityZ < 0 ? pusher.velocityZ : pusher.velocityZ * 0.18,
+            surfaceVelocityZ: this.getPusherCarryVelocity(coin, pusher, "pusher"),
             kind: "pusher"
         };
     }
@@ -208,10 +219,11 @@ class PhysicsWorld3D {
     isOnVisiblePusherSurface(coin, pusher) {
         const sideExtent = this.getSideExtent(coin);
         const depthExtent = this.getDepthExtent(coin);
+        const frontRetention = this.getSupportFrontRetention(coin, pusher);
         const withinX = Math.abs(coin.position.x) <=
             pusher.width / 2 + sideExtent * this.physics.pusherCaptureSlack;
         const withinZ = coin.position.z + depthExtent * this.physics.pusherCaptureSlack >=
-            pusher.frontZ &&
+            pusher.frontZ - frontRetention &&
             coin.position.z - depthExtent <= pusher.backZ;
         return withinX && withinZ;
     }
@@ -221,12 +233,61 @@ class PhysicsWorld3D {
         }
         const sideExtent = this.getSideExtent(coin);
         const depthExtent = this.getDepthExtent(coin);
+        const frontRetention = this.getSupportFrontRetention(coin, pusher);
         const withinX = Math.abs(coin.position.x) <=
             pusher.hiddenSupportWidth / 2 + sideExtent * 0.22;
         const withinZ = coin.position.z + depthExtent * this.physics.pusherCaptureSlack >=
-            pusher.hiddenSupportFrontZ &&
+            pusher.hiddenSupportFrontZ - frontRetention &&
             coin.position.z - depthExtent <= pusher.hiddenSupportBackZ;
         return withinX && withinZ;
+    }
+    getSupportSurfaceFriction(support) {
+        switch (support.kind) {
+            case "pusher":
+                return this.physics.pusherCarry;
+            case "hidden":
+                return this.physics.pusherCarry * 0.84;
+            case "stack":
+                return this.physics.stackFriction;
+            default:
+                return this.physics.groundFriction;
+        }
+    }
+    getPusherCarryVelocity(coin, pusher, supportKind) {
+        if (pusher.velocityZ === 0) {
+            return 0;
+        }
+        const baseCarryFactor = supportKind === "pusher"
+            ? pusher.velocityZ < 0
+                ? 0.72
+                : 0.58
+            : pusher.velocityZ < 0
+                ? 0.54
+                : 0.42;
+        const edgeCarryFactor = this.getSupportEdgeCarryFactor(coin, pusher, supportKind);
+        return pusher.velocityZ * baseCarryFactor * edgeCarryFactor;
+    }
+    getSupportEdgeCarryFactor(coin, pusher, supportKind) {
+        const sideExtent = this.getSideExtent(coin);
+        const depthExtent = this.getDepthExtent(coin);
+        const halfWidth = supportKind === "pusher"
+            ? pusher.width / 2
+            : pusher.hiddenSupportWidth / 2;
+        const frontRetention = this.getSupportFrontRetention(coin, pusher);
+        const frontZ = (supportKind === "pusher" ? pusher.frontZ : pusher.hiddenSupportFrontZ) -
+            frontRetention;
+        const backZ = supportKind === "pusher" ? pusher.backZ : pusher.hiddenSupportBackZ;
+        const sideMargin = halfWidth - Math.abs(coin.position.x) + sideExtent;
+        const frontMargin = coin.position.z + depthExtent - frontZ;
+        const backMargin = backZ - (coin.position.z - depthExtent);
+        const contactMargin = Math.min(sideMargin, frontMargin, backMargin);
+        return (0, math_1.clamp)(contactMargin / Math.max(1, coin.radius * 0.9), 0, 1);
+    }
+    getSupportFrontRetention(coin, pusher) {
+        if (pusher.velocityZ <= 0) {
+            return coin.radius * 0.12;
+        }
+        return coin.radius * 0.46;
     }
     applyContactStabilization(coin, support, deltaSeconds) {
         const relativeLinearSpeed = Math.hypot(coin.velocity.x - support.surfaceVelocityX, coin.velocity.z - support.surfaceVelocityZ);
@@ -280,8 +341,14 @@ class PhysicsWorld3D {
     resolveCoinPairs(coins, deltaSeconds) {
         for (let index = 0; index < coins.length; index += 1) {
             const coinA = coins[index];
+            if (coinA.isDropped) {
+                continue;
+            }
             for (let otherIndex = index + 1; otherIndex < coins.length; otherIndex += 1) {
                 const coinB = coins[otherIndex];
+                if (coinB.isDropped) {
+                    continue;
+                }
                 const deltaX = coinB.position.x - coinA.position.x;
                 const deltaZ = coinB.position.z - coinA.position.z;
                 const radiusSum = coinA.radius + coinB.radius;
@@ -391,6 +458,9 @@ class PhysicsWorld3D {
     }
     resolveBounds(coins, pusher) {
         for (const coin of coins) {
+            if (coin.isDropped) {
+                continue;
+            }
             const sideExtent = this.getSideExtent(coin);
             const depthExtent = this.getDepthExtent(coin);
             const minX = -this.cabinet.width / 2 + sideExtent;
@@ -428,6 +498,9 @@ class PhysicsWorld3D {
             return;
         }
         for (const coin of coins) {
+            if (coin.isDropped) {
+                continue;
+            }
             const sideExtent = this.getSideExtent(coin);
             const depthExtent = this.getDepthExtent(coin);
             const verticalExtent = this.getVerticalExtent(coin);
@@ -458,6 +531,28 @@ class PhysicsWorld3D {
                 coin.angularVelocity.z = 0;
             }
         }
+    }
+    collectDroppedCoins(coins, droppedItems) {
+        for (const coin of coins) {
+            if (coin.isDropped || !this.shouldResolveFrontDrop(coin)) {
+                continue;
+            }
+            coin.markDropped();
+            droppedItems.push(coin.buildDropResult());
+        }
+    }
+    shouldResolveFrontDrop(coin) {
+        const depthExtent = this.getDepthExtent(coin);
+        const frontReachZ = coin.position.z - depthExtent;
+        const hasCrossedFrontEdge = frontReachZ <=
+            this.cabinet.platformFrontZ + this.physics.frontDropTriggerSlack;
+        if (!hasCrossedFrontEdge) {
+            return false;
+        }
+        const hasDescendedIntoDropZone = coin.position.y <= -this.physics.frontDropResolveDepth;
+        const hasReachedCollectorFront = coin.position.z <=
+            this.physics.frontWallZ + depthExtent + this.physics.frontDropTriggerSlack;
+        return hasDescendedIntoDropZone || hasReachedCollectorFront;
     }
     getRearBoundZ(coin, pusher, depthExtent) {
         const visibleRearBoundZ = this.cabinet.depth - depthExtent;
