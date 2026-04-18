@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SceneRenderer3D = void 0;
+const CoinMesh3D_1 = require("./CoinMesh3D");
 const MachineCabinet3D_1 = require("./MachineCabinet3D");
 const math3d_1 = require("./math3d");
 const PusherMesh3D_1 = require("./PusherMesh3D");
@@ -8,6 +9,7 @@ class SceneRenderer3D {
     constructor(config) {
         this.config = config;
         this.cabinetMesh = new MachineCabinet3D_1.MachineCabinet3D(config);
+        this.coinMesh = new CoinMesh3D_1.CoinMesh3D(config);
         this.pusherMesh = new PusherMesh3D_1.PusherMesh3D(config);
         this.viewport = config.threeD.viewport;
         this.camera = {
@@ -23,7 +25,8 @@ class SceneRenderer3D {
             diffuse: config.threeD.light.diffuse
         };
     }
-    render(context, pusher) {
+    render(context, pusher, coins) {
+        const pusherState = pusher.getState();
         this.drawBackdrop(context);
         this.drawCabinetShell(context);
         context.save();
@@ -33,7 +36,11 @@ class SceneRenderer3D {
         this.drawViewportAmbient(context);
         const surfaces = [
             ...this.cabinetMesh.buildSurfaces(),
-            ...this.pusherMesh.buildSurfaces(pusher.getState())
+            ...this.pusherMesh.buildSurfaces(pusherState),
+            ...(this.config.threeD.debug3DPhysics
+                ? this.pusherMesh.buildDebugSurfaces(pusherState)
+                : []),
+            ...this.coinMesh.buildSurfaces(coins)
         ];
         const projectedSurfaces = surfaces
             .map((surface) => (0, math3d_1.projectSurface3D)(surface, this.camera, this.viewport, this.light))
@@ -48,6 +55,9 @@ class SceneRenderer3D {
             this.drawSurface(context, surface);
         }
         context.restore();
+        if (this.config.threeD.debug3DPhysics) {
+            this.drawDebugOverlay(context, pusherState, coins);
+        }
         this.drawGlassFrame(context);
     }
     drawBackdrop(context) {
@@ -128,6 +138,58 @@ class SceneRenderer3D {
             context.stroke();
         }
         context.restore();
+    }
+    drawDebugOverlay(context, pusherState, coins) {
+        const groundedCount = coins.filter((coin) => coin.isGrounded).length;
+        const sleepingCount = coins.filter((coin) => coin.isSleeping).length;
+        const unstableCount = coins.filter((coin) => this.isCoinUnstable(coin)).length;
+        const debugLines = [
+            "DEBUG 3D PHYSICS",
+            `coins ${coins.length}`,
+            `grounded ${groundedCount}`,
+            `sleeping ${sleepingCount}`,
+            `unstable ${unstableCount}`,
+            `rear support z ${pusherState.hiddenSupportFrontZ.toFixed(0)}..${pusherState.hiddenSupportBackZ.toFixed(0)}`
+        ];
+        context.save();
+        context.fillStyle = "rgba(8, 16, 28, 0.72)";
+        context.fillRect(this.viewport.x + 12, this.viewport.y + 12, 172, 92);
+        context.strokeStyle = "rgba(74, 222, 128, 0.9)";
+        context.lineWidth = 1.5;
+        context.strokeRect(this.viewport.x + 12, this.viewport.y + 12, 172, 92);
+        context.font = "12px monospace";
+        context.textBaseline = "top";
+        debugLines.forEach((line, index) => {
+            context.fillStyle = index === 0 ? "#86efac" : "#e5f3ff";
+            context.fillText(line, this.viewport.x + 20, this.viewport.y + 20 + index * 13);
+        });
+        context.fillStyle = "rgba(34, 197, 94, 0.9)";
+        context.fillRect(this.viewport.x + 194, this.viewport.y + 20, 12, 12);
+        context.fillStyle = "#e5f3ff";
+        context.fillText("rear support", this.viewport.x + 212, this.viewport.y + 18);
+        context.fillStyle = "#4ade80";
+        context.fillRect(this.viewport.x + 194, this.viewport.y + 38, 12, 12);
+        context.fillStyle = "#e5f3ff";
+        context.fillText("sleeping", this.viewport.x + 212, this.viewport.y + 36);
+        context.fillStyle = "#facc15";
+        context.fillRect(this.viewport.x + 194, this.viewport.y + 56, 12, 12);
+        context.fillStyle = "#e5f3ff";
+        context.fillText("grounded", this.viewport.x + 212, this.viewport.y + 54);
+        context.fillStyle = "#f87171";
+        context.fillRect(this.viewport.x + 194, this.viewport.y + 74, 12, 12);
+        context.fillStyle = "#e5f3ff";
+        context.fillText("active/spinning", this.viewport.x + 212, this.viewport.y + 72);
+        context.restore();
+    }
+    isCoinUnstable(coin) {
+        if (coin.isSleeping) {
+            return false;
+        }
+        const linearSpeed = Math.hypot(coin.velocity.x, coin.velocity.z);
+        const angularSpeed = Math.hypot(coin.angularVelocity.x, coin.angularVelocity.y, coin.angularVelocity.z);
+        return (!coin.isGrounded ||
+            linearSpeed > this.config.physics3d.sleepLinearSpeed * 0.8 ||
+            angularSpeed > this.config.physics3d.sleepAngularSpeed * 0.8);
     }
 }
 exports.SceneRenderer3D = SceneRenderer3D;

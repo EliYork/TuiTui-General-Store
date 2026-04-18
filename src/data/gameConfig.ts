@@ -162,9 +162,67 @@ export interface RuntimeGameConfig {
       depth: number;
       retractFrontZ: number;
       extendFrontZ: number;
+      hiddenSupportFrontZ: number;
+      hiddenSupportBackZ: number;
+      hiddenSupportWidth: number;
       baseY: number;
       cycleSeconds: number;
     };
+    debug3DPhysics: boolean;
+    coin: {
+      radius: number;
+      thickness: number;
+      sides: number;
+      spawnX: number;
+      spawnY: number;
+      spawnZ: number;
+      spawnSpreadX: number;
+      spawnSpreadZ: number;
+      initialVelocityXMin: number;
+      initialVelocityXMax: number;
+      initialVelocityYMin: number;
+      initialVelocityYMax: number;
+      initialVelocityZMin: number;
+      initialVelocityZMax: number;
+      initialNormalYMin: number;
+      initialNormalYMax: number;
+      initialAngularVelocityXMin: number;
+      initialAngularVelocityXMax: number;
+      initialAngularVelocityYMin: number;
+      initialAngularVelocityYMax: number;
+      initialAngularVelocityZMin: number;
+      initialAngularVelocityZMax: number;
+      maxVisible: number;
+    };
+  };
+  physics3d: {
+    gravity: number;
+    maxStepSeconds: number;
+    solverIterations: number;
+    wallBounce: number;
+    collisionBounce: number;
+    airDamping: number;
+    groundFriction: number;
+    stackFriction: number;
+    pusherCarry: number;
+    platformEdgeSlack: number;
+    pusherCaptureSlack: number;
+    airAngularDamping: number;
+    groundAngularDamping: number;
+    settlingTorque: number;
+    rollAcceleration: number;
+    collisionAngularKick: number;
+    maxAngularSpeed: number;
+    sleepLinearSpeed: number;
+    sleepAngularSpeed: number;
+    sleepDelaySeconds: number;
+    settledLinearDamping: number;
+    settledAngularDamping: number;
+    pairWakeSpeed: number;
+    pairWakeOverlap: number;
+    maxHorizontalSpeed: number;
+    maxVerticalSpeed: number;
+    frontWallZ: number;
   };
   pseudo3d: {
     centerX: number;
@@ -363,7 +421,7 @@ export function createGameConfig(screen: Size): RuntimeGameConfig {
   const threeDCabinetDepth = sy(190);
   const threeDWallThickness = sx(12);
   const threeDCeilingThickness = sy(8);
-  const threeDPlatformFrontZ = sy(50);
+  const threeDPlatformFrontZ = sy(30);
   const threeDDropWellDepth = sy(40);
   const threeDPusherWidth = threeDCabinetWidth - threeDWallThickness * 2 - sx(6);
   const threeDPusherHeight = sy(18);
@@ -372,7 +430,15 @@ export function createGameConfig(screen: Size): RuntimeGameConfig {
   const threeDRearOpeningHeight = threeDPusherHeight + sy(12);
   const threeDRearOpeningInsetDepth = sy(28);
   const threeDPusherRetractFrontZ = threeDCabinetDepth - threeDPusherDepth + sy(6);
-  const threeDPusherExtendFrontZ = threeDPlatformFrontZ + sy(20);
+  const threeDPusherExtendFrontZ = threeDPlatformFrontZ + sy(34);
+  const threeDHiddenSupportFrontZ =
+    threeDCabinetDepth - threeDRearOpeningInsetDepth;
+  const threeDHiddenSupportBackZ = threeDCabinetDepth;
+  const threeDHiddenSupportWidth = threeDRearOpeningWidth;
+  const threeDCoinRadius = Math.max(6, sx(8));
+  const threeDCoinThickness = Math.max(4, sy(4));
+  const threeDCoinSpawnY = threeDCabinetHeight + sy(46);
+  const threeDCoinSpawnZ = threeDCabinetDepth - sy(8);
 
   return {
     renderMode: DEFAULT_RENDER_MODE,
@@ -482,6 +548,7 @@ export function createGameConfig(screen: Size): RuntimeGameConfig {
       exitHeight: slotExitHeight
     },
     threeD: {
+      debug3DPhysics: false,
       viewport: {
         x: threeDViewportX,
         y: threeDViewportY,
@@ -490,12 +557,12 @@ export function createGameConfig(screen: Size): RuntimeGameConfig {
       },
       camera: {
         positionX: 0,
-        positionY: threeDCabinetHeight * 0.85,
-        positionZ: -threeDCabinetDepth * 2.9,
+        positionY: threeDCabinetHeight * 2.3,
+        positionZ: -threeDCabinetDepth * 1.45,
         targetX: 0,
-        targetY: threeDCabinetHeight * 0.06,
-        targetZ: threeDCabinetDepth * 0.62,
-        fovDegrees: 29,
+        targetY: 0,
+        targetZ: threeDCabinetDepth * 0.42,
+        fovDegrees: 31,
         near: 1
       },
       light: {
@@ -523,9 +590,66 @@ export function createGameConfig(screen: Size): RuntimeGameConfig {
         depth: threeDPusherDepth,
         retractFrontZ: threeDPusherRetractFrontZ,
         extendFrontZ: threeDPusherExtendFrontZ,
+        hiddenSupportFrontZ: threeDHiddenSupportFrontZ,
+        hiddenSupportBackZ: threeDHiddenSupportBackZ,
+        hiddenSupportWidth: threeDHiddenSupportWidth,
         baseY: 0,
         cycleSeconds: 2
+      },
+      coin: {
+        radius: threeDCoinRadius,
+        thickness: threeDCoinThickness,
+        sides: 12,
+        spawnX: 0,
+        spawnY: threeDCoinSpawnY,
+        spawnZ: threeDCoinSpawnZ,
+        spawnSpreadX: sx(22),
+        spawnSpreadZ: sy(14),
+        initialVelocityXMin: -sx(20),
+        initialVelocityXMax: sx(20),
+        initialVelocityYMin: -sy(24),
+        initialVelocityYMax: -sy(10),
+        initialVelocityZMin: -sy(52),
+        initialVelocityZMax: -sy(20),
+        initialNormalYMin: 0.06,
+        initialNormalYMax: 0.36,
+        initialAngularVelocityXMin: -5.6,
+        initialAngularVelocityXMax: 5.6,
+        initialAngularVelocityYMin: -7.2,
+        initialAngularVelocityYMax: 7.2,
+        initialAngularVelocityZMin: -5.6,
+        initialAngularVelocityZMax: 5.6,
+        maxVisible: 40
       }
+    },
+    physics3d: {
+      gravity: sy(520),
+      maxStepSeconds: 1 / 120,
+      solverIterations: 7,
+      wallBounce: 0.08,
+      collisionBounce: 0.02,
+      airDamping: 0.44,
+      groundFriction: 12.8,
+      stackFriction: 7.8,
+      pusherCarry: 16,
+      platformEdgeSlack: 0.62,
+      pusherCaptureSlack: 0.22,
+      airAngularDamping: 0.8,
+      groundAngularDamping: 10.8,
+      settlingTorque: 14,
+      rollAcceleration: sx(154),
+      collisionAngularKick: 0.72,
+      maxAngularSpeed: 10.5,
+      sleepLinearSpeed: sx(14),
+      sleepAngularSpeed: 2.2,
+      sleepDelaySeconds: 0.12,
+      settledLinearDamping: 20,
+      settledAngularDamping: 28,
+      pairWakeSpeed: sx(10),
+      pairWakeOverlap: sx(2),
+      maxHorizontalSpeed: sx(132),
+      maxVerticalSpeed: sy(420),
+      frontWallZ: sx(6)
     },
     pseudo3d: {
       centerX: screen.width / 2,

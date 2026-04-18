@@ -6,15 +6,17 @@ const CoinSpawner_1 = require("../gameplay/CoinSpawner");
 const ComboTracker_1 = require("../gameplay/ComboTracker");
 const Pusher_1 = require("../gameplay/entities/Pusher");
 const RewardSpawner_1 = require("../gameplay/RewardSpawner");
+const CoinSpawner3D_1 = require("../gameplay3d/CoinSpawner3D");
 const PusherRig3D_1 = require("../gameplay3d/PusherRig3D");
 const RewardSystem_1 = require("../gameplay/rewards/RewardSystem");
 const miniGameAdapter_1 = require("../platform/miniGameAdapter");
 const PhysicsWorld_1 = require("../physics/PhysicsWorld");
+const PhysicsWorld3D_1 = require("../physics3d/PhysicsWorld3D");
 const AudioService_1 = require("../services/AudioService");
-const SaveService_1 = require("../services/SaveService");
 const CloudService_1 = require("../services/CloudService");
-const DropFeedbackOverlay_1 = require("../ui/DropFeedbackOverlay");
+const SaveService_1 = require("../services/SaveService");
 const Button_1 = require("../ui/Button");
+const DropFeedbackOverlay_1 = require("../ui/DropFeedbackOverlay");
 const Hud_1 = require("../ui/Hud");
 const EventBus_1 = require("./EventBus");
 const GameLoop_1 = require("./GameLoop");
@@ -24,6 +26,7 @@ const SceneRenderer3D_1 = require("./render3d/SceneRenderer3D");
 class Game {
     constructor(adapter = (0, miniGameAdapter_1.createMiniGameAdapter)()) {
         this.coins = [];
+        this.coins3D = [];
         this.rewardBlocks = [];
         this.rewardReplenishTimer = 0;
         this.update = (deltaSeconds) => {
@@ -46,7 +49,7 @@ class Game {
             const context = this.adapter.context;
             context.clearRect(0, 0, this.config.screen.width, this.config.screen.height);
             if (this.renderMode === "prototype3d" && this.sceneRenderer3D && this.pusher3D) {
-                this.sceneRenderer3D.render(context, this.pusher3D);
+                this.sceneRenderer3D.render(context, this.pusher3D, this.coins3D);
             }
             else {
                 this.sceneRenderer.render(context, this.pusher, this.getBoardItems());
@@ -63,7 +66,13 @@ class Game {
         this.state.applyLoadedData((0, SaveService_1.loadGame)());
         this.pusher = new Pusher_1.Pusher(this.config.pusher);
         this.physicsWorld = new PhysicsWorld_1.PhysicsWorld(this.config.physics);
+        this.physicsWorld3D =
+            this.renderMode === "prototype3d" ? new PhysicsWorld3D_1.PhysicsWorld3D(this.config) : null;
         this.coinSpawner = new CoinSpawner_1.CoinSpawner(this.config.coin);
+        this.coinSpawner3D =
+            this.renderMode === "prototype3d"
+                ? new CoinSpawner3D_1.CoinSpawner3D(this.config.threeD.coin)
+                : null;
         this.rewardSpawner = new RewardSpawner_1.RewardSpawner(this.config.reward);
         this.comboTracker = new ComboTracker_1.ComboTracker(this.config.combo);
         this.feedbackOverlay = new DropFeedbackOverlay_1.DropFeedbackOverlay(this.config);
@@ -72,7 +81,9 @@ class Game {
             this.renderMode === "prototype3d" ? new SceneRenderer3D_1.SceneRenderer3D(this.config) : null;
         this.hud = new Hud_1.Hud(this.config.ui.hud, this.config.ui.hintText, this.config.colors);
         this.pusher3D =
-            this.renderMode === "prototype3d" ? new PusherRig3D_1.PusherRig3D(this.config.threeD.pusher) : null;
+            this.renderMode === "prototype3d"
+                ? new PusherRig3D_1.PusherRig3D(this.config.threeD.pusher)
+                : null;
         this.coinButton = new Button_1.Button(this.config.ui.coinButton, this.config.colors, () => {
             this.handleSpawnCoin();
         });
@@ -86,7 +97,7 @@ class Game {
             this.bootstrapRewardBlocks();
         }
         else {
-            this.state.setStatusText("3D 第一阶段骨架已重置：当前只验证机舱盒体与整块推板");
+            this.state.setStatusText("\u0033\u0044 \u786c\u5e01\u539f\u578b\u5df2\u542f\u7528\uff1a\u70b9\u51fb\u6295\u5e01\u9a8c\u8bc1\u6389\u843d\u3001\u5806\u53e0\u548c\u63a8\u677f\u524d\u63a8");
         }
         this.syncSceneCounts();
     }
@@ -107,7 +118,7 @@ class Game {
             const handledByUi = this.coinButton.handleTouch(point);
             if (!handledByUi) {
                 if (this.renderMode === "prototype3d") {
-                    this.state.setStatusText("3D 第一阶段仅验证盒体、平台、后墙开口与整块推板");
+                    this.state.setStatusText("\u70b9\u51fb\u6295\u5e01\u9a8c\u8bc1 \u0033\u0044 \u786c\u5e01\u6389\u843d\u3001\u5806\u53e0\u548c\u63a8\u677f\u524d\u63a8");
                     return;
                 }
                 this.state.setStatusText("\u70b9\u51fb\u6295\u5e01\u6309\u94ae\uff0c\u628a\u786c\u5e01\u548c\u5956\u52b1\u7269\u4e00\u8d77\u63a8\u5411\u524d\u6cbf");
@@ -122,7 +133,15 @@ class Game {
     }
     handleSpawnCoin() {
         if (this.renderMode === "prototype3d") {
-            this.state.setStatusText("3D 硬币与奖励尚未接入：当前只看机舱骨架");
+            if (!this.coinSpawner3D) {
+                return;
+            }
+            const coin3D = this.coinSpawner3D.spawn();
+            this.coins3D.push(coin3D);
+            this.state.setStatusText("\u5df2\u6295\u4e0b\u4e00\u679a \u0033\u0044 \u786c\u5e01\uff0c\u89c2\u5bdf\u5b83\u7684\u6389\u843d\u3001\u5806\u53e0\u548c\u53d7\u63a8\u60c5\u51b5");
+            this.syncSceneCounts();
+            this.eventBus.emit(EventBus_1.GAME_EVENTS.COIN_SPAWNED, { coinId: coin3D.id });
+            (0, AudioService_1.playSound)("coin-drop");
             return;
         }
         const coin = this.coinSpawner.spawn();
@@ -134,6 +153,9 @@ class Game {
     update3DPrototype(deltaSeconds) {
         var _a;
         (_a = this.pusher3D) === null || _a === void 0 ? void 0 : _a.update(deltaSeconds);
+        if (this.physicsWorld3D && this.pusher3D) {
+            this.physicsWorld3D.updateCoins(this.coins3D, this.pusher3D.getState(), deltaSeconds);
+        }
         this.feedbackOverlay.update(deltaSeconds);
         this.state.setComboCount(0);
         this.syncSceneCounts();
@@ -211,6 +233,11 @@ class Game {
         return [...this.rewardBlocks, ...this.coins];
     }
     syncSceneCounts() {
+        if (this.renderMode === "prototype3d") {
+            this.state.setSceneCoinCount(this.coins3D.length);
+            this.state.setRewardBlockCount(0);
+            return;
+        }
         this.state.setSceneCoinCount(this.coins.length);
         this.state.setRewardBlockCount(this.rewardBlocks.length);
     }

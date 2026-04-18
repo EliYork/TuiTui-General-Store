@@ -6,18 +6,21 @@ import { Coin } from "../gameplay/entities/Coin";
 import { Pusher } from "../gameplay/entities/Pusher";
 import { RewardBlock } from "../gameplay/entities/RewardBlock";
 import { RewardSpawner } from "../gameplay/RewardSpawner";
+import { CoinSpawner3D } from "../gameplay3d/CoinSpawner3D";
 import { PusherRig3D } from "../gameplay3d/PusherRig3D";
+import { CoinBody3D } from "../gameplay3d/entities/CoinBody3D";
 import {
   onDropResolved,
   spawnReward
 } from "../gameplay/rewards/RewardSystem";
 import { createMiniGameAdapter, MiniGameAdapter } from "../platform/miniGameAdapter";
 import { PhysicsStepResult, PhysicsWorld } from "../physics/PhysicsWorld";
+import { PhysicsWorld3D } from "../physics3d/PhysicsWorld3D";
 import { playSound } from "../services/AudioService";
-import { loadGame, saveGame } from "../services/SaveService";
 import { syncToCloud } from "../services/CloudService";
-import { DropFeedbackOverlay } from "../ui/DropFeedbackOverlay";
+import { loadGame, saveGame } from "../services/SaveService";
 import { Button } from "../ui/Button";
+import { DropFeedbackOverlay } from "../ui/DropFeedbackOverlay";
 import { Hud } from "../ui/Hud";
 import { Point } from "../utils/math";
 import { EventBus, GAME_EVENTS } from "./EventBus";
@@ -38,13 +41,16 @@ export class Game {
   private readonly pusher: Pusher;
   private readonly pusher3D: PusherRig3D | null;
   private readonly physicsWorld: PhysicsWorld;
+  private readonly physicsWorld3D: PhysicsWorld3D | null;
   private readonly coinSpawner: CoinSpawner;
+  private readonly coinSpawner3D: CoinSpawner3D | null;
   private readonly rewardSpawner: RewardSpawner;
   private readonly comboTracker: ComboTracker;
   private readonly feedbackOverlay: DropFeedbackOverlay;
   private readonly hud: Hud;
   private readonly coinButton: Button;
   private readonly coins: Coin[] = [];
+  private readonly coins3D: CoinBody3D[] = [];
   private readonly rewardBlocks: RewardBlock[] = [];
   private rewardReplenishTimer = 0;
 
@@ -58,19 +64,35 @@ export class Game {
 
     this.pusher = new Pusher(this.config.pusher);
     this.physicsWorld = new PhysicsWorld(this.config.physics);
+    this.physicsWorld3D =
+      this.renderMode === "prototype3d" ? new PhysicsWorld3D(this.config) : null;
     this.coinSpawner = new CoinSpawner(this.config.coin);
+    this.coinSpawner3D =
+      this.renderMode === "prototype3d"
+        ? new CoinSpawner3D(this.config.threeD.coin)
+        : null;
     this.rewardSpawner = new RewardSpawner(this.config.reward);
     this.comboTracker = new ComboTracker(this.config.combo);
     this.feedbackOverlay = new DropFeedbackOverlay(this.config);
     this.sceneRenderer = new CanvasSceneRenderer(this.config);
     this.sceneRenderer3D =
       this.renderMode === "prototype3d" ? new SceneRenderer3D(this.config) : null;
-    this.hud = new Hud(this.config.ui.hud, this.config.ui.hintText, this.config.colors);
+    this.hud = new Hud(
+      this.config.ui.hud,
+      this.config.ui.hintText,
+      this.config.colors
+    );
     this.pusher3D =
-      this.renderMode === "prototype3d" ? new PusherRig3D(this.config.threeD.pusher) : null;
-    this.coinButton = new Button(this.config.ui.coinButton, this.config.colors, () => {
-      this.handleSpawnCoin();
-    });
+      this.renderMode === "prototype3d"
+        ? new PusherRig3D(this.config.threeD.pusher)
+        : null;
+    this.coinButton = new Button(
+      this.config.ui.coinButton,
+      this.config.colors,
+      () => {
+        this.handleSpawnCoin();
+      }
+    );
 
     this.loop = new GameLoop(this.adapter.frameDriver, {
       update: this.update,
@@ -83,7 +105,7 @@ export class Game {
       this.bootstrapRewardBlocks();
     } else {
       this.state.setStatusText(
-        "3D 第一阶段骨架已重置：当前只验证机舱盒体与整块推板"
+        "\u0033\u0044 \u786c\u5e01\u539f\u578b\u5df2\u542f\u7528\uff1a\u70b9\u51fb\u6295\u5e01\u9a8c\u8bc1\u6389\u843d\u3001\u5806\u53e0\u548c\u63a8\u677f\u524d\u63a8"
       );
     }
     this.syncSceneCounts();
@@ -100,7 +122,9 @@ export class Game {
     });
 
     this.eventBus.on(GAME_EVENTS.REWARD_SPAWN_REQUESTED, (payload) => {
-      spawnReward(payload as { reason: string; position?: Point; rewardType?: string });
+      spawnReward(
+        payload as { reason: string; position?: Point; rewardType?: string }
+      );
     });
   }
 
@@ -110,7 +134,7 @@ export class Game {
       if (!handledByUi) {
         if (this.renderMode === "prototype3d") {
           this.state.setStatusText(
-            "3D 第一阶段仅验证盒体、平台、后墙开口与整块推板"
+            "\u70b9\u51fb\u6295\u5e01\u9a8c\u8bc1 \u0033\u0044 \u786c\u5e01\u6389\u843d\u3001\u5806\u53e0\u548c\u63a8\u677f\u524d\u63a8"
           );
           return;
         }
@@ -131,9 +155,18 @@ export class Game {
 
   private handleSpawnCoin(): void {
     if (this.renderMode === "prototype3d") {
+      if (!this.coinSpawner3D) {
+        return;
+      }
+
+      const coin3D = this.coinSpawner3D.spawn();
+      this.coins3D.push(coin3D);
       this.state.setStatusText(
-        "3D 硬币与奖励尚未接入：当前只看机舱骨架"
+        "\u5df2\u6295\u4e0b\u4e00\u679a \u0033\u0044 \u786c\u5e01\uff0c\u89c2\u5bdf\u5b83\u7684\u6389\u843d\u3001\u5806\u53e0\u548c\u53d7\u63a8\u60c5\u51b5"
       );
+      this.syncSceneCounts();
+      this.eventBus.emit(GAME_EVENTS.COIN_SPAWNED, { coinId: coin3D.id });
+      playSound("coin-drop");
       return;
     }
 
@@ -173,7 +206,7 @@ export class Game {
     const context = this.adapter.context;
     context.clearRect(0, 0, this.config.screen.width, this.config.screen.height);
     if (this.renderMode === "prototype3d" && this.sceneRenderer3D && this.pusher3D) {
-      this.sceneRenderer3D.render(context, this.pusher3D);
+      this.sceneRenderer3D.render(context, this.pusher3D, this.coins3D);
     } else {
       this.sceneRenderer.render(context, this.pusher, this.getBoardItems());
     }
@@ -184,13 +217,22 @@ export class Game {
 
   private update3DPrototype(deltaSeconds: number): void {
     this.pusher3D?.update(deltaSeconds);
+    if (this.physicsWorld3D && this.pusher3D) {
+      this.physicsWorld3D.updateCoins(
+        this.coins3D,
+        this.pusher3D.getState(),
+        deltaSeconds
+      );
+    }
     this.feedbackOverlay.update(deltaSeconds);
     this.state.setComboCount(0);
     this.syncSceneCounts();
   }
 
   private handleDropResolution(physicsResult: PhysicsStepResult): void {
-    const comboResult = this.comboTracker.registerDrop(physicsResult.droppedItems.length);
+    const comboResult = this.comboTracker.registerDrop(
+      physicsResult.droppedItems.length
+    );
     this.removeDroppedItems(physicsResult.droppedItems);
 
     const latestDropHint = this.buildLatestDropHint(
@@ -249,7 +291,9 @@ export class Game {
 
     this.rewardReplenishTimer = 0;
     this.addRewardBlock(rewardBlock, "auto-replenish");
-    playSound(rewardBlock.rewardType === "chestReward" ? "reward-rare" : "reward-spawn");
+    playSound(
+      rewardBlock.rewardType === "chestReward" ? "reward-rare" : "reward-spawn"
+    );
   }
 
   private addRewardBlock(rewardBlock: RewardBlock, reason: string): void {
@@ -290,11 +334,20 @@ export class Game {
   }
 
   private syncSceneCounts(): void {
+    if (this.renderMode === "prototype3d") {
+      this.state.setSceneCoinCount(this.coins3D.length);
+      this.state.setRewardBlockCount(0);
+      return;
+    }
+
     this.state.setSceneCoinCount(this.coins.length);
     this.state.setRewardBlockCount(this.rewardBlocks.length);
   }
 
-  private playDropSounds(droppedItems: DroppedItemResult[], comboCount: number): void {
+  private playDropSounds(
+    droppedItems: DroppedItemResult[],
+    comboCount: number
+  ): void {
     const hasRewardBlock = droppedItems.some((item) => item.kind === "reward");
     const hasChest = droppedItems.some((item) => item.rewardType === "chestReward");
 

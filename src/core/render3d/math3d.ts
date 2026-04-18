@@ -34,6 +34,28 @@ export function scaleVec3(vector: Vector3, scalar: number): Vector3 {
   return vec3(vector.x * scalar, vector.y * scalar, vector.z * scalar);
 }
 
+export function rotateVec3AroundAxis(
+  vector: Vector3,
+  axis: Vector3,
+  angleRadians: number
+): Vector3 {
+  const normalizedAxis = normalizeVec3(axis);
+  const cosTheta = Math.cos(angleRadians);
+  const sinTheta = Math.sin(angleRadians);
+  const axisProjection = scaleVec3(
+    normalizedAxis,
+    dotVec3(normalizedAxis, vector) * (1 - cosTheta)
+  );
+
+  return addVec3(
+    addVec3(
+      scaleVec3(vector, cosTheta),
+      scaleVec3(crossVec3(normalizedAxis, vector), sinTheta)
+    ),
+    axisProjection
+  );
+}
+
 export function dotVec3(left: Vector3, right: Vector3): number {
   return left.x * right.x + left.y * right.y + left.z * right.z;
 }

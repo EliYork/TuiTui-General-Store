@@ -4,6 +4,7 @@ exports.vec3 = vec3;
 exports.addVec3 = addVec3;
 exports.subtractVec3 = subtractVec3;
 exports.scaleVec3 = scaleVec3;
+exports.rotateVec3AroundAxis = rotateVec3AroundAxis;
 exports.dotVec3 = dotVec3;
 exports.crossVec3 = crossVec3;
 exports.lengthVec3 = lengthVec3;
@@ -26,6 +27,13 @@ function subtractVec3(left, right) {
 }
 function scaleVec3(vector, scalar) {
     return vec3(vector.x * scalar, vector.y * scalar, vector.z * scalar);
+}
+function rotateVec3AroundAxis(vector, axis, angleRadians) {
+    const normalizedAxis = normalizeVec3(axis);
+    const cosTheta = Math.cos(angleRadians);
+    const sinTheta = Math.sin(angleRadians);
+    const axisProjection = scaleVec3(normalizedAxis, dotVec3(normalizedAxis, vector) * (1 - cosTheta));
+    return addVec3(addVec3(scaleVec3(vector, cosTheta), scaleVec3(crossVec3(normalizedAxis, vector), sinTheta)), axisProjection);
 }
 function dotVec3(left, right) {
     return left.x * right.x + left.y * right.y + left.z * right.z;
