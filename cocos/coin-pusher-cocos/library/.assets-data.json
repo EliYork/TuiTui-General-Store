@@ -1,0 +1,134 @@
+{
+  "78550637-8924-4364-8453-7a392e885020": {
+    "url": "db://assets/materials",
+    "value": {},
+    "versionCode": 1
+  },
+  "8d52c82a-7d7f-4937-b184-5c14baafc30a": {
+    "url": "db://assets/models",
+    "value": {},
+    "versionCode": 1
+  },
+  "c2853625-8549-4d0a-893f-3e66f7e4367f": {
+    "url": "db://assets/prefabs",
+    "value": {},
+    "versionCode": 1
+  },
+  "e93ff105-0972-4186-989f-1616aecf0a7e": {
+    "url": "db://assets/scenes",
+    "value": {},
+    "versionCode": 1
+  },
+  "f5a8f2c5-864c-488e-9338-cc36e0179cfa": {
+    "url": "db://assets/scripts",
+    "value": {},
+    "versionCode": 1
+  },
+  "3e1d5ed1-e01a-4468-89e0-2cc52ec1f060": {
+    "url": "db://assets/textures",
+    "value": {},
+    "versionCode": 1
+  },
+  "bbf78522-c2b6-44a7-8d85-c44bdb42b166": {
+    "url": "db://assets/scripts/core",
+    "value": {},
+    "versionCode": 1
+  },
+  "92715b6c-f9e4-4eea-a663-302fc8cf4a8e": {
+    "url": "db://assets/scripts/gameplay",
+    "value": {},
+    "versionCode": 1
+  },
+  "f7ef0e46-6e88-494d-b00b-abffbd547bdb": {
+    "url": "db://assets/scripts/ui",
+    "value": {},
+    "versionCode": 1
+  },
+  "6bf28501-5fb5-4b59-92ea-2a723c3f027e": {
+    "url": "db://assets/scripts/core/GameManager.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "162c9ae4-7339-4033-8fd7-f5fe93695055": {
+    "url": "db://assets/scripts/gameplay/CoinBehaviour.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "08942fc9-9f2e-4fe0-b2a7-7b42dce00ae9": {
+    "url": "db://assets/scripts/gameplay/CoinSpawner.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "703bb93f-8e50-4fdd-853b-bef2df4409a3": {
+    "url": "db://assets/scripts/gameplay/DropZone.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "db135a83-3f79-4dfd-9412-36a413283365": {
+    "url": "db://assets/scripts/gameplay/PusherController.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "822de87a-eb1e-4aee-8255-46954f6c3ee1": {
+    "url": "db://assets/scenes/Prototype01.scene",
+    "value": {
+      "depends": [
+        "620b6bf3-0369-4560-837f-2a2c00b73c26",
+        "1263d74c-8167-4928-91a6-4e2672411f47@a804a",
+        "4f72bf0d-dd0d-4ff6-b437-d0022e464213",
+        "25fa81b2-657c-4636-b85f-628eb7dd2df4",
+        "20835ba4-6145-4fbc-a58a-051ce700aa3e@f9941",
+        "544e49d6-3f05-4fa8-9a9e-091f98fc2ce8@f9941",
+        "951249e0-9f16-456d-8b85-a6ca954da16b@f9941",
+        "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0",
+        "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0"
+      ],
+      "dependScripts": [
+        "703bb93f-8e50-4fdd-853b-bef2df4409a3",
+        "db135a83-3f79-4dfd-9412-36a413283365",
+        "08942fc9-9f2e-4fe0-b2a7-7b42dce00ae9",
+        "6bf28501-5fb5-4b59-92ea-2a723c3f027e"
+      ]
+    },
+    "versionCode": 2
+  },
+  "25fa81b2-657c-4636-b85f-628eb7dd2df4": {
+    "url": "db://assets/prefabs/Coin.prefab",
+    "value": {
+      "depends": [
+        "620b6bf3-0369-4560-837f-2a2c00b73c26",
+        "1263d74c-8167-4928-91a6-4e2672411f47@8abdc",
+        "3188c091-22a6-44d8-9a0e-dd7ab417e049"
+      ],
+      "dependScripts": [
+        "162c9ae4-7339-4033-8fd7-f5fe93695055"
+      ]
+    },
+    "versionCode": 2
+  },
+  "683e9266-06b8-4ced-8188-b8fd507c0892": {
+    "url": "db://assets/scenes/Coin.prefab",
+    "value": {},
+    "versionCode": 2
+  },
+  "63d02f07-4c90-47db-87a2-db0a389726c6": {
+    "url": "db://assets/scenes/Coin.prefab",
+    "value": {},
+    "versionCode": 2
+  },
+  "3b26fa6b-8150-46b3-956c-1c0575f7bb2a": {
+    "url": "db://assets/physics-materials",
+    "value": {},
+    "versionCode": 1
+  },
+  "3188c091-22a6-44d8-9a0e-dd7ab417e049": {
+    "url": "db://assets/physics-materials/CoinMat.pmtl",
+    "value": {},
+    "versionCode": 1
+  },
+  "4f72bf0d-dd0d-4ff6-b437-d0022e464213": {
+    "url": "db://assets/physics-materials/BoardMat.pmtl",
+    "value": {},
+    "versionCode": 1
+  }
+}

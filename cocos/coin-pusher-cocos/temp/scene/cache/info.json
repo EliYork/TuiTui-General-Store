@@ -1,0 +1,11 @@
+{
+    "systemInfo": {
+        "arch": "x64",
+        "cpu": "Intel(R) Core(TM) i5-14600K",
+        "version": "Windows 11 Pro"
+    },
+    "sceneListMap": {
+        "822de87a-eb1e-4aee-8255-46954f6c3ee1": "C:\\coin-pusher\\cocos\\coin-pusher-cocos\\assets\\scenes\\Prototype01.scene.scene"
+    },
+    "deviceMd5": "48f73942225e50d88fb039087e48e461"
+}

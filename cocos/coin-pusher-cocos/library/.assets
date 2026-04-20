@@ -1,0 +1,26 @@
+{
+    "version": "1.0.1",
+    "data": {
+        "paths": [
+            "materials",
+            "models",
+            "prefabs",
+            "scenes",
+            "scripts",
+            "textures",
+            "scripts\\core",
+            "scripts\\gameplay",
+            "scripts\\ui",
+            "scripts\\core\\GameManager.ts",
+            "scripts\\gameplay\\CoinBehaviour.ts",
+            "scripts\\gameplay\\CoinSpawner.ts",
+            "scripts\\gameplay\\DropZone.ts",
+            "scripts\\gameplay\\PusherController.ts",
+            "prefabs\\Coin.prefab",
+            "scenes\\Prototype01.scene",
+            "physics-materials",
+            "physics-materials\\CoinMat.pmtl",
+            "physics-materials\\BoardMat.pmtl"
+        ]
+    }
+}

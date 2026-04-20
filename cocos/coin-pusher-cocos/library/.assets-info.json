@@ -1,0 +1,139 @@
+{
+  "version": "1.0.1",
+  "map": {
+    "materials.meta": {
+      "time": 1776537171018.7373
+    },
+    "models.meta": {
+      "time": 1776537171019.234
+    },
+    "prefabs.meta": {
+      "time": 1776537171019.7307
+    },
+    "scenes.meta": {
+      "time": 1776537171020.2473
+    },
+    "scripts.meta": {
+      "time": 1776537171020.9001
+    },
+    "textures.meta": {
+      "time": 1776537171021.9092
+    },
+    "scripts\\core.meta": {
+      "time": 1776537171022.9111
+    },
+    "scripts\\gameplay.meta": {
+      "time": 1776537171024.312
+    },
+    "scripts\\ui.meta": {
+      "time": 1776537171025.4133
+    },
+    "scripts\\core\\GameManager.ts.meta": {
+      "time": 1776537171029.1946
+    },
+    "scripts\\gameplay\\CoinBehaviour.ts.meta": {
+      "time": 1776537171029.691
+    },
+    "scripts\\gameplay\\CoinSpawner.ts.meta": {
+      "time": 1776537171030.9563
+    },
+    "scripts\\gameplay\\DropZone.ts.meta": {
+      "time": 1776537171032.9514
+    },
+    "scripts\\gameplay\\PusherController.ts.meta": {
+      "time": 1776537171034.0874
+    },
+    "materials": {
+      "time": 1776536911607.9407,
+      "uuid": "78550637-8924-4364-8453-7a392e885020"
+    },
+    "models": {
+      "time": 1776536911609.4304,
+      "uuid": "8d52c82a-7d7f-4937-b184-5c14baafc30a"
+    },
+    "prefabs": {
+      "time": 1776603856375.9163,
+      "uuid": "c2853625-8549-4d0a-893f-3e66f7e4367f"
+    },
+    "scenes": {
+      "time": 1776654166371.3872,
+      "uuid": "e93ff105-0972-4186-989f-1616aecf0a7e"
+    },
+    "scripts": {
+      "time": 1776537171011.6816,
+      "uuid": "f5a8f2c5-864c-488e-9338-cc36e0179cfa"
+    },
+    "textures": {
+      "time": 1776536911610.4927,
+      "uuid": "3e1d5ed1-e01a-4468-89e0-2cc52ec1f060"
+    },
+    "scripts\\core": {
+      "time": 1776537171012.6836,
+      "uuid": "bbf78522-c2b6-44a7-8d85-c44bdb42b166"
+    },
+    "scripts\\gameplay": {
+      "time": 1776604546467.9607,
+      "uuid": "92715b6c-f9e4-4eea-a663-302fc8cf4a8e"
+    },
+    "scripts\\ui": {
+      "time": 1776536911602.0383,
+      "uuid": "f7ef0e46-6e88-494d-b00b-abffbd547bdb"
+    },
+    "scripts\\core\\GameManager.ts": {
+      "time": 1776537002798.6802,
+      "uuid": "6bf28501-5fb5-4b59-92ea-2a723c3f027e"
+    },
+    "scripts\\gameplay\\CoinBehaviour.ts": {
+      "time": 1776611840713.2388,
+      "uuid": "162c9ae4-7339-4033-8fd7-f5fe93695055"
+    },
+    "scripts\\gameplay\\CoinSpawner.ts": {
+      "time": 1776654840457.3066,
+      "uuid": "08942fc9-9f2e-4fe0-b2a7-7b42dce00ae9"
+    },
+    "scripts\\gameplay\\DropZone.ts": {
+      "time": 1776604546465.7517,
+      "uuid": "703bb93f-8e50-4fdd-853b-bef2df4409a3"
+    },
+    "scripts\\gameplay\\PusherController.ts": {
+      "time": 1776537028056.5498,
+      "uuid": "db135a83-3f79-4dfd-9412-36a413283365"
+    },
+    "prefabs\\Coin.prefab.meta": {
+      "time": 1776603856378.5034
+    },
+    "prefabs\\Coin.prefab": {
+      "time": 1776659060773.5388,
+      "uuid": "25fa81b2-657c-4636-b85f-628eb7dd2df4"
+    },
+    "scenes\\Prototype01.scene.meta": {
+      "time": 1776601364235.588
+    },
+    "scenes\\Prototype01.scene": {
+      "time": 1776659678701.9573,
+      "uuid": "822de87a-eb1e-4aee-8255-46954f6c3ee1"
+    },
+    "physics-materials.meta": {
+      "time": 1776658913492.7444
+    },
+    "physics-materials": {
+      "time": 1776658946325.7097,
+      "uuid": "3b26fa6b-8150-46b3-956c-1c0575f7bb2a"
+    },
+    "physics-materials\\CoinMat.pmtl.meta": {
+      "time": 1776658939170.6091
+    },
+    "physics-materials\\CoinMat.pmtl": {
+      "time": 1776659007224.4075,
+      "uuid": "3188c091-22a6-44d8-9a0e-dd7ab417e049"
+    },
+    "physics-materials\\BoardMat.pmtl.meta": {
+      "time": 1776658946327.1023
+    },
+    "physics-materials\\BoardMat.pmtl": {
+      "time": 1776659021504.1628,
+      "uuid": "4f72bf0d-dd0d-4ff6-b437-d0022e464213"
+    }
+  },
+  "missing": {}
+}
