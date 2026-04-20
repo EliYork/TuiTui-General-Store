@@ -68,7 +68,7 @@
       "uuid": "3e1d5ed1-e01a-4468-89e0-2cc52ec1f060"
     },
     "scripts\\core": {
-      "time": 1776537171012.6836,
+      "time": 1776661038907.157,
       "uuid": "bbf78522-c2b6-44a7-8d85-c44bdb42b166"
     },
     "scripts\\gameplay": {
@@ -80,7 +80,7 @@
       "uuid": "f7ef0e46-6e88-494d-b00b-abffbd547bdb"
     },
     "scripts\\core\\GameManager.ts": {
-      "time": 1776537002798.6802,
+      "time": 1776661038907.157,
       "uuid": "6bf28501-5fb5-4b59-92ea-2a723c3f027e"
     },
     "scripts\\gameplay\\CoinBehaviour.ts": {
@@ -110,7 +110,7 @@
       "time": 1776601364235.588
     },
     "scenes\\Prototype01.scene": {
-      "time": 1776659678701.9573,
+      "time": 1776671283257.962,
       "uuid": "822de87a-eb1e-4aee-8255-46954f6c3ee1"
     },
     "physics-materials.meta": {

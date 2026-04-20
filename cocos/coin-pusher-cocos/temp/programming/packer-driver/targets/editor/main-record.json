@@ -997,7 +997,7 @@
       ]
     },
     "cce:/internal/x/prerequisite-imports": {
-      "mTimestamp": 761362.0501,
+      "mTimestamp": 7046313.2887,
       "chunkId": "6d8fd2b0177941b032ddc0733af48a561fb60657",
       "imports": [
         {
@@ -1807,7 +1807,7 @@
     },
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/core/GameManager.ts": {
       "mTimestamp": {
-        "mtime": 1776537002798.6802,
+        "mtime": 1776661038907.157,
         "uuid": "6bf28501-5fb5-4b59-92ea-2a723c3f027e"
       },
       "chunkId": "7e0d17b40a9513aab3872a981088d039553c9992",
@@ -1827,11 +1827,11 @@
           "loc": {
             "start": {
               "line": 1,
-              "column": 51
+              "column": 61
             },
             "end": {
               "line": 1,
-              "column": 55
+              "column": 65
             }
           }
         },
