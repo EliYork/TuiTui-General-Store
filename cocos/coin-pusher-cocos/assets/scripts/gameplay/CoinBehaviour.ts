@@ -1,27 +1,20 @@
-import { _decorator, Color, Component, MeshRenderer, Node, Quat, RigidBody, Vec3 } from 'cc';
+import {
+    _decorator,
+    Component,
+    Quat,
+    RigidBody,
+    Vec3,
+    warn,
+} from 'cc';
+import { ItemPrefabConfig } from './ItemPrefabConfig';
 
 const { ccclass, property } = _decorator;
 const WORLD_UP = new Vec3(0, 1, 0);
 const LOCAL_UP = new Vec3(0, 1, 0);
-const NORMAL_COIN_COLOR = new Color(255, 255, 255, 255);
-const SPECIAL_COIN_COLOR = new Color(255, 215, 0, 255);
-const TOY_CAR_COLOR = new Color(255, 106, 0, 255);
-const DEFAULT_VISUAL_SCALE = new Vec3(1, 1, 1);
-const SPECIAL_VISUAL_SCALE = new Vec3(1.12, 1.2, 1.12);
-const TOY_CAR_VISUAL_SCALE = new Vec3(1.35, 0.85, 0.85);
-
-enum RewardKind {
-    NormalCoin = 'NormalCoin',
-    SpecialCoin = 'SpecialCoin',
-    ToyCar = 'ToyCar',
-}
 
 @ccclass('CoinBehaviour')
 export class CoinBehaviour extends Component {
-    @property
-    public coinValue = 1;
-
-    @property({ tooltip: 'How long the spawn stabilizer should suppress tumble right after the coin is created.' })
+    @property({ tooltip: 'How long the spawn stabilizer should suppress tumble right after the item is created.' })
     public spawnAssistDuration = 0.18;
 
     @property({ tooltip: 'Clamp for horizontal speed during the spawn assist window.' })
@@ -30,13 +23,13 @@ export class CoinBehaviour extends Component {
     @property({ tooltip: 'Clamp for vertical speed during the spawn assist window.' })
     public maxSpawnVerticalSpeed = 0.22;
 
-    @property({ tooltip: 'Maximum spin speed along the coin normal during the spawn assist window.' })
+    @property({ tooltip: 'Maximum spin speed along the item normal during the spawn assist window.' })
     public maxSpawnSpinSpeed = 1.2;
 
-    @property({ tooltip: 'Maximum tumble speed across the coin plane during the spawn assist window.' })
+    @property({ tooltip: 'Maximum tumble speed across the item plane during the spawn assist window.' })
     public maxSpawnTumbleSpeed = 0.35;
 
-    @property({ tooltip: 'Delay before the coin starts trying to settle flatter on the board.' })
+    @property({ tooltip: 'Delay before the spawned body starts trying to settle flatter on the board.' })
     public settleAssistDelay = 0.12;
 
     @property({ tooltip: 'Only apply the settle assist when horizontal motion is already slow.' })
@@ -48,7 +41,7 @@ export class CoinBehaviour extends Component {
     @property({ tooltip: 'Only apply the settle assist when angular speed is already under control.' })
     public settleAssistAngularSpeedThreshold = 1.1;
 
-    @property({ tooltip: 'Target angular speed used to help a resting coin topple toward flat.' })
+    @property({ tooltip: 'Target angular speed used to help a resting body topple toward flat.' })
     public settleAssistAngularSpeed = 1.4;
 
     @property({ tooltip: 'Blend factor for the settle assist. Higher values flatten faster.' })
@@ -64,17 +57,16 @@ export class CoinBehaviour extends Component {
     private readonly _desiredAngular = new Vec3();
     private readonly _correctedAngular = new Vec3();
     private readonly _flattenAxis = new Vec3();
-    private readonly _coinNormal = new Vec3();
+    private readonly _itemNormal = new Vec3();
     private readonly _worldRotation = new Quat();
     private readonly _zeroVelocity = new Vec3();
-    private readonly _defaultDisplayScale = new Vec3(DEFAULT_VISUAL_SCALE.x, DEFAULT_VISUAL_SCALE.y, DEFAULT_VISUAL_SCALE.z);
     private _body: RigidBody | null = null;
-    private _displayRoot: Node | null = null;
-    private _displayRenderer: MeshRenderer | null = null;
     private _coinId = 0;
     private _hasScored = false;
-    private _rewardKind = RewardKind.NormalCoin;
     private _aliveSeconds = 0;
+    private _itemId = '';
+    private _itemName = '';
+    private _fallbackItemId = '';
 
     public get coinId(): number {
         return this._coinId;
@@ -84,41 +76,36 @@ export class CoinBehaviour extends Component {
         return this._hasScored;
     }
 
-    public get isSpecialReward(): boolean {
-        return this._rewardKind === RewardKind.SpecialCoin;
+    public get itemId(): string {
+        return this._itemId;
     }
 
-    public get isToyCarReward(): boolean {
-        return this._rewardKind === RewardKind.ToyCar;
+    public get itemName(): string {
+        return this._itemName;
     }
 
-    public get coinTypeLabel(): string {
-        switch (this._rewardKind) {
-        case RewardKind.SpecialCoin:
-            return '\u5956\u52b1 coin';
-        case RewardKind.ToyCar:
-            return 'ToyCar';
-        case RewardKind.NormalCoin:
-        default:
-            return '\u666e\u901a coin';
-        }
+    public get itemTypeLabel(): string {
+        return this._itemName || this._itemId || 'BoardItem';
     }
 
     protected onLoad(): void {
         this._body = this.getComponent(RigidBody);
-        this.cacheDisplayTargets();
+        this._fallbackItemId = this.node.name;
+
         if (this._body) {
             this._body.sleepThreshold = this.sleepThreshold;
+        } else {
+            warn('[CoinBehaviour] Each runtime item prefab should include its own RigidBody.');
         }
+
+        this.refreshItemIdentity();
     }
 
     public initialize(coinId: number): void {
         this._coinId = coinId;
         this._hasScored = false;
-        this._rewardKind = RewardKind.NormalCoin;
         this._aliveSeconds = 0;
-        this.updateRewardName();
-        this.applyPresentation();
+        this.refreshItemIdentity();
 
         if (!this._body) {
             return;
@@ -128,27 +115,6 @@ export class CoinBehaviour extends Component {
         this._body.wakeUp();
         this._body.setLinearVelocity(this._zeroVelocity);
         this._body.setAngularVelocity(this._zeroVelocity);
-    }
-
-    public configureAsNormal(scoreValue: number): void {
-        this.coinValue = scoreValue;
-        this._rewardKind = RewardKind.NormalCoin;
-        this.updateRewardName();
-        this.applyPresentation();
-    }
-
-    public configureAsSpecial(scoreValue: number): void {
-        this.coinValue = scoreValue;
-        this._rewardKind = RewardKind.SpecialCoin;
-        this.updateRewardName();
-        this.applyPresentation();
-    }
-
-    public configureAsToyCar(scoreValue: number): void {
-        this.coinValue = scoreValue;
-        this._rewardKind = RewardKind.ToyCar;
-        this.updateRewardName();
-        this.applyPresentation();
     }
 
     protected update(deltaTime: number): void {
@@ -197,6 +163,22 @@ export class CoinBehaviour extends Component {
         }, 0);
     }
 
+    private refreshItemIdentity(): void {
+        const prefabConfig = ItemPrefabConfig.readFromNode(
+            this.node,
+            this._fallbackItemId || this.node.name,
+            this._itemName,
+        );
+        this._itemId = prefabConfig.itemId;
+        this._itemName = prefabConfig.itemName;
+        this.updateItemName();
+    }
+
+    private updateItemName(): void {
+        const baseName = this._itemId || this._fallbackItemId || 'BoardItem';
+        this.node.name = this._coinId > 0 ? `${baseName}_${this._coinId}` : baseName;
+    }
+
     private applySpawnAssist(): void {
         if (!this._body) {
             return;
@@ -218,12 +200,12 @@ export class CoinBehaviour extends Component {
         this._body.setLinearVelocity(this._linearVelocity);
 
         this._body.getAngularVelocity(this._angularVelocity);
-        this.getCoinNormal(this._coinNormal);
+        this.getItemNormal(this._itemNormal);
 
-        const spinSpeed = Vec3.dot(this._angularVelocity, this._coinNormal);
+        const spinSpeed = Vec3.dot(this._angularVelocity, this._itemNormal);
         Vec3.multiplyScalar(
             this._parallelAngular,
-            this._coinNormal,
+            this._itemNormal,
             clamp(spinSpeed, -this.maxSpawnSpinSpeed, this.maxSpawnSpinSpeed),
         );
 
@@ -254,12 +236,12 @@ export class CoinBehaviour extends Component {
             return;
         }
 
-        this.getCoinNormal(this._coinNormal);
-        if (this._coinNormal.y > 0.995) {
+        this.getItemNormal(this._itemNormal);
+        if (this._itemNormal.y > 0.995) {
             return;
         }
 
-        Vec3.cross(this._flattenAxis, this._coinNormal, WORLD_UP);
+        Vec3.cross(this._flattenAxis, this._itemNormal, WORLD_UP);
         const axisLength = Vec3.len(this._flattenAxis);
         if (axisLength <= 0.0001) {
             return;
@@ -267,15 +249,15 @@ export class CoinBehaviour extends Component {
 
         Vec3.multiplyScalar(this._flattenAxis, this._flattenAxis, 1 / axisLength);
 
-        const tiltFactor = clamp01(1 - this._coinNormal.y);
+        const tiltFactor = clamp01(1 - this._itemNormal.y);
         Vec3.multiplyScalar(
             this._desiredAngular,
             this._flattenAxis,
             this.settleAssistAngularSpeed * tiltFactor,
         );
 
-        const retainedSpin = Vec3.dot(this._angularVelocity, this._coinNormal) * 0.15;
-        Vec3.scaleAndAdd(this._desiredAngular, this._desiredAngular, this._coinNormal, retainedSpin);
+        const retainedSpin = Vec3.dot(this._angularVelocity, this._itemNormal) * 0.15;
+        Vec3.scaleAndAdd(this._desiredAngular, this._desiredAngular, this._itemNormal, retainedSpin);
 
         const blend = 1 - Math.exp(-this.settleAssistBlend * deltaTime);
         Vec3.lerp(this._correctedAngular, this._angularVelocity, this._desiredAngular, blend);
@@ -283,51 +265,13 @@ export class CoinBehaviour extends Component {
         this._body.wakeUp();
     }
 
-    private getCoinNormal(out: Vec3): void {
+    private getItemNormal(out: Vec3): void {
         this.node.getWorldRotation(this._worldRotation);
         Vec3.transformQuat(out, LOCAL_UP, this._worldRotation);
 
         if (out.y < 0) {
             Vec3.multiplyScalar(out, out, -1);
         }
-    }
-
-    private cacheDisplayTargets(): void {
-        const renderers = this.node.getComponentsInChildren(MeshRenderer);
-        this._displayRenderer = renderers.length > 0 ? renderers[0] : null;
-        this._displayRoot = this.node.getChildByName('CoinMesh') ?? this._displayRenderer?.node ?? null;
-
-        if (this._displayRoot) {
-            this._displayRoot.getScale(this._defaultDisplayScale);
-        }
-    }
-
-    private updateRewardName(): void {
-        this.node.name = `${this._rewardKind}_${this._coinId}`;
-    }
-
-    private applyPresentation(): void {
-        switch (this._rewardKind) {
-        case RewardKind.SpecialCoin:
-            this.applyDisplayTransform(SPECIAL_VISUAL_SCALE, SPECIAL_COIN_COLOR);
-            return;
-        case RewardKind.ToyCar:
-            this.applyDisplayTransform(TOY_CAR_VISUAL_SCALE, TOY_CAR_COLOR);
-            return;
-        case RewardKind.NormalCoin:
-        default:
-            this.applyDisplayTransform(this._defaultDisplayScale, NORMAL_COIN_COLOR);
-            return;
-        }
-    }
-
-    private applyDisplayTransform(scale: Vec3, color: Color): void {
-        if (this._displayRoot) {
-            this._displayRoot.setScale(scale);
-        }
-
-        const materialInstance = this._displayRenderer?.getMaterialInstance(0);
-        materialInstance?.setProperty('mainColor', color);
     }
 }
 

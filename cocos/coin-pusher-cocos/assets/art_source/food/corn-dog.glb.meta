@@ -1,0 +1,142 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "87c7f98c-1be4-4181-8fd0-409ad848bbda",
+  "files": [],
+  "subMetas": {
+    "93cda": {
+      "importer": "gltf-mesh",
+      "uuid": "87c7f98c-1be4-4181-8fd0-409ad848bbda@93cda",
+      "displayName": "",
+      "id": "93cda",
+      "name": "corn-dog.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 20
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0d32b": {
+      "importer": "gltf-mesh",
+      "uuid": "87c7f98c-1be4-4181-8fd0-409ad848bbda@0d32b",
+      "displayName": "",
+      "id": "0d32b",
+      "name": "dog.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 44
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "87c7f98c-1be4-4181-8fd0-409ad848bbda@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "87c7f98c-1be4-4181-8fd0-409ad848bbda@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "45dd8": {
+      "importer": "gltf-scene",
+      "uuid": "87c7f98c-1be4-4181-8fd0-409ad848bbda@45dd8",
+      "displayName": "",
+      "id": "45dd8",
+      "name": "corn-dog.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "87c7f98c-1be4-4181-8fd0-409ad848bbda@93cda",
+        "87c7f98c-1be4-4181-8fd0-409ad848bbda@0d32b"
+      ],
+      "skeletons": [],
+      "textures": [
+        "87c7f98c-1be4-4181-8fd0-409ad848bbda@96c50"
+      ],
+      "materials": [
+        "87c7f98c-1be4-4181-8fd0-409ad848bbda@9991c"
+      ],
+      "scenes": [
+        "87c7f98c-1be4-4181-8fd0-409ad848bbda@45dd8"
+      ]
+    }
+  }
+}

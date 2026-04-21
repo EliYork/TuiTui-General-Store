@@ -12,6 +12,7 @@
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/gameplay/CoinBehaviour.ts": "./chunks/8a/8a2c612034d19cd2ead33bfedce5dd3911d1f426.js",
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/gameplay/CoinSpawner.ts": "./chunks/71/71fc892358fe813b1cd5fcf757cfa6a8e06fd4e6.js",
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/gameplay/DropZone.ts": "./chunks/aa/aa43c29963af722499e377d831ec1a1af06fa6ce.js",
+    "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/gameplay/ItemPrefabConfig.ts": "./chunks/fd/fd28f1626fbf18718b2a54dfc6e4bdc9b0e38a45.js",
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/gameplay/PusherController.ts": "./chunks/77/772221a0049d9e341a8ea3ad2e0ad9de06b1d161.js",
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/ui/SpawnButtonHold.ts": "./chunks/cb/cb55218a78a578629ba0155a755b8894d5f09bbf.js"
   },
@@ -73,6 +74,10 @@
     "./chunks/7e/7e0d17b40a9513aab3872a981088d039553c9992.js": {
       "__unresolved_0": "./chunks/6a/6a5019a719a9014c047e67aa1cf34453ab8392ce.js",
       "__unresolved_1": "./chunks/71/71fc892358fe813b1cd5fcf757cfa6a8e06fd4e6.js",
+      "__unresolved_2": "./chunks/fd/fd28f1626fbf18718b2a54dfc6e4bdc9b0e38a45.js",
+      "cc": "./chunks/93/93ba276ea7b26ffcdc433fab14afc1ed6f05647b.js"
+    },
+    "./chunks/fd/fd28f1626fbf18718b2a54dfc6e4bdc9b0e38a45.js": {
       "cc": "./chunks/93/93ba276ea7b26ffcdc433fab14afc1ed6f05647b.js"
     },
     "./chunks/71/71fc892358fe813b1cd5fcf757cfa6a8e06fd4e6.js": {
@@ -81,6 +86,8 @@
       "cc": "./chunks/93/93ba276ea7b26ffcdc433fab14afc1ed6f05647b.js"
     },
     "./chunks/8a/8a2c612034d19cd2ead33bfedce5dd3911d1f426.js": {
+      "__unresolved_0": "./chunks/6a/6a5019a719a9014c047e67aa1cf34453ab8392ce.js",
+      "__unresolved_1": "./chunks/fd/fd28f1626fbf18718b2a54dfc6e4bdc9b0e38a45.js",
       "cc": "./chunks/93/93ba276ea7b26ffcdc433fab14afc1ed6f05647b.js"
     },
     "./chunks/77/772221a0049d9e341a8ea3ad2e0ad9de06b1d161.js": {
@@ -123,8 +130,9 @@
     "./chunks/6d/6d8fd2b0177941b032ddc0733af48a561fb60657.js": {
       "__unresolved_0": "./chunks/50/50ec684ab28702df18cf262b25c26ec6d899c3a5.js",
       "__unresolved_1": "./chunks/b1/b18130d786bcadd1d0cb653401afdf2ede79b799.js",
-      "__unresolved_10": "./chunks/77/772221a0049d9e341a8ea3ad2e0ad9de06b1d161.js",
-      "__unresolved_11": "./chunks/cb/cb55218a78a578629ba0155a755b8894d5f09bbf.js",
+      "__unresolved_10": "./chunks/fd/fd28f1626fbf18718b2a54dfc6e4bdc9b0e38a45.js",
+      "__unresolved_11": "./chunks/77/772221a0049d9e341a8ea3ad2e0ad9de06b1d161.js",
+      "__unresolved_12": "./chunks/cb/cb55218a78a578629ba0155a755b8894d5f09bbf.js",
       "__unresolved_2": "./chunks/e2/e2831fde95d58c09916d0f882742b7597544b8d1.js",
       "__unresolved_3": "./chunks/7d/7dd5f1b51da4ae6cb44c6f9d41d8fc719b109223.js",
       "__unresolved_4": "./chunks/fd/fd74c742a972dbbcd3691d204a338b19a4515b62.js",

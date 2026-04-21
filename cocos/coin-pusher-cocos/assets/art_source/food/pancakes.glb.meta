@@ -1,0 +1,199 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "e3a58e88-0f9f-4373-b53e-e41651961ab9",
+  "files": [],
+  "subMetas": {
+    "80624": {
+      "importer": "gltf-mesh",
+      "uuid": "e3a58e88-0f9f-4373-b53e-e41651961ab9@80624",
+      "displayName": "",
+      "id": "80624",
+      "name": "pancake-4.mesh",
+      "userData": {
+        "gltfIndex": 4,
+        "triangleCount": 134
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "bc659": {
+      "importer": "gltf-mesh",
+      "uuid": "e3a58e88-0f9f-4373-b53e-e41651961ab9@bc659",
+      "displayName": "",
+      "id": "bc659",
+      "name": "pancakes-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 30
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "52ede": {
+      "importer": "gltf-mesh",
+      "uuid": "e3a58e88-0f9f-4373-b53e-e41651961ab9@52ede",
+      "displayName": "",
+      "id": "52ede",
+      "name": "butter-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 28
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f569b": {
+      "importer": "gltf-mesh",
+      "uuid": "e3a58e88-0f9f-4373-b53e-e41651961ab9@f569b",
+      "displayName": "",
+      "id": "f569b",
+      "name": "pancake-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 134
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "3d7f5": {
+      "importer": "gltf-mesh",
+      "uuid": "e3a58e88-0f9f-4373-b53e-e41651961ab9@3d7f5",
+      "displayName": "",
+      "id": "3d7f5",
+      "name": "pancake-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 186
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "e3a58e88-0f9f-4373-b53e-e41651961ab9@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "e3a58e88-0f9f-4373-b53e-e41651961ab9@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "add85": {
+      "importer": "gltf-scene",
+      "uuid": "e3a58e88-0f9f-4373-b53e-e41651961ab9@add85",
+      "displayName": "",
+      "id": "add85",
+      "name": "pancakes.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "e3a58e88-0f9f-4373-b53e-e41651961ab9@bc659",
+        "e3a58e88-0f9f-4373-b53e-e41651961ab9@52ede",
+        "e3a58e88-0f9f-4373-b53e-e41651961ab9@f569b",
+        "e3a58e88-0f9f-4373-b53e-e41651961ab9@3d7f5",
+        "e3a58e88-0f9f-4373-b53e-e41651961ab9@80624"
+      ],
+      "skeletons": [],
+      "textures": [
+        "e3a58e88-0f9f-4373-b53e-e41651961ab9@96c50"
+      ],
+      "materials": [
+        "e3a58e88-0f9f-4373-b53e-e41651961ab9@9991c"
+      ],
+      "scenes": [
+        "e3a58e88-0f9f-4373-b53e-e41651961ab9@add85"
+      ]
+    }
+  }
+}

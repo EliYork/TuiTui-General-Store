@@ -12,9 +12,6 @@ function randomRange(min: number, max: number): number {
 
 @ccclass('CoinSpawner')
 export class CoinSpawner extends Component {
-    @property(Prefab)
-    public coinPrefab: Prefab | null = null;
-
     @property(Node)
     public spawnPoint: Node | null = null;
 
@@ -33,7 +30,7 @@ export class CoinSpawner extends Component {
     @property({ tooltip: 'Base local yaw added on spawn. Keep at 0 unless the spawn point needs an offset.' })
     public spawnYawDegrees = 0;
 
-    @property({ tooltip: 'Random yaw range around the coin normal. This adds visual variation without making the coin stand up.' })
+    @property({ tooltip: 'Random yaw range around the item normal. This adds visual variation without making the body stand up.' })
     public randomYawDegrees = 180;
 
     @property({ tooltip: 'Small base tilt on the X axis. 0 means spawn almost flat.' })
@@ -42,10 +39,10 @@ export class CoinSpawner extends Component {
     @property({ tooltip: 'Small base tilt on the Z axis. 0 means spawn almost flat.' })
     public baseTiltZDegrees = 0;
 
-    @property({ tooltip: 'Random X tilt range. Keep this small so the coin does not spawn on edge.' })
+    @property({ tooltip: 'Random X tilt range. Keep this small so the body does not spawn on edge.' })
     public randomTiltXDegrees = 4;
 
-    @property({ tooltip: 'Random Z tilt range. Keep this small so the coin does not spawn on edge.' })
+    @property({ tooltip: 'Random Z tilt range. Keep this small so the body does not spawn on edge.' })
     public randomTiltZDegrees = 4;
 
     @property
@@ -69,23 +66,23 @@ export class CoinSpawner extends Component {
     private readonly _forwardAxis = new Vec3();
     private readonly _spawnImpulse = new Vec3();
     private readonly _spawnTorque = new Vec3();
-    private readonly _coinNormal = new Vec3();
+    private readonly _itemNormal = new Vec3();
 
-    public spawnCoin(): CoinBehaviour | null {
-        if (!this.coinPrefab) {
-            warn('[CoinSpawner] coinPrefab is not assigned.');
+    public spawnCoin(itemPrefab: Prefab | null): CoinBehaviour | null {
+        if (!itemPrefab) {
+            warn('[CoinSpawner] item prefab is not assigned.');
             return null;
         }
 
-        const coinNode = instantiate(this.coinPrefab);
+        const itemNode = instantiate(itemPrefab);
         const parent = this.coinRoot ?? this.node;
-        parent.addChild(coinNode);
+        parent.addChild(itemNode);
 
         const basePosition = this.spawnPoint ? this.spawnPoint.worldPosition : this.node.worldPosition;
         const rotationSource = this.spawnPoint ?? this.node;
         rotationSource.getWorldRotation(this._spawnBaseRotation);
 
-        coinNode.setWorldPosition(new Vec3(
+        itemNode.setWorldPosition(new Vec3(
             basePosition.x + randomRange(-this.spawnSpreadX, this.spawnSpreadX),
             basePosition.y + this.spawnHeightOffset,
             basePosition.z + randomRange(-this.spawnSpreadZ, this.spawnSpreadZ),
@@ -97,16 +94,16 @@ export class CoinSpawner extends Component {
 
         Quat.fromEuler(this._spawnRotationOffset, tiltX, yaw, tiltZ);
         Quat.multiply(this._spawnRotation, this._spawnBaseRotation, this._spawnRotationOffset);
-        coinNode.setWorldRotation(this._spawnRotation);
+        itemNode.setWorldRotation(this._spawnRotation);
 
-        const coin = coinNode.getComponent(CoinBehaviour);
-        if (!coin) {
-            warn('[CoinSpawner] Spawned prefab is missing CoinBehaviour.');
-            coinNode.destroy();
+        const item = itemNode.getComponent(CoinBehaviour);
+        if (!item) {
+            warn('[CoinSpawner] Spawned item prefab is missing CoinBehaviour.');
+            itemNode.destroy();
             return null;
         }
 
-        coin.initialize(this._nextCoinId);
+        item.initialize(this._nextCoinId);
 
         Vec3.transformQuat(this._rightAxis, LOCAL_RIGHT, this._spawnBaseRotation);
         Vec3.transformQuat(this._upAxis, LOCAL_UP, this._spawnBaseRotation);
@@ -122,16 +119,16 @@ export class CoinSpawner extends Component {
         Vec3.scaleAndAdd(this._spawnImpulse, this._spawnImpulse, this._upAxis, this.launchUpImpulse);
         Vec3.scaleAndAdd(this._spawnImpulse, this._spawnImpulse, this._forwardAxis, this.launchForwardImpulse);
 
-        Vec3.transformQuat(this._coinNormal, LOCAL_UP, this._spawnRotation);
+        Vec3.transformQuat(this._itemNormal, LOCAL_UP, this._spawnRotation);
         Vec3.multiplyScalar(
             this._spawnTorque,
-            this._coinNormal,
+            this._itemNormal,
             randomRange(-this.spinTorque, this.spinTorque),
         );
 
-        coin.applyLaunchImpulse(this._spawnImpulse, this._spawnTorque);
+        item.applyLaunchImpulse(this._spawnImpulse, this._spawnTorque);
 
         this._nextCoinId += 1;
-        return coin;
+        return item;
     }
 }

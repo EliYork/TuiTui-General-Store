@@ -1,0 +1,161 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "76273cce-d334-4575-9060-e79a0ecb5068",
+  "files": [],
+  "subMetas": {
+    "53442": {
+      "importer": "gltf-mesh",
+      "uuid": "76273cce-d334-4575-9060-e79a0ecb5068@53442",
+      "displayName": "",
+      "id": "53442",
+      "name": "cherry.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 60
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "c6819": {
+      "importer": "gltf-mesh",
+      "uuid": "76273cce-d334-4575-9060-e79a0ecb5068@c6819",
+      "displayName": "",
+      "id": "c6819",
+      "name": "sundae.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 244
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "67fba": {
+      "importer": "gltf-mesh",
+      "uuid": "76273cce-d334-4575-9060-e79a0ecb5068@67fba",
+      "displayName": "",
+      "id": "67fba",
+      "name": "straw.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 12
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "76273cce-d334-4575-9060-e79a0ecb5068@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "76273cce-d334-4575-9060-e79a0ecb5068@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "87a31": {
+      "importer": "gltf-scene",
+      "uuid": "76273cce-d334-4575-9060-e79a0ecb5068@87a31",
+      "displayName": "",
+      "id": "87a31",
+      "name": "sundae.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "76273cce-d334-4575-9060-e79a0ecb5068@c6819",
+        "76273cce-d334-4575-9060-e79a0ecb5068@53442",
+        "76273cce-d334-4575-9060-e79a0ecb5068@67fba"
+      ],
+      "skeletons": [],
+      "textures": [
+        "76273cce-d334-4575-9060-e79a0ecb5068@96c50"
+      ],
+      "materials": [
+        "76273cce-d334-4575-9060-e79a0ecb5068@9991c"
+      ],
+      "scenes": [
+        "76273cce-d334-4575-9060-e79a0ecb5068@87a31"
+      ]
+    }
+  }
+}

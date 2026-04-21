@@ -1,0 +1,180 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "1ca77638-47f7-4319-ac42-543d10ca35f1",
+  "files": [],
+  "subMetas": {
+    "269e2": {
+      "importer": "gltf-mesh",
+      "uuid": "1ca77638-47f7-4319-ac42-543d10ca35f1@269e2",
+      "displayName": "",
+      "id": "269e2",
+      "name": "lettuce-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 20
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e23b1": {
+      "importer": "gltf-mesh",
+      "uuid": "1ca77638-47f7-4319-ac42-543d10ca35f1@e23b1",
+      "displayName": "",
+      "id": "e23b1",
+      "name": "meat-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 44
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ebf43": {
+      "importer": "gltf-mesh",
+      "uuid": "1ca77638-47f7-4319-ac42-543d10ca35f1@ebf43",
+      "displayName": "",
+      "id": "ebf43",
+      "name": "bun-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 56
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "cc051": {
+      "importer": "gltf-mesh",
+      "uuid": "1ca77638-47f7-4319-ac42-543d10ca35f1@cc051",
+      "displayName": "",
+      "id": "cc051",
+      "name": "bun-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 56
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "1ca77638-47f7-4319-ac42-543d10ca35f1@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "1ca77638-47f7-4319-ac42-543d10ca35f1@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "30e4f": {
+      "importer": "gltf-scene",
+      "uuid": "1ca77638-47f7-4319-ac42-543d10ca35f1@30e4f",
+      "displayName": "",
+      "id": "30e4f",
+      "name": "sandwich.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "1ca77638-47f7-4319-ac42-543d10ca35f1@269e2",
+        "1ca77638-47f7-4319-ac42-543d10ca35f1@e23b1",
+        "1ca77638-47f7-4319-ac42-543d10ca35f1@ebf43",
+        "1ca77638-47f7-4319-ac42-543d10ca35f1@cc051"
+      ],
+      "skeletons": [],
+      "textures": [
+        "1ca77638-47f7-4319-ac42-543d10ca35f1@96c50"
+      ],
+      "materials": [
+        "1ca77638-47f7-4319-ac42-543d10ca35f1@9991c"
+      ],
+      "scenes": [
+        "1ca77638-47f7-4319-ac42-543d10ca35f1@30e4f"
+      ]
+    }
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "7126e6fc-c551-47ad-bec5-44c216cb9285",
+  "files": [],
+  "subMetas": {
+    "dcfec": {
+      "importer": "gltf-mesh",
+      "uuid": "7126e6fc-c551-47ad-bec5-44c216cb9285@dcfec",
+      "displayName": "",
+      "id": "dcfec",
+      "name": "pizza-box.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 44
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "07938": {
+      "importer": "gltf-mesh",
+      "uuid": "7126e6fc-c551-47ad-bec5-44c216cb9285@07938",
+      "displayName": "",
+      "id": "07938",
+      "name": "lid.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 40
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "7126e6fc-c551-47ad-bec5-44c216cb9285@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "7126e6fc-c551-47ad-bec5-44c216cb9285@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "dd7c2": {
+      "importer": "gltf-scene",
+      "uuid": "7126e6fc-c551-47ad-bec5-44c216cb9285@dd7c2",
+      "displayName": "",
+      "id": "dd7c2",
+      "name": "pizza-box.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "7126e6fc-c551-47ad-bec5-44c216cb9285@dcfec",
+        "7126e6fc-c551-47ad-bec5-44c216cb9285@07938"
+      ],
+      "skeletons": [],
+      "textures": [
+        "7126e6fc-c551-47ad-bec5-44c216cb9285@96c50"
+      ],
+      "materials": [
+        "7126e6fc-c551-47ad-bec5-44c216cb9285@9991c"
+      ],
+      "scenes": [
+        "7126e6fc-c551-47ad-bec5-44c216cb9285@dd7c2"
+      ]
+    }
+  }
+}

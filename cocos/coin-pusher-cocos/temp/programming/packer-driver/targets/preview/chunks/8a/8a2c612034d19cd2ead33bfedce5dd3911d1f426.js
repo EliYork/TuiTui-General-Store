@@ -1,7 +1,7 @@
-System.register(["cc"], function (_export, _context) {
+System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _context) {
   "use strict";
 
-  var _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Color, Component, MeshRenderer, Quat, RigidBody, Vec3, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _crd, ccclass, property, WORLD_UP, LOCAL_UP, NORMAL_COIN_COLOR, SPECIAL_COIN_COLOR, TOY_CAR_COLOR, DEFAULT_VISUAL_SCALE, SPECIAL_VISUAL_SCALE, TOY_CAR_VISUAL_SCALE, RewardKind, CoinBehaviour;
+  var _reporterNs, _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Component, Quat, RigidBody, Vec3, warn, ItemPrefabConfig, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _crd, ccclass, property, WORLD_UP, LOCAL_UP, CoinBehaviour;
 
   function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -27,25 +27,32 @@ System.register(["cc"], function (_export, _context) {
     Vec3.multiplyScalar(vector, vector, maxLength / length);
   }
 
+  function _reportPossibleCrUseOfItemPrefabConfig(extras) {
+    _reporterNs.report("ItemPrefabConfig", "./ItemPrefabConfig", _context.meta, extras);
+  }
+
   return {
-    setters: [function (_cc) {
+    setters: [function (_unresolved_) {
+      _reporterNs = _unresolved_;
+    }, function (_cc) {
       _cclegacy = _cc.cclegacy;
       __checkObsolete__ = _cc.__checkObsolete__;
       __checkObsoleteInNamespace__ = _cc.__checkObsoleteInNamespace__;
       _decorator = _cc._decorator;
-      Color = _cc.Color;
       Component = _cc.Component;
-      MeshRenderer = _cc.MeshRenderer;
       Quat = _cc.Quat;
       RigidBody = _cc.RigidBody;
       Vec3 = _cc.Vec3;
+      warn = _cc.warn;
+    }, function (_unresolved_2) {
+      ItemPrefabConfig = _unresolved_2.ItemPrefabConfig;
     }],
     execute: function () {
       _crd = true;
 
       _cclegacy._RF.push({}, "162c9rkczlAM4/X9f6TaVBV", "CoinBehaviour", undefined);
 
-      __checkObsolete__(['_decorator', 'Color', 'Component', 'MeshRenderer', 'Node', 'Quat', 'RigidBody', 'Vec3']);
+      __checkObsolete__(['_decorator', 'Component', 'Quat', 'RigidBody', 'Vec3', 'warn']);
 
       ({
         ccclass,
@@ -53,32 +60,19 @@ System.register(["cc"], function (_export, _context) {
       } = _decorator);
       WORLD_UP = new Vec3(0, 1, 0);
       LOCAL_UP = new Vec3(0, 1, 0);
-      NORMAL_COIN_COLOR = new Color(255, 255, 255, 255);
-      SPECIAL_COIN_COLOR = new Color(255, 215, 0, 255);
-      TOY_CAR_COLOR = new Color(255, 106, 0, 255);
-      DEFAULT_VISUAL_SCALE = new Vec3(1, 1, 1);
-      SPECIAL_VISUAL_SCALE = new Vec3(1.12, 1.2, 1.12);
-      TOY_CAR_VISUAL_SCALE = new Vec3(1.35, 0.85, 0.85);
-
-      RewardKind = /*#__PURE__*/function (RewardKind) {
-        RewardKind["NormalCoin"] = "NormalCoin";
-        RewardKind["SpecialCoin"] = "SpecialCoin";
-        RewardKind["ToyCar"] = "ToyCar";
-        return RewardKind;
-      }(RewardKind || {});
 
       _export("CoinBehaviour", CoinBehaviour = (_dec = ccclass('CoinBehaviour'), _dec2 = property({
-        tooltip: 'How long the spawn stabilizer should suppress tumble right after the coin is created.'
+        tooltip: 'How long the spawn stabilizer should suppress tumble right after the item is created.'
       }), _dec3 = property({
         tooltip: 'Clamp for horizontal speed during the spawn assist window.'
       }), _dec4 = property({
         tooltip: 'Clamp for vertical speed during the spawn assist window.'
       }), _dec5 = property({
-        tooltip: 'Maximum spin speed along the coin normal during the spawn assist window.'
+        tooltip: 'Maximum spin speed along the item normal during the spawn assist window.'
       }), _dec6 = property({
-        tooltip: 'Maximum tumble speed across the coin plane during the spawn assist window.'
+        tooltip: 'Maximum tumble speed across the item plane during the spawn assist window.'
       }), _dec7 = property({
-        tooltip: 'Delay before the coin starts trying to settle flatter on the board.'
+        tooltip: 'Delay before the spawned body starts trying to settle flatter on the board.'
       }), _dec8 = property({
         tooltip: 'Only apply the settle assist when horizontal motion is already slow.'
       }), _dec9 = property({
@@ -86,7 +80,7 @@ System.register(["cc"], function (_export, _context) {
       }), _dec10 = property({
         tooltip: 'Only apply the settle assist when angular speed is already under control.'
       }), _dec11 = property({
-        tooltip: 'Target angular speed used to help a resting coin topple toward flat.'
+        tooltip: 'Target angular speed used to help a resting body topple toward flat.'
       }), _dec12 = property({
         tooltip: 'Blend factor for the settle assist. Higher values flatten faster.'
       }), _dec13 = property({
@@ -95,31 +89,29 @@ System.register(["cc"], function (_export, _context) {
         constructor() {
           super(...arguments);
 
-          _initializerDefineProperty(this, "coinValue", _descriptor, this);
+          _initializerDefineProperty(this, "spawnAssistDuration", _descriptor, this);
 
-          _initializerDefineProperty(this, "spawnAssistDuration", _descriptor2, this);
+          _initializerDefineProperty(this, "maxSpawnHorizontalSpeed", _descriptor2, this);
 
-          _initializerDefineProperty(this, "maxSpawnHorizontalSpeed", _descriptor3, this);
+          _initializerDefineProperty(this, "maxSpawnVerticalSpeed", _descriptor3, this);
 
-          _initializerDefineProperty(this, "maxSpawnVerticalSpeed", _descriptor4, this);
+          _initializerDefineProperty(this, "maxSpawnSpinSpeed", _descriptor4, this);
 
-          _initializerDefineProperty(this, "maxSpawnSpinSpeed", _descriptor5, this);
+          _initializerDefineProperty(this, "maxSpawnTumbleSpeed", _descriptor5, this);
 
-          _initializerDefineProperty(this, "maxSpawnTumbleSpeed", _descriptor6, this);
+          _initializerDefineProperty(this, "settleAssistDelay", _descriptor6, this);
 
-          _initializerDefineProperty(this, "settleAssistDelay", _descriptor7, this);
+          _initializerDefineProperty(this, "settleAssistSpeedThreshold", _descriptor7, this);
 
-          _initializerDefineProperty(this, "settleAssistSpeedThreshold", _descriptor8, this);
+          _initializerDefineProperty(this, "settleAssistVerticalSpeedThreshold", _descriptor8, this);
 
-          _initializerDefineProperty(this, "settleAssistVerticalSpeedThreshold", _descriptor9, this);
+          _initializerDefineProperty(this, "settleAssistAngularSpeedThreshold", _descriptor9, this);
 
-          _initializerDefineProperty(this, "settleAssistAngularSpeedThreshold", _descriptor10, this);
+          _initializerDefineProperty(this, "settleAssistAngularSpeed", _descriptor10, this);
 
-          _initializerDefineProperty(this, "settleAssistAngularSpeed", _descriptor11, this);
+          _initializerDefineProperty(this, "settleAssistBlend", _descriptor11, this);
 
-          _initializerDefineProperty(this, "settleAssistBlend", _descriptor12, this);
-
-          _initializerDefineProperty(this, "sleepThreshold", _descriptor13, this);
+          _initializerDefineProperty(this, "sleepThreshold", _descriptor12, this);
 
           this._linearVelocity = new Vec3();
           this._angularVelocity = new Vec3();
@@ -128,17 +120,16 @@ System.register(["cc"], function (_export, _context) {
           this._desiredAngular = new Vec3();
           this._correctedAngular = new Vec3();
           this._flattenAxis = new Vec3();
-          this._coinNormal = new Vec3();
+          this._itemNormal = new Vec3();
           this._worldRotation = new Quat();
           this._zeroVelocity = new Vec3();
-          this._defaultDisplayScale = new Vec3(DEFAULT_VISUAL_SCALE.x, DEFAULT_VISUAL_SCALE.y, DEFAULT_VISUAL_SCALE.z);
           this._body = null;
-          this._displayRoot = null;
-          this._displayRenderer = null;
           this._coinId = 0;
           this._hasScored = false;
-          this._rewardKind = RewardKind.NormalCoin;
           this._aliveSeconds = 0;
+          this._itemId = '';
+          this._itemName = '';
+          this._fallbackItemId = '';
         }
 
         get coinId() {
@@ -149,44 +140,36 @@ System.register(["cc"], function (_export, _context) {
           return this._hasScored;
         }
 
-        get isSpecialReward() {
-          return this._rewardKind === RewardKind.SpecialCoin;
+        get itemId() {
+          return this._itemId;
         }
 
-        get isToyCarReward() {
-          return this._rewardKind === RewardKind.ToyCar;
+        get itemName() {
+          return this._itemName;
         }
 
-        get coinTypeLabel() {
-          switch (this._rewardKind) {
-            case RewardKind.SpecialCoin:
-              return '\u5956\u52b1 coin';
-
-            case RewardKind.ToyCar:
-              return 'ToyCar';
-
-            case RewardKind.NormalCoin:
-            default:
-              return '\u666e\u901a coin';
-          }
+        get itemTypeLabel() {
+          return this._itemName || this._itemId || 'BoardItem';
         }
 
         onLoad() {
           this._body = this.getComponent(RigidBody);
-          this.cacheDisplayTargets();
+          this._fallbackItemId = this.node.name;
 
           if (this._body) {
             this._body.sleepThreshold = this.sleepThreshold;
+          } else {
+            warn('[CoinBehaviour] Each runtime item prefab should include its own RigidBody.');
           }
+
+          this.refreshItemIdentity();
         }
 
         initialize(coinId) {
           this._coinId = coinId;
           this._hasScored = false;
-          this._rewardKind = RewardKind.NormalCoin;
           this._aliveSeconds = 0;
-          this.updateRewardName();
-          this.applyPresentation();
+          this.refreshItemIdentity();
 
           if (!this._body) {
             return;
@@ -199,27 +182,6 @@ System.register(["cc"], function (_export, _context) {
           this._body.setLinearVelocity(this._zeroVelocity);
 
           this._body.setAngularVelocity(this._zeroVelocity);
-        }
-
-        configureAsNormal(scoreValue) {
-          this.coinValue = scoreValue;
-          this._rewardKind = RewardKind.NormalCoin;
-          this.updateRewardName();
-          this.applyPresentation();
-        }
-
-        configureAsSpecial(scoreValue) {
-          this.coinValue = scoreValue;
-          this._rewardKind = RewardKind.SpecialCoin;
-          this.updateRewardName();
-          this.applyPresentation();
-        }
-
-        configureAsToyCar(scoreValue) {
-          this.coinValue = scoreValue;
-          this._rewardKind = RewardKind.ToyCar;
-          this.updateRewardName();
-          this.applyPresentation();
         }
 
         update(deltaTime) {
@@ -269,6 +231,20 @@ System.register(["cc"], function (_export, _context) {
           }, 0);
         }
 
+        refreshItemIdentity() {
+          var prefabConfig = (_crd && ItemPrefabConfig === void 0 ? (_reportPossibleCrUseOfItemPrefabConfig({
+            error: Error()
+          }), ItemPrefabConfig) : ItemPrefabConfig).readFromNode(this.node, this._fallbackItemId || this.node.name, this._itemName);
+          this._itemId = prefabConfig.itemId;
+          this._itemName = prefabConfig.itemName;
+          this.updateItemName();
+        }
+
+        updateItemName() {
+          var baseName = this._itemId || this._fallbackItemId || 'BoardItem';
+          this.node.name = this._coinId > 0 ? baseName + "_" + this._coinId : baseName;
+        }
+
         applySpawnAssist() {
           if (!this._body) {
             return;
@@ -290,9 +266,9 @@ System.register(["cc"], function (_export, _context) {
 
           this._body.getAngularVelocity(this._angularVelocity);
 
-          this.getCoinNormal(this._coinNormal);
-          var spinSpeed = Vec3.dot(this._angularVelocity, this._coinNormal);
-          Vec3.multiplyScalar(this._parallelAngular, this._coinNormal, clamp(spinSpeed, -this.maxSpawnSpinSpeed, this.maxSpawnSpinSpeed));
+          this.getItemNormal(this._itemNormal);
+          var spinSpeed = Vec3.dot(this._angularVelocity, this._itemNormal);
+          Vec3.multiplyScalar(this._parallelAngular, this._itemNormal, clamp(spinSpeed, -this.maxSpawnSpinSpeed, this.maxSpawnSpinSpeed));
           Vec3.subtract(this._tumbleAngular, this._angularVelocity, this._parallelAngular);
           clampVec3Magnitude(this._tumbleAngular, this.maxSpawnTumbleSpeed);
           Vec3.add(this._correctedAngular, this._parallelAngular, this._tumbleAngular);
@@ -320,13 +296,13 @@ System.register(["cc"], function (_export, _context) {
             return;
           }
 
-          this.getCoinNormal(this._coinNormal);
+          this.getItemNormal(this._itemNormal);
 
-          if (this._coinNormal.y > 0.995) {
+          if (this._itemNormal.y > 0.995) {
             return;
           }
 
-          Vec3.cross(this._flattenAxis, this._coinNormal, WORLD_UP);
+          Vec3.cross(this._flattenAxis, this._itemNormal, WORLD_UP);
           var axisLength = Vec3.len(this._flattenAxis);
 
           if (axisLength <= 0.0001) {
@@ -334,10 +310,10 @@ System.register(["cc"], function (_export, _context) {
           }
 
           Vec3.multiplyScalar(this._flattenAxis, this._flattenAxis, 1 / axisLength);
-          var tiltFactor = clamp01(1 - this._coinNormal.y);
+          var tiltFactor = clamp01(1 - this._itemNormal.y);
           Vec3.multiplyScalar(this._desiredAngular, this._flattenAxis, this.settleAssistAngularSpeed * tiltFactor);
-          var retainedSpin = Vec3.dot(this._angularVelocity, this._coinNormal) * 0.15;
-          Vec3.scaleAndAdd(this._desiredAngular, this._desiredAngular, this._coinNormal, retainedSpin);
+          var retainedSpin = Vec3.dot(this._angularVelocity, this._itemNormal) * 0.15;
+          Vec3.scaleAndAdd(this._desiredAngular, this._desiredAngular, this._itemNormal, retainedSpin);
           var blend = 1 - Math.exp(-this.settleAssistBlend * deltaTime);
           Vec3.lerp(this._correctedAngular, this._angularVelocity, this._desiredAngular, blend);
 
@@ -346,7 +322,7 @@ System.register(["cc"], function (_export, _context) {
           this._body.wakeUp();
         }
 
-        getCoinNormal(out) {
+        getItemNormal(out) {
           this.node.getWorldRotation(this._worldRotation);
           Vec3.transformQuat(out, LOCAL_UP, this._worldRotation);
 
@@ -355,135 +331,84 @@ System.register(["cc"], function (_export, _context) {
           }
         }
 
-        cacheDisplayTargets() {
-          var _ref, _this$node$getChildBy, _this$_displayRendere;
-
-          var renderers = this.node.getComponentsInChildren(MeshRenderer);
-          this._displayRenderer = renderers.length > 0 ? renderers[0] : null;
-          this._displayRoot = (_ref = (_this$node$getChildBy = this.node.getChildByName('CoinMesh')) != null ? _this$node$getChildBy : (_this$_displayRendere = this._displayRenderer) == null ? void 0 : _this$_displayRendere.node) != null ? _ref : null;
-
-          if (this._displayRoot) {
-            this._displayRoot.getScale(this._defaultDisplayScale);
-          }
-        }
-
-        updateRewardName() {
-          this.node.name = this._rewardKind + "_" + this._coinId;
-        }
-
-        applyPresentation() {
-          switch (this._rewardKind) {
-            case RewardKind.SpecialCoin:
-              this.applyDisplayTransform(SPECIAL_VISUAL_SCALE, SPECIAL_COIN_COLOR);
-              return;
-
-            case RewardKind.ToyCar:
-              this.applyDisplayTransform(TOY_CAR_VISUAL_SCALE, TOY_CAR_COLOR);
-              return;
-
-            case RewardKind.NormalCoin:
-            default:
-              this.applyDisplayTransform(this._defaultDisplayScale, NORMAL_COIN_COLOR);
-              return;
-          }
-        }
-
-        applyDisplayTransform(scale, color) {
-          var _this$_displayRendere2;
-
-          if (this._displayRoot) {
-            this._displayRoot.setScale(scale);
-          }
-
-          var materialInstance = (_this$_displayRendere2 = this._displayRenderer) == null ? void 0 : _this$_displayRendere2.getMaterialInstance(0);
-          materialInstance == null || materialInstance.setProperty('mainColor', color);
-        }
-
-      }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "coinValue", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 1;
-        }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "spawnAssistDuration", [_dec2], {
+      }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "spawnAssistDuration", [_dec2], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.18;
         }
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "maxSpawnHorizontalSpeed", [_dec3], {
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "maxSpawnHorizontalSpeed", [_dec3], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.16;
         }
-      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "maxSpawnVerticalSpeed", [_dec4], {
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "maxSpawnVerticalSpeed", [_dec4], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.22;
         }
-      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "maxSpawnSpinSpeed", [_dec5], {
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "maxSpawnSpinSpeed", [_dec5], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.2;
         }
-      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "maxSpawnTumbleSpeed", [_dec6], {
+      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "maxSpawnTumbleSpeed", [_dec6], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.35;
         }
-      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistDelay", [_dec7], {
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistDelay", [_dec7], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.12;
         }
-      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistSpeedThreshold", [_dec8], {
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistSpeedThreshold", [_dec8], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.08;
         }
-      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistVerticalSpeedThreshold", [_dec9], {
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistVerticalSpeedThreshold", [_dec9], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.06;
         }
-      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistAngularSpeedThreshold", [_dec10], {
+      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistAngularSpeedThreshold", [_dec10], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.1;
         }
-      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistAngularSpeed", [_dec11], {
+      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistAngularSpeed", [_dec11], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.4;
         }
-      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistBlend", [_dec12], {
+      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "settleAssistBlend", [_dec12], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 7;
         }
-      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "sleepThreshold", [_dec13], {
+      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "sleepThreshold", [_dec13], {
         configurable: true,
         enumerable: true,
         writable: true,

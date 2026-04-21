@@ -1,0 +1,142 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "42169eb3-488a-40a4-9a96-490a98687be6",
+  "files": [],
+  "subMetas": {
+    "2b867": {
+      "importer": "gltf-mesh",
+      "uuid": "42169eb3-488a-40a4-9a96-490a98687be6@2b867",
+      "displayName": "",
+      "id": "2b867",
+      "name": "ice-cream.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 16
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a22b6": {
+      "importer": "gltf-mesh",
+      "uuid": "42169eb3-488a-40a4-9a96-490a98687be6@a22b6",
+      "displayName": "",
+      "id": "a22b6",
+      "name": "Group.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 64
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "42169eb3-488a-40a4-9a96-490a98687be6@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "42169eb3-488a-40a4-9a96-490a98687be6@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "b0d63": {
+      "importer": "gltf-scene",
+      "uuid": "42169eb3-488a-40a4-9a96-490a98687be6@b0d63",
+      "displayName": "",
+      "id": "b0d63",
+      "name": "ice-cream.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "42169eb3-488a-40a4-9a96-490a98687be6@2b867",
+        "42169eb3-488a-40a4-9a96-490a98687be6@a22b6"
+      ],
+      "skeletons": [],
+      "textures": [
+        "42169eb3-488a-40a4-9a96-490a98687be6@96c50"
+      ],
+      "materials": [
+        "42169eb3-488a-40a4-9a96-490a98687be6@9991c"
+      ],
+      "scenes": [
+        "42169eb3-488a-40a4-9a96-490a98687be6@b0d63"
+      ]
+    }
+  }
+}

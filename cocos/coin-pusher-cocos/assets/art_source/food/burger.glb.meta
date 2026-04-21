@@ -1,0 +1,218 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "2108bccb-d26e-484f-aeeb-a22361755424",
+  "files": [],
+  "subMetas": {
+    "15029": {
+      "importer": "gltf-mesh",
+      "uuid": "2108bccb-d26e-484f-aeeb-a22361755424@15029",
+      "displayName": "",
+      "id": "15029",
+      "name": "salad.mesh",
+      "userData": {
+        "gltfIndex": 4,
+        "triangleCount": 8
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f5e46": {
+      "importer": "gltf-mesh",
+      "uuid": "2108bccb-d26e-484f-aeeb-a22361755424@f5e46",
+      "displayName": "",
+      "id": "f5e46",
+      "name": "bun-bottom.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 56
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "3fdd5": {
+      "importer": "gltf-mesh",
+      "uuid": "2108bccb-d26e-484f-aeeb-a22361755424@3fdd5",
+      "displayName": "",
+      "id": "3fdd5",
+      "name": "bun-top.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 60
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a5293": {
+      "importer": "gltf-mesh",
+      "uuid": "2108bccb-d26e-484f-aeeb-a22361755424@a5293",
+      "displayName": "",
+      "id": "a5293",
+      "name": "cheese.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 10
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ebc61": {
+      "importer": "gltf-mesh",
+      "uuid": "2108bccb-d26e-484f-aeeb-a22361755424@ebc61",
+      "displayName": "",
+      "id": "ebc61",
+      "name": "patty.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 100
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ce9ce": {
+      "importer": "gltf-mesh",
+      "uuid": "2108bccb-d26e-484f-aeeb-a22361755424@ce9ce",
+      "displayName": "",
+      "id": "ce9ce",
+      "name": "tomato.mesh",
+      "userData": {
+        "gltfIndex": 5,
+        "triangleCount": 60
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "2108bccb-d26e-484f-aeeb-a22361755424@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "2108bccb-d26e-484f-aeeb-a22361755424@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "297a5": {
+      "importer": "gltf-scene",
+      "uuid": "2108bccb-d26e-484f-aeeb-a22361755424@297a5",
+      "displayName": "",
+      "id": "297a5",
+      "name": "burger.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "2108bccb-d26e-484f-aeeb-a22361755424@f5e46",
+        "2108bccb-d26e-484f-aeeb-a22361755424@3fdd5",
+        "2108bccb-d26e-484f-aeeb-a22361755424@a5293",
+        "2108bccb-d26e-484f-aeeb-a22361755424@ebc61",
+        "2108bccb-d26e-484f-aeeb-a22361755424@15029",
+        "2108bccb-d26e-484f-aeeb-a22361755424@ce9ce"
+      ],
+      "skeletons": [],
+      "textures": [
+        "2108bccb-d26e-484f-aeeb-a22361755424@96c50"
+      ],
+      "materials": [
+        "2108bccb-d26e-484f-aeeb-a22361755424@9991c"
+      ],
+      "scenes": [
+        "2108bccb-d26e-484f-aeeb-a22361755424@297a5"
+      ]
+    }
+  }
+}

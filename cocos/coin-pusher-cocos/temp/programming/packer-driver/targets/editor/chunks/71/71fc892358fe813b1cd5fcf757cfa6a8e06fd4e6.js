@@ -1,7 +1,7 @@
 System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _context) {
   "use strict";
 
-  var _reporterNs, _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Component, instantiate, Node, Prefab, Quat, Vec3, warn, CoinBehaviour, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _crd, ccclass, property, LOCAL_RIGHT, LOCAL_UP, LOCAL_FORWARD, CoinSpawner;
+  var _reporterNs, _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Component, instantiate, Node, Quat, Vec3, warn, CoinBehaviour, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _crd, ccclass, property, LOCAL_RIGHT, LOCAL_UP, LOCAL_FORWARD, CoinSpawner;
 
   function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -28,7 +28,6 @@ System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _
       Component = _cc.Component;
       instantiate = _cc.instantiate;
       Node = _cc.Node;
-      Prefab = _cc.Prefab;
       Quat = _cc.Quat;
       Vec3 = _cc.Vec3;
       warn = _cc.warn;
@@ -50,53 +49,51 @@ System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _
       LOCAL_UP = new Vec3(0, 1, 0);
       LOCAL_FORWARD = new Vec3(0, 0, 1);
 
-      _export("CoinSpawner", CoinSpawner = (_dec = ccclass('CoinSpawner'), _dec2 = property(Prefab), _dec3 = property(Node), _dec4 = property(Node), _dec5 = property({
+      _export("CoinSpawner", CoinSpawner = (_dec = ccclass('CoinSpawner'), _dec2 = property(Node), _dec3 = property(Node), _dec4 = property({
         tooltip: 'Base local yaw added on spawn. Keep at 0 unless the spawn point needs an offset.'
+      }), _dec5 = property({
+        tooltip: 'Random yaw range around the item normal. This adds visual variation without making the body stand up.'
       }), _dec6 = property({
-        tooltip: 'Random yaw range around the coin normal. This adds visual variation without making the coin stand up.'
-      }), _dec7 = property({
         tooltip: 'Small base tilt on the X axis. 0 means spawn almost flat.'
-      }), _dec8 = property({
+      }), _dec7 = property({
         tooltip: 'Small base tilt on the Z axis. 0 means spawn almost flat.'
+      }), _dec8 = property({
+        tooltip: 'Random X tilt range. Keep this small so the body does not spawn on edge.'
       }), _dec9 = property({
-        tooltip: 'Random X tilt range. Keep this small so the coin does not spawn on edge.'
-      }), _dec10 = property({
-        tooltip: 'Random Z tilt range. Keep this small so the coin does not spawn on edge.'
+        tooltip: 'Random Z tilt range. Keep this small so the body does not spawn on edge.'
       }), _dec(_class = (_class2 = class CoinSpawner extends Component {
         constructor(...args) {
           super(...args);
 
-          _initializerDefineProperty(this, "coinPrefab", _descriptor, this);
+          _initializerDefineProperty(this, "spawnPoint", _descriptor, this);
 
-          _initializerDefineProperty(this, "spawnPoint", _descriptor2, this);
+          _initializerDefineProperty(this, "coinRoot", _descriptor2, this);
 
-          _initializerDefineProperty(this, "coinRoot", _descriptor3, this);
+          _initializerDefineProperty(this, "spawnSpreadX", _descriptor3, this);
 
-          _initializerDefineProperty(this, "spawnSpreadX", _descriptor4, this);
+          _initializerDefineProperty(this, "spawnSpreadZ", _descriptor4, this);
 
-          _initializerDefineProperty(this, "spawnSpreadZ", _descriptor5, this);
+          _initializerDefineProperty(this, "spawnHeightOffset", _descriptor5, this);
 
-          _initializerDefineProperty(this, "spawnHeightOffset", _descriptor6, this);
+          _initializerDefineProperty(this, "spawnYawDegrees", _descriptor6, this);
 
-          _initializerDefineProperty(this, "spawnYawDegrees", _descriptor7, this);
+          _initializerDefineProperty(this, "randomYawDegrees", _descriptor7, this);
 
-          _initializerDefineProperty(this, "randomYawDegrees", _descriptor8, this);
+          _initializerDefineProperty(this, "baseTiltXDegrees", _descriptor8, this);
 
-          _initializerDefineProperty(this, "baseTiltXDegrees", _descriptor9, this);
+          _initializerDefineProperty(this, "baseTiltZDegrees", _descriptor9, this);
 
-          _initializerDefineProperty(this, "baseTiltZDegrees", _descriptor10, this);
+          _initializerDefineProperty(this, "randomTiltXDegrees", _descriptor10, this);
 
-          _initializerDefineProperty(this, "randomTiltXDegrees", _descriptor11, this);
+          _initializerDefineProperty(this, "randomTiltZDegrees", _descriptor11, this);
 
-          _initializerDefineProperty(this, "randomTiltZDegrees", _descriptor12, this);
+          _initializerDefineProperty(this, "launchUpImpulse", _descriptor12, this);
 
-          _initializerDefineProperty(this, "launchUpImpulse", _descriptor13, this);
+          _initializerDefineProperty(this, "launchForwardImpulse", _descriptor13, this);
 
-          _initializerDefineProperty(this, "launchForwardImpulse", _descriptor14, this);
+          _initializerDefineProperty(this, "randomSideImpulse", _descriptor14, this);
 
-          _initializerDefineProperty(this, "randomSideImpulse", _descriptor15, this);
-
-          _initializerDefineProperty(this, "spinTorque", _descriptor16, this);
+          _initializerDefineProperty(this, "spinTorque", _descriptor15, this);
 
           this._nextCoinId = 1;
           this._spawnBaseRotation = new Quat();
@@ -107,41 +104,41 @@ System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _
           this._forwardAxis = new Vec3();
           this._spawnImpulse = new Vec3();
           this._spawnTorque = new Vec3();
-          this._coinNormal = new Vec3();
+          this._itemNormal = new Vec3();
         }
 
-        spawnCoin() {
+        spawnCoin(itemPrefab) {
           var _this$coinRoot, _this$spawnPoint;
 
-          if (!this.coinPrefab) {
-            warn('[CoinSpawner] coinPrefab is not assigned.');
+          if (!itemPrefab) {
+            warn('[CoinSpawner] item prefab is not assigned.');
             return null;
           }
 
-          const coinNode = instantiate(this.coinPrefab);
+          const itemNode = instantiate(itemPrefab);
           const parent = (_this$coinRoot = this.coinRoot) != null ? _this$coinRoot : this.node;
-          parent.addChild(coinNode);
+          parent.addChild(itemNode);
           const basePosition = this.spawnPoint ? this.spawnPoint.worldPosition : this.node.worldPosition;
           const rotationSource = (_this$spawnPoint = this.spawnPoint) != null ? _this$spawnPoint : this.node;
           rotationSource.getWorldRotation(this._spawnBaseRotation);
-          coinNode.setWorldPosition(new Vec3(basePosition.x + randomRange(-this.spawnSpreadX, this.spawnSpreadX), basePosition.y + this.spawnHeightOffset, basePosition.z + randomRange(-this.spawnSpreadZ, this.spawnSpreadZ)));
+          itemNode.setWorldPosition(new Vec3(basePosition.x + randomRange(-this.spawnSpreadX, this.spawnSpreadX), basePosition.y + this.spawnHeightOffset, basePosition.z + randomRange(-this.spawnSpreadZ, this.spawnSpreadZ)));
           const tiltX = this.baseTiltXDegrees + randomRange(-this.randomTiltXDegrees, this.randomTiltXDegrees);
           const tiltZ = this.baseTiltZDegrees + randomRange(-this.randomTiltZDegrees, this.randomTiltZDegrees);
           const yaw = this.spawnYawDegrees + randomRange(-this.randomYawDegrees, this.randomYawDegrees);
           Quat.fromEuler(this._spawnRotationOffset, tiltX, yaw, tiltZ);
           Quat.multiply(this._spawnRotation, this._spawnBaseRotation, this._spawnRotationOffset);
-          coinNode.setWorldRotation(this._spawnRotation);
-          const coin = coinNode.getComponent(_crd && CoinBehaviour === void 0 ? (_reportPossibleCrUseOfCoinBehaviour({
+          itemNode.setWorldRotation(this._spawnRotation);
+          const item = itemNode.getComponent(_crd && CoinBehaviour === void 0 ? (_reportPossibleCrUseOfCoinBehaviour({
             error: Error()
           }), CoinBehaviour) : CoinBehaviour);
 
-          if (!coin) {
-            warn('[CoinSpawner] Spawned prefab is missing CoinBehaviour.');
-            coinNode.destroy();
+          if (!item) {
+            warn('[CoinSpawner] Spawned item prefab is missing CoinBehaviour.');
+            itemNode.destroy();
             return null;
           }
 
-          coin.initialize(this._nextCoinId);
+          item.initialize(this._nextCoinId);
           Vec3.transformQuat(this._rightAxis, LOCAL_RIGHT, this._spawnBaseRotation);
           Vec3.transformQuat(this._upAxis, LOCAL_UP, this._spawnBaseRotation);
           Vec3.transformQuat(this._forwardAxis, LOCAL_FORWARD, this._spawnBaseRotation);
@@ -149,119 +146,112 @@ System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _
           Vec3.scaleAndAdd(this._spawnImpulse, this._spawnImpulse, this._rightAxis, randomRange(-this.randomSideImpulse, this.randomSideImpulse));
           Vec3.scaleAndAdd(this._spawnImpulse, this._spawnImpulse, this._upAxis, this.launchUpImpulse);
           Vec3.scaleAndAdd(this._spawnImpulse, this._spawnImpulse, this._forwardAxis, this.launchForwardImpulse);
-          Vec3.transformQuat(this._coinNormal, LOCAL_UP, this._spawnRotation);
-          Vec3.multiplyScalar(this._spawnTorque, this._coinNormal, randomRange(-this.spinTorque, this.spinTorque));
-          coin.applyLaunchImpulse(this._spawnImpulse, this._spawnTorque);
+          Vec3.transformQuat(this._itemNormal, LOCAL_UP, this._spawnRotation);
+          Vec3.multiplyScalar(this._spawnTorque, this._itemNormal, randomRange(-this.spinTorque, this.spinTorque));
+          item.applyLaunchImpulse(this._spawnImpulse, this._spawnTorque);
           this._nextCoinId += 1;
-          return coin;
+          return item;
         }
 
-      }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "coinPrefab", [_dec2], {
+      }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "spawnPoint", [_dec2], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return null;
         }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "spawnPoint", [_dec3], {
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "coinRoot", [_dec3], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return null;
         }
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "coinRoot", [_dec4], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function () {
-          return null;
-        }
-      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "spawnSpreadX", [property], {
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "spawnSpreadX", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 0.18;
         }
-      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "spawnSpreadZ", [property], {
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "spawnSpreadZ", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 0.08;
         }
-      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "spawnHeightOffset", [property], {
+      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "spawnHeightOffset", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 0;
         }
-      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "spawnYawDegrees", [_dec5], {
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "spawnYawDegrees", [_dec4], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 0;
         }
-      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "randomYawDegrees", [_dec6], {
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "randomYawDegrees", [_dec5], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 180;
         }
-      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "baseTiltXDegrees", [_dec7], {
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "baseTiltXDegrees", [_dec6], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 0;
         }
-      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "baseTiltZDegrees", [_dec8], {
+      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "baseTiltZDegrees", [_dec7], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 0;
         }
-      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "randomTiltXDegrees", [_dec9], {
+      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "randomTiltXDegrees", [_dec8], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 4;
         }
-      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "randomTiltZDegrees", [_dec10], {
+      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "randomTiltZDegrees", [_dec9], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 4;
         }
-      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "launchUpImpulse", [property], {
+      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "launchUpImpulse", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 0.008;
         }
-      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "launchForwardImpulse", [property], {
+      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "launchForwardImpulse", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return -0.02;
         }
-      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "randomSideImpulse", [property], {
+      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "randomSideImpulse", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 0.003;
         }
-      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "spinTorque", [property], {
+      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "spinTorque", [property], {
         configurable: true,
         enumerable: true,
         writable: true,

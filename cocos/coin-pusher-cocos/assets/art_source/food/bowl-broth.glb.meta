@@ -1,0 +1,142 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0",
+  "files": [],
+  "subMetas": {
+    "ecc2f": {
+      "importer": "gltf-mesh",
+      "uuid": "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@ecc2f",
+      "displayName": "",
+      "id": "ecc2f",
+      "name": "bowl-broth.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 194
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a22b6": {
+      "importer": "gltf-mesh",
+      "uuid": "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@a22b6",
+      "displayName": "",
+      "id": "a22b6",
+      "name": "Group.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 16
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f410d": {
+      "importer": "gltf-scene",
+      "uuid": "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@f410d",
+      "displayName": "",
+      "id": "f410d",
+      "name": "bowl-broth.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@ecc2f",
+        "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@a22b6"
+      ],
+      "skeletons": [],
+      "textures": [
+        "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@96c50"
+      ],
+      "materials": [
+        "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@9991c"
+      ],
+      "scenes": [
+        "9e6f1d80-8bd5-4c37-987f-07aa44ede4d0@f410d"
+      ]
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "73bb6bfa-0487-4a0f-9cfc-8d4c34eca19f",
+  "files": [],
+  "subMetas": {
+    "a8df0": {
+      "importer": "gltf-mesh",
+      "uuid": "73bb6bfa-0487-4a0f-9cfc-8d4c34eca19f@a8df0",
+      "displayName": "",
+      "id": "a8df0",
+      "name": "soda.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 188
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "73bb6bfa-0487-4a0f-9cfc-8d4c34eca19f@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "73bb6bfa-0487-4a0f-9cfc-8d4c34eca19f@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "fdc1e": {
+      "importer": "gltf-scene",
+      "uuid": "73bb6bfa-0487-4a0f-9cfc-8d4c34eca19f@fdc1e",
+      "displayName": "",
+      "id": "fdc1e",
+      "name": "soda.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "73bb6bfa-0487-4a0f-9cfc-8d4c34eca19f@a8df0"
+      ],
+      "skeletons": [],
+      "textures": [
+        "73bb6bfa-0487-4a0f-9cfc-8d4c34eca19f@96c50"
+      ],
+      "materials": [
+        "73bb6bfa-0487-4a0f-9cfc-8d4c34eca19f@9991c"
+      ],
+      "scenes": [
+        "73bb6bfa-0487-4a0f-9cfc-8d4c34eca19f@fdc1e"
+      ]
+    }
+  }
+}

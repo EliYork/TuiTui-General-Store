@@ -1,0 +1,218 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df",
+  "files": [],
+  "subMetas": {
+    "73588": {
+      "importer": "gltf-scene",
+      "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df@73588",
+      "displayName": "",
+      "id": "73588",
+      "name": "skewer-vegetables.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e77cc": {
+      "importer": "gltf-mesh",
+      "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df@e77cc",
+      "displayName": "",
+      "id": "e77cc",
+      "name": "skewer-vegetables-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 20
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e23b1": {
+      "importer": "gltf-mesh",
+      "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df@e23b1",
+      "displayName": "",
+      "id": "e23b1",
+      "name": "meat-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 32
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "555e8": {
+      "importer": "gltf-mesh",
+      "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df@555e8",
+      "displayName": "",
+      "id": "555e8",
+      "name": "meat-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 32
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "6cef4": {
+      "importer": "gltf-mesh",
+      "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df@6cef4",
+      "displayName": "",
+      "id": "6cef4",
+      "name": "meat-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 32
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "fd96a": {
+      "importer": "gltf-mesh",
+      "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df@fd96a",
+      "displayName": "",
+      "id": "fd96a",
+      "name": "vegetables-4.mesh",
+      "userData": {
+        "gltfIndex": 4,
+        "triangleCount": 20
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a873e": {
+      "importer": "gltf-mesh",
+      "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df@a873e",
+      "displayName": "",
+      "id": "a873e",
+      "name": "vegetables-5.mesh",
+      "userData": {
+        "gltfIndex": 5,
+        "triangleCount": 20
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "f04d44b8-2f30-41c1-8051-4ff244ceb1df@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "f04d44b8-2f30-41c1-8051-4ff244ceb1df@e77cc",
+        "f04d44b8-2f30-41c1-8051-4ff244ceb1df@e23b1",
+        "f04d44b8-2f30-41c1-8051-4ff244ceb1df@555e8",
+        "f04d44b8-2f30-41c1-8051-4ff244ceb1df@6cef4",
+        "f04d44b8-2f30-41c1-8051-4ff244ceb1df@fd96a",
+        "f04d44b8-2f30-41c1-8051-4ff244ceb1df@a873e"
+      ],
+      "skeletons": [],
+      "textures": [
+        "f04d44b8-2f30-41c1-8051-4ff244ceb1df@96c50"
+      ],
+      "materials": [
+        "f04d44b8-2f30-41c1-8051-4ff244ceb1df@9991c"
+      ],
+      "scenes": [
+        "f04d44b8-2f30-41c1-8051-4ff244ceb1df@73588"
+      ]
+    }
+  }
+}

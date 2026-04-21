@@ -1,0 +1,161 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "d72f593d-6b5d-4cf7-8f00-15092604bfca",
+  "files": [],
+  "subMetas": {
+    "50d9d": {
+      "importer": "gltf-mesh",
+      "uuid": "d72f593d-6b5d-4cf7-8f00-15092604bfca@50d9d",
+      "displayName": "",
+      "id": "50d9d",
+      "name": "soda-glass.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 68
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "67fba": {
+      "importer": "gltf-mesh",
+      "uuid": "d72f593d-6b5d-4cf7-8f00-15092604bfca@67fba",
+      "displayName": "",
+      "id": "67fba",
+      "name": "straw.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 12
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "2805c": {
+      "importer": "gltf-mesh",
+      "uuid": "d72f593d-6b5d-4cf7-8f00-15092604bfca@2805c",
+      "displayName": "",
+      "id": "2805c",
+      "name": "lemon.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 44
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "d72f593d-6b5d-4cf7-8f00-15092604bfca@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "d72f593d-6b5d-4cf7-8f00-15092604bfca@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "29a77": {
+      "importer": "gltf-scene",
+      "uuid": "d72f593d-6b5d-4cf7-8f00-15092604bfca@29a77",
+      "displayName": "",
+      "id": "29a77",
+      "name": "soda-glass.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "d72f593d-6b5d-4cf7-8f00-15092604bfca@50d9d",
+        "d72f593d-6b5d-4cf7-8f00-15092604bfca@67fba",
+        "d72f593d-6b5d-4cf7-8f00-15092604bfca@2805c"
+      ],
+      "skeletons": [],
+      "textures": [
+        "d72f593d-6b5d-4cf7-8f00-15092604bfca@96c50"
+      ],
+      "materials": [
+        "d72f593d-6b5d-4cf7-8f00-15092604bfca@9991c"
+      ],
+      "scenes": [
+        "d72f593d-6b5d-4cf7-8f00-15092604bfca@29a77"
+      ]
+    }
+  }
+}

@@ -1,0 +1,180 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "e1635e47-d2a5-4ca6-b1c5-3e28da90984d",
+  "files": [],
+  "subMetas": {
+    "18723": {
+      "importer": "gltf-mesh",
+      "uuid": "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@18723",
+      "displayName": "",
+      "id": "18723",
+      "name": "layer-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 142
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ae3c6": {
+      "importer": "gltf-mesh",
+      "uuid": "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@ae3c6",
+      "displayName": "",
+      "id": "ae3c6",
+      "name": "lid-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 66
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "905fa": {
+      "importer": "gltf-mesh",
+      "uuid": "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@905fa",
+      "displayName": "",
+      "id": "905fa",
+      "name": "layer-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 142
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "bbf76": {
+      "importer": "gltf-mesh",
+      "uuid": "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@bbf76",
+      "displayName": "",
+      "id": "bbf76",
+      "name": "layer-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 142
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "bffc7": {
+      "importer": "gltf-scene",
+      "uuid": "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@bffc7",
+      "displayName": "",
+      "id": "bffc7",
+      "name": "steamer.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@ae3c6",
+        "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@905fa",
+        "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@18723",
+        "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@bbf76"
+      ],
+      "skeletons": [],
+      "textures": [
+        "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@96c50"
+      ],
+      "materials": [
+        "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@9991c"
+      ],
+      "scenes": [
+        "e1635e47-d2a5-4ca6-b1c5-3e28da90984d@bffc7"
+      ]
+    }
+  }
+}

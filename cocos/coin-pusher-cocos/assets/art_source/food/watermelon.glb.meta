@@ -1,0 +1,256 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245",
+  "files": [],
+  "subMetas": {
+    "82063": {
+      "importer": "gltf-mesh",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@82063",
+      "displayName": "",
+      "id": "82063",
+      "name": "slice-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 172
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "98906": {
+      "importer": "gltf-mesh",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@98906",
+      "displayName": "",
+      "id": "98906",
+      "name": "slice-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 172
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "1bb3f": {
+      "importer": "gltf-mesh",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@1bb3f",
+      "displayName": "",
+      "id": "1bb3f",
+      "name": "slice-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 172
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "eeab7": {
+      "importer": "gltf-mesh",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@eeab7",
+      "displayName": "",
+      "id": "eeab7",
+      "name": "slice-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 172
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "494a7": {
+      "importer": "gltf-mesh",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@494a7",
+      "displayName": "",
+      "id": "494a7",
+      "name": "slice-4.mesh",
+      "userData": {
+        "gltfIndex": 4,
+        "triangleCount": 172
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "8559e": {
+      "importer": "gltf-mesh",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@8559e",
+      "displayName": "",
+      "id": "8559e",
+      "name": "slice-5.mesh",
+      "userData": {
+        "gltfIndex": 5,
+        "triangleCount": 172
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "716e6": {
+      "importer": "gltf-mesh",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@716e6",
+      "displayName": "",
+      "id": "716e6",
+      "name": "slice-6.mesh",
+      "userData": {
+        "gltfIndex": 6,
+        "triangleCount": 172
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "8dcf9": {
+      "importer": "gltf-mesh",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@8dcf9",
+      "displayName": "",
+      "id": "8dcf9",
+      "name": "slice-7.mesh",
+      "userData": {
+        "gltfIndex": 7,
+        "triangleCount": 172
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "c1587": {
+      "importer": "gltf-scene",
+      "uuid": "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@c1587",
+      "displayName": "",
+      "id": "c1587",
+      "name": "watermelon.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@98906",
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@82063",
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@1bb3f",
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@eeab7",
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@494a7",
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@8559e",
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@716e6",
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@8dcf9"
+      ],
+      "skeletons": [],
+      "textures": [
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@96c50"
+      ],
+      "materials": [
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@9991c"
+      ],
+      "scenes": [
+        "d801cec4-ed0e-4ad0-8c3c-3a08bc8e7245@c1587"
+      ]
+    }
+  }
+}

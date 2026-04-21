@@ -1,0 +1,256 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff",
+  "files": [],
+  "subMetas": {
+    "16796": {
+      "importer": "gltf-mesh",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@16796",
+      "displayName": "",
+      "id": "16796",
+      "name": "piece-6.mesh",
+      "userData": {
+        "gltfIndex": 6,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "16845": {
+      "importer": "gltf-mesh",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@16845",
+      "displayName": "",
+      "id": "16845",
+      "name": "piece-5.mesh",
+      "userData": {
+        "gltfIndex": 5,
+        "triangleCount": 24
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9d1ee": {
+      "importer": "gltf-mesh",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@9d1ee",
+      "displayName": "",
+      "id": "9d1ee",
+      "name": "piece-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 36
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "5fd6e": {
+      "importer": "gltf-mesh",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@5fd6e",
+      "displayName": "",
+      "id": "5fd6e",
+      "name": "piece-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9a78d": {
+      "importer": "gltf-mesh",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@9a78d",
+      "displayName": "",
+      "id": "9a78d",
+      "name": "piece-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 36
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "17d68": {
+      "importer": "gltf-mesh",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@17d68",
+      "displayName": "",
+      "id": "17d68",
+      "name": "piece-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f94c7": {
+      "importer": "gltf-mesh",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@f94c7",
+      "displayName": "",
+      "id": "f94c7",
+      "name": "piece-4.mesh",
+      "userData": {
+        "gltfIndex": 4,
+        "triangleCount": 36
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0799e": {
+      "importer": "gltf-mesh",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@0799e",
+      "displayName": "",
+      "id": "0799e",
+      "name": "piece-7.mesh",
+      "userData": {
+        "gltfIndex": 7,
+        "triangleCount": 60
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "613d6": {
+      "importer": "gltf-scene",
+      "uuid": "4a8e910d-3f87-4802-a52d-49761779dbff@613d6",
+      "displayName": "",
+      "id": "613d6",
+      "name": "plate-broken.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "4a8e910d-3f87-4802-a52d-49761779dbff@9d1ee",
+        "4a8e910d-3f87-4802-a52d-49761779dbff@5fd6e",
+        "4a8e910d-3f87-4802-a52d-49761779dbff@9a78d",
+        "4a8e910d-3f87-4802-a52d-49761779dbff@17d68",
+        "4a8e910d-3f87-4802-a52d-49761779dbff@f94c7",
+        "4a8e910d-3f87-4802-a52d-49761779dbff@16845",
+        "4a8e910d-3f87-4802-a52d-49761779dbff@16796",
+        "4a8e910d-3f87-4802-a52d-49761779dbff@0799e"
+      ],
+      "skeletons": [],
+      "textures": [
+        "4a8e910d-3f87-4802-a52d-49761779dbff@96c50"
+      ],
+      "materials": [
+        "4a8e910d-3f87-4802-a52d-49761779dbff@9991c"
+      ],
+      "scenes": [
+        "4a8e910d-3f87-4802-a52d-49761779dbff@613d6"
+      ]
+    }
+  }
+}

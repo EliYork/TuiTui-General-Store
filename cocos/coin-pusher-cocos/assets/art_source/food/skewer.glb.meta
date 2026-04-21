@@ -1,0 +1,180 @@
+{
+  "ver": "2.3.14",
+  "importer": "gltf",
+  "imported": true,
+  "uuid": "f700585e-f1ff-4967-a4e0-c6656dbcc305",
+  "files": [],
+  "subMetas": {
+    "32680": {
+      "importer": "gltf-mesh",
+      "uuid": "f700585e-f1ff-4967-a4e0-c6656dbcc305@32680",
+      "displayName": "",
+      "id": "32680",
+      "name": "skewer-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 20
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e23b1": {
+      "importer": "gltf-mesh",
+      "uuid": "f700585e-f1ff-4967-a4e0-c6656dbcc305@e23b1",
+      "displayName": "",
+      "id": "e23b1",
+      "name": "meat-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 32
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "555e8": {
+      "importer": "gltf-mesh",
+      "uuid": "f700585e-f1ff-4967-a4e0-c6656dbcc305@555e8",
+      "displayName": "",
+      "id": "555e8",
+      "name": "meat-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 32
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "6cef4": {
+      "importer": "gltf-mesh",
+      "uuid": "f700585e-f1ff-4967-a4e0-c6656dbcc305@6cef4",
+      "displayName": "",
+      "id": "6cef4",
+      "name": "meat-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 32
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "96c50": {
+      "importer": "texture",
+      "uuid": "f700585e-f1ff-4967-a4e0-c6656dbcc305@96c50",
+      "displayName": "",
+      "id": "96c50",
+      "name": "colormap.texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "nearest",
+        "magfilter": "nearest",
+        "mipfilter": "nearest",
+        "anisotropy": 0,
+        "isUuid": false,
+        "imageUuidOrDatabaseUri": "db://assets/art_source/food/Textures/colormap.png"
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9991c": {
+      "importer": "gltf-material",
+      "uuid": "f700585e-f1ff-4967-a4e0-c6656dbcc305@9991c",
+      "displayName": "",
+      "id": "9991c",
+      "name": "colormap.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "d7e91": {
+      "importer": "gltf-scene",
+      "uuid": "f700585e-f1ff-4967-a4e0-c6656dbcc305@d7e91",
+      "displayName": "",
+      "id": "d7e91",
+      "name": "skewer.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [
+      {
+        "name": "colormap",
+        "uri": "db://assets/art_source/food/Textures/colormap.png"
+      }
+    ],
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    },
+    "assetFinder": {
+      "meshes": [
+        "f700585e-f1ff-4967-a4e0-c6656dbcc305@32680",
+        "f700585e-f1ff-4967-a4e0-c6656dbcc305@e23b1",
+        "f700585e-f1ff-4967-a4e0-c6656dbcc305@555e8",
+        "f700585e-f1ff-4967-a4e0-c6656dbcc305@6cef4"
+      ],
+      "skeletons": [],
+      "textures": [
+        "f700585e-f1ff-4967-a4e0-c6656dbcc305@96c50"
+      ],
+      "materials": [
+        "f700585e-f1ff-4967-a4e0-c6656dbcc305@9991c"
+      ],
+      "scenes": [
+        "f700585e-f1ff-4967-a4e0-c6656dbcc305@d7e91"
+      ]
+    }
+  }
+}
