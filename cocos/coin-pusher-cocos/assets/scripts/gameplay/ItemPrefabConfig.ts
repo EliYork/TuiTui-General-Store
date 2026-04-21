@@ -5,6 +5,8 @@ const { ccclass, property } = _decorator;
 export interface ItemPrefabRuntimeConfig {
     itemId: string;
     itemName: string;
+    value: number;
+    weight: number;
 }
 
 @ccclass('ItemPrefabConfig')
@@ -15,6 +17,12 @@ export class ItemPrefabConfig extends Component {
     @property({ tooltip: 'Display name shown in HUD and unlock messages.' })
     public itemName = '';
 
+    @property({ tooltip: 'How much resource this item restores after it is collected by DropZone.' })
+    public value = 1;
+
+    @property({ tooltip: 'Relative share used only by the world random-drop pool. Higher means more likely.' })
+    public weight = 1;
+
     public toRuntimeConfig(fallbackItemId = '', fallbackItemName = ''): ItemPrefabRuntimeConfig {
         const resolvedItemId = normalizeText(this.itemId) || normalizeText(fallbackItemId) || this.node.name || 'item';
         const resolvedItemName = normalizeText(this.itemName) || normalizeText(fallbackItemName) || humanizeItemId(resolvedItemId);
@@ -22,6 +30,8 @@ export class ItemPrefabConfig extends Component {
         return {
             itemId: resolvedItemId,
             itemName: resolvedItemName,
+            value: normalizeNonNegativeInteger(this.value, 1),
+            weight: normalizeNonNegativeNumber(this.weight, 1),
         };
     }
 
@@ -38,6 +48,8 @@ export class ItemPrefabConfig extends Component {
             return {
                 itemId: defaultItemId,
                 itemName: defaultItemName,
+                value: 1,
+                weight: 1,
             };
         }
 
@@ -68,4 +80,20 @@ function humanizeItemId(itemId: string): string {
         .replace(/[_-]+/g, ' ');
 
     return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+function normalizeNonNegativeInteger(value: number, fallback = 0): number {
+    if (!Number.isFinite(value)) {
+        return fallback;
+    }
+
+    return Math.max(0, Math.round(value));
+}
+
+function normalizeNonNegativeNumber(value: number, fallback = 0): number {
+    if (!Number.isFinite(value)) {
+        return fallback;
+    }
+
+    return Math.max(0, value);
 }

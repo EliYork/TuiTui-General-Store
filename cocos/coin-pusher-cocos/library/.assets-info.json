@@ -68,11 +68,11 @@
       "uuid": "3e1d5ed1-e01a-4468-89e0-2cc52ec1f060"
     },
     "scripts\\core": {
-      "time": 1776761307778.2112,
+      "time": 1776778703946.06,
       "uuid": "bbf78522-c2b6-44a7-8d85-c44bdb42b166"
     },
     "scripts\\gameplay": {
-      "time": 1776768165590.9565,
+      "time": 1776778552297.2368,
       "uuid": "92715b6c-f9e4-4eea-a663-302fc8cf4a8e"
     },
     "scripts\\ui": {
@@ -80,7 +80,7 @@
       "uuid": "f7ef0e46-6e88-494d-b00b-abffbd547bdb"
     },
     "scripts\\core\\GameManager.ts": {
-      "time": 1776768208375.7048,
+      "time": 1776778703947.075,
       "uuid": "6bf28501-5fb5-4b59-92ea-2a723c3f027e"
     },
     "scripts\\gameplay\\CoinBehaviour.ts": {
@@ -88,7 +88,7 @@
       "uuid": "162c9ae4-7339-4033-8fd7-f5fe93695055"
     },
     "scripts\\gameplay\\CoinSpawner.ts": {
-      "time": 1776768165481.8516,
+      "time": 1776777459042.679,
       "uuid": "08942fc9-9f2e-4fe0-b2a7-7b42dce00ae9"
     },
     "scripts\\gameplay\\DropZone.ts": {
@@ -173,7 +173,7 @@
       "time": 1776761698762.5195
     },
     "scripts\\gameplay\\ItemPrefabConfig.ts": {
-      "time": 1776768165366.8984,
+      "time": 1776778552297.2368,
       "uuid": "540b4dc9-7880-47fe-960c-6d5e852f658b"
     },
     "art_source.meta": {
@@ -1615,7 +1615,7 @@
       "time": 1776773171261.8203
     },
     "prefabs\\items\\all\\banana.prefab": {
-      "time": 1776773171260.6602,
+      "time": 1776779447237.3933,
       "uuid": "41926478-1d5e-4860-b126-7e4abe13064b"
     },
     "prefabs\\items\\all\\lemon.prefab.meta": {

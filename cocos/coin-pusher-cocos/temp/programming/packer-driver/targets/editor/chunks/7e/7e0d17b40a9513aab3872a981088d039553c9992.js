@@ -1,7 +1,7 @@
 System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], function (_export, _context) {
   "use strict";
 
-  var _reporterNs, _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Component, director, Enum, Label, Prefab, warn, PhysicsSystem, EPhysicsDrawFlags, CoinSpawner, ItemPrefabConfig, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _class4, _class5, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _crd, ccclass, property, SHARED_SCENE_NAME, RoundState, MapSelection, CatalogItemConfig, DEFAULT_TEST_ITEMS, runtimeProgress, GameManager;
+  var _reporterNs, _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Component, director, Enum, Label, Prefab, warn, PhysicsSystem, EPhysicsDrawFlags, CoinSpawner, ItemPrefabConfig, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _class4, _class5, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _crd, ccclass, property, SHARED_SCENE_NAME, RoundState, MapSelection, CatalogItemConfig, DEFAULT_TEST_ITEMS, runtimeProgress, GameManager;
 
   function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -15,6 +15,10 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
 
   function _reportPossibleCrUseOfCoinSpawner(extras) {
     _reporterNs.report("CoinSpawner", "../gameplay/CoinSpawner", _context.meta, extras);
+  }
+
+  function _reportPossibleCrUseOfCoinSpawnRequest(extras) {
+    _reporterNs.report("CoinSpawnRequest", "../gameplay/CoinSpawner", _context.meta, extras);
   }
 
   function _reportPossibleCrUseOfItemPrefabConfig(extras) {
@@ -62,7 +66,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
       RoundState = /*#__PURE__*/function (RoundState) {
         RoundState["Ready"] = "Ready";
         RoundState["Playing"] = "Playing";
-        RoundState["NoCoins"] = "NoCoins";
+        RoundState["LowResources"] = "LowResources";
         return RoundState;
       }(RoundState || {});
 
@@ -177,8 +181,8 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
         currentMapId: 'Map01',
         currentCoins: 0,
         maxCoins: 0,
-        coinRegenInterval: 0,
-        regenProgressSeconds: 0,
+        resourceRegenProgressSeconds: 0,
+        worldDropProgressSeconds: 0,
         currentSpawnItemId: '',
         lastDroppedItemId: '',
         itemProgress: {}
@@ -190,31 +194,33 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
         type: Enum(MapSelection),
         tooltip: 'Inspector map selection used on first boot and by applyInspectorMapSelection().'
       }), _dec10 = property({
-        tooltip: 'Initial active-spawn resource written into the persistent runtime data on first boot.'
+        tooltip: 'Initial active-spawn resource written into the runtime progress on first boot.'
       }), _dec11 = property({
-        tooltip: 'Natural regeneration cap. Active-spawn resource may exceed this only if you later add external rewards.'
+        tooltip: 'Resource cap used only by automatic regeneration. Drop rewards may exceed this value.'
       }), _dec12 = property({
-        tooltip: 'Seconds needed to regenerate 1 active-spawn resource while currentCoins is below maxCoins.'
+        tooltip: 'Seconds between each automatic resource regeneration tick.'
       }), _dec13 = property({
-        tooltip: 'How many active-spawn resources are consumed per spawn button click.'
+        tooltip: 'How much resource is restored on each regeneration tick.'
       }), _dec14 = property({
-        type: [CatalogItemConfig],
-        tooltip: 'Logic-only item catalog. Shape and collider parameters now live on each item prefab.'
+        tooltip: 'How much resource is consumed per manual spawn. This is tracked, but no longer blocks spawning.'
       }), _dec15 = property({
-        tooltip: 'How many map-pool items should be seeded onto the board when Map01 starts.'
+        type: [CatalogItemConfig],
+        tooltip: 'Logic-only item catalog. Each item prefab is a complete runtime object.'
       }), _dec16 = property({
-        tooltip: 'Seconds between automatic Map01 map-pool spawns. Set 0 to disable ambient map refresh.'
+        tooltip: 'How many map-pool items should be seeded onto the board when Map01 starts.'
       }), _dec17 = property({
         tooltip: 'Map01 future leak-risk hint. Reserved for later board-difficulty tuning.'
       }), _dec18 = property({
         tooltip: 'How many map-pool items should be seeded onto the board when Map02 starts.'
       }), _dec19 = property({
-        tooltip: 'Seconds between automatic Map02 map-pool spawns. Set 0 to disable ambient map refresh.'
-      }), _dec20 = property({
         tooltip: 'Map02 future leak-risk hint. Reserved for later board-difficulty tuning.'
+      }), _dec20 = property({
+        tooltip: 'Enable or disable timed world drops without affecting manual spawn or resource recovery.'
       }), _dec21 = property({
-        tooltip: 'Simple board safety cap so ambient map refresh does not flood the scene while idle.'
-      }), _dec22 = property(Label), _dec23 = property(Label), _dec24 = property(Label), _dec25 = property(Label), _dec7(_class4 = (_class5 = class GameManager extends Component {
+        tooltip: 'Seconds between each timed world drop batch.'
+      }), _dec22 = property({
+        tooltip: 'How many random map-pool items are spawned each time the world drop timer fires.'
+      }), _dec23 = property(Label), _dec24 = property(Label), _dec25 = property(Label), _dec26 = property(Label), _dec7(_class4 = (_class5 = class GameManager extends Component {
         constructor(...args) {
           super(...args);
 
@@ -226,40 +232,41 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
 
           _initializerDefineProperty(this, "maxCoins", _descriptor11, this);
 
-          _initializerDefineProperty(this, "coinRegenInterval", _descriptor12, this);
+          _initializerDefineProperty(this, "resourceRegenInterval", _descriptor12, this);
 
-          _initializerDefineProperty(this, "spawnCostPerCoin", _descriptor13, this);
+          _initializerDefineProperty(this, "resourceRegenAmount", _descriptor13, this);
 
-          _initializerDefineProperty(this, "itemCatalog", _descriptor14, this);
+          _initializerDefineProperty(this, "spawnCostPerCoin", _descriptor14, this);
 
-          _initializerDefineProperty(this, "map01InitialMapItemCount", _descriptor15, this);
+          _initializerDefineProperty(this, "itemCatalog", _descriptor15, this);
 
-          _initializerDefineProperty(this, "map01AmbientSpawnInterval", _descriptor16, this);
+          _initializerDefineProperty(this, "map01InitialMapItemCount", _descriptor16, this);
 
           _initializerDefineProperty(this, "map01RiskLevelHint", _descriptor17, this);
 
           _initializerDefineProperty(this, "map02InitialMapItemCount", _descriptor18, this);
 
-          _initializerDefineProperty(this, "map02AmbientSpawnInterval", _descriptor19, this);
+          _initializerDefineProperty(this, "map02RiskLevelHint", _descriptor19, this);
 
-          _initializerDefineProperty(this, "map02RiskLevelHint", _descriptor20, this);
+          _initializerDefineProperty(this, "worldDropEnabled", _descriptor20, this);
 
-          _initializerDefineProperty(this, "maxBoardItemCount", _descriptor21, this);
+          _initializerDefineProperty(this, "worldDropInterval", _descriptor21, this);
 
-          _initializerDefineProperty(this, "scoreLabel", _descriptor22, this);
+          _initializerDefineProperty(this, "worldDropAmount", _descriptor22, this);
 
-          _initializerDefineProperty(this, "dropCountLabel", _descriptor23, this);
+          _initializerDefineProperty(this, "scoreLabel", _descriptor23, this);
 
-          _initializerDefineProperty(this, "spawnCountLabel", _descriptor24, this);
+          _initializerDefineProperty(this, "dropCountLabel", _descriptor24, this);
 
-          _initializerDefineProperty(this, "statusLabel", _descriptor25, this);
+          _initializerDefineProperty(this, "spawnCountLabel", _descriptor25, this);
+
+          _initializerDefineProperty(this, "statusLabel", _descriptor26, this);
+
+          _initializerDefineProperty(this, "showColliderDebug", _descriptor27, this);
 
           this._state = RoundState.Ready;
           this._sessionSpawnedCoinCount = 0;
-          this._statusText = '准备进入持续存档';
-          this._ambientSpawnProgressSeconds = 0;
-
-          _initializerDefineProperty(this, "showColliderDebug", _descriptor26, this);
+          this._statusText = 'Preparing runtime progress';
         }
 
         start() {
@@ -273,17 +280,16 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
 
           this.ensureRuntimeProgress();
           this._sessionSpawnedCoinCount = 0;
-          this._ambientSpawnProgressSeconds = 0;
           this.syncStateFromResources();
-          this.seedInitialMapItems();
           const missingPrefabs = this.getResolvedCatalog().filter(item => !item.prefab);
 
           if (missingPrefabs.length > 0) {
-            this.setStatus(`请先在 GameManager.itemCatalog 绑定 prefab: ${missingPrefabs.map(item => item.itemName).join(' / ')}`);
+            this.setStatus(`Assign prefabs in GameManager.itemCatalog: ${missingPrefabs.map(item => item.itemName).join(' / ')}`);
             return;
           }
 
-          this.setStatus(`当前地图: ${this.getCurrentMapConfig().mapName}`);
+          this.seedInitialMapItems();
+          this.setStatus(`Current map: ${this.getCurrentMapConfig().mapName}`);
         }
 
         update(deltaTime) {
@@ -293,12 +299,12 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
 
           let shouldRefreshUi = false;
 
-          if (this.tryRegenerateCoins(deltaTime)) {
+          if (this.tryRegenerateResources(deltaTime)) {
             this.syncStateFromResources();
             shouldRefreshUi = true;
           }
 
-          if (this.trySpawnAmbientMapItem(deltaTime)) {
+          if (this.trySpawnWorldDrops(deltaTime)) {
             shouldRefreshUi = true;
           }
 
@@ -308,57 +314,44 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
         }
 
         spawnCoinFromButton() {
-          const spawnCost = this.getConfiguredSpawnCost();
           const currentSpawnItem = this.getCurrentSpawnItem();
 
           if (!this.coinSpawner) {
             warn('[GameManager] coinSpawner is not assigned.');
-            this.setStatus('缺少 CoinSpawner 引用');
+            this.setStatus('Missing CoinSpawner reference');
             return false;
           }
 
           if (!currentSpawnItem) {
-            this.setStatus('当前没有可投放物，请先检查图鉴配置');
+            this.setStatus('No active spawn item is currently available');
             return false;
           }
 
-          if (runtimeProgress.currentCoins < spawnCost) {
-            this.syncStateFromResources();
-            this.setStatus('投放资源不足');
-            return false;
-          }
+          const spawnedItem = this.spawnCatalogItem(currentSpawnItem);
 
-          const spawnedCoin = this.coinSpawner.spawnCoin(currentSpawnItem.prefab);
-
-          if (!spawnedCoin) {
-            this.setStatus('投放失败');
+          if (!spawnedItem) {
+            this.setStatus('Spawn failed');
             return false;
           }
 
           this._sessionSpawnedCoinCount += 1;
-          runtimeProgress.currentCoins -= spawnCost;
+          runtimeProgress.currentCoins -= this.getConfiguredSpawnCost();
           this.syncStateFromResources();
-
-          if (runtimeProgress.currentCoins < spawnCost) {
-            this.setStatus(`投出 ${currentSpawnItem.itemName} 后，投放资源不足`);
-            return true;
-          }
-
-          this.setStatus(`已投放 ${currentSpawnItem.itemName}`);
+          this.setStatus(`Spawned ${currentSpawnItem.itemName}, resource ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins}`);
           return true;
         }
 
-        resolveCoinDrop(coin) {
-          if (!coin.tryMarkScored()) {
+        resolveCoinDrop(item) {
+          if (!item.tryMarkScored()) {
             return;
           }
 
-          const collectedItem = this.findResolvedCatalogItemById(coin.itemId);
+          const collectedItem = this.findResolvedCatalogItemById(item.itemId);
 
           if (!collectedItem) {
-            warn(`[GameManager] Dropped item is missing catalog registration: ${coin.itemId || coin.node.name}`);
-            this.setStatus(`掉落物未登记: ${coin.itemTypeLabel}`);
-            coin.onScored();
+            warn(`[GameManager] Dropped item is missing catalog registration: ${item.itemId || item.node.name}`);
+            this.setStatus(`Dropped item is not registered: ${item.itemTypeLabel}`);
+            item.onScored();
             return;
           }
 
@@ -366,6 +359,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           progress.ownedCount += 1;
           progress.isDiscovered = true;
           runtimeProgress.lastDroppedItemId = collectedItem.itemId;
+          runtimeProgress.currentCoins += collectedItem.value;
           let unlockedItemName = '';
 
           if (!progress.isSpawnUnlocked && progress.ownedCount >= collectedItem.unlockRequiredCount) {
@@ -375,14 +369,15 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
 
           this.ensureRuntimeProgress();
           this.syncStateFromResources();
-          coin.onScored();
+          item.onScored();
+          const rewardText = `resource +${collectedItem.value}`;
 
           if (unlockedItemName) {
-            this.setStatus(`收到 ${collectedItem.itemName} x1，已解锁可投放: ${unlockedItemName}`);
+            this.setStatus(`Received ${collectedItem.itemName} x1, ${rewardText}, owned ${progress.ownedCount}, unlocked spawn: ${unlockedItemName}`);
             return;
           }
 
-          this.setStatus(`收到 ${collectedItem.itemName} x1，口袋 ${progress.ownedCount}`);
+          this.setStatus(`Received ${collectedItem.itemName} x1, ${rewardText}, owned ${progress.ownedCount}`);
         }
 
         restartGame() {
@@ -390,7 +385,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
 
           if (!currentScene) {
             warn('[GameManager] restartGame failed: current scene is missing.');
-            this.setStatus('重开失败：当前场景不存在');
+            this.setStatus('Restart failed: current scene is missing');
             return;
           }
 
@@ -410,7 +405,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
         }
 
         canSpawnCoin() {
-          return !!this.coinSpawner && !!this.getCurrentSpawnItem() && runtimeProgress.currentCoins >= this.getConfiguredSpawnCost();
+          return !!this.coinSpawner && !!this.getCurrentSpawnItem();
         }
 
         onSpawnItemButtonClicked(_event, itemId) {
@@ -421,23 +416,23 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           const nextItem = this.findResolvedCatalogItemById(itemId);
 
           if (!nextItem) {
-            this.setStatus(`未找到投放物: ${itemId}`);
+            this.setStatus(`Unknown spawn item: ${itemId}`);
             return false;
           }
 
           if (!nextItem.isSpawnUnlocked) {
-            this.setStatus(`${nextItem.itemName} 还没有解锁投放`);
+            this.setStatus(`${nextItem.itemName} is not unlocked for spawning yet`);
             return false;
           }
 
           if (!nextItem.prefab) {
-            this.setStatus(`${nextItem.itemName} 缺少 prefab 绑定`);
+            this.setStatus(`${nextItem.itemName} is missing its prefab`);
             return false;
           }
 
           runtimeProgress.currentSpawnItemId = nextItem.itemId;
           this.refreshUi();
-          this.setStatus(`当前投放物切换为 ${nextItem.itemName}`);
+          this.setStatus(`Active spawn item switched to ${nextItem.itemName}`);
           return true;
         }
 
@@ -447,17 +442,16 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           if (!runtimeProgress.initialized) {
             runtimeProgress.initialized = true;
             runtimeProgress.currentMapId = this.getMapIdFromSelection(this.mapSelection);
-            runtimeProgress.currentCoins = this.getConfiguredInitialCoins();
             runtimeProgress.maxCoins = this.getConfiguredMaxCoins();
-            runtimeProgress.coinRegenInterval = this.getConfiguredCoinRegenInterval();
-            runtimeProgress.regenProgressSeconds = 0;
+            runtimeProgress.currentCoins = this.getConfiguredInitialCoins();
+            runtimeProgress.resourceRegenProgressSeconds = 0;
+            runtimeProgress.worldDropProgressSeconds = 0;
             runtimeProgress.currentSpawnItemId = '';
             runtimeProgress.lastDroppedItemId = '';
             runtimeProgress.itemProgress = {};
           } else {
             runtimeProgress.maxCoins = this.getConfiguredMaxCoins();
-            runtimeProgress.currentCoins = Math.max(0, runtimeProgress.currentCoins);
-            runtimeProgress.coinRegenInterval = this.getConfiguredCoinRegenInterval();
+            runtimeProgress.currentCoins = this.normalizeFiniteInteger(runtimeProgress.currentCoins, 0);
           }
 
           for (const config of catalogConfigs) {
@@ -510,12 +504,12 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
 
           if (!nextConfig) {
             warn(`[GameManager] Unknown map id: ${mapId}`);
-            this.setStatus('地图切换失败');
+            this.setStatus('Map switch failed');
             return;
           }
 
           runtimeProgress.currentMapId = mapId;
-          this._ambientSpawnProgressSeconds = 0;
+          runtimeProgress.worldDropProgressSeconds = 0;
           this.syncStateFromResources();
           const currentSceneName = (_director$getScene$na = (_director$getScene = director.getScene()) == null ? void 0 : _director$getScene.name) != null ? _director$getScene$na : '';
 
@@ -525,93 +519,108 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           }
 
           this.seedInitialMapItems();
-          this.setStatus(`已切换到 ${nextConfig.mapName}`);
+          this.setStatus(`Switched to ${nextConfig.mapName}`);
         }
 
         seedInitialMapItems() {
           const mapConfig = this.getCurrentMapConfig();
-          const initialCount = this.normalizeNonNegativeInteger(mapConfig.initialAmbientItemCount);
+          const initialCount = this.normalizeNonNegativeInteger(mapConfig.initialMapItemCount);
 
           for (let index = 0; index < initialCount; index += 1) {
-            if (!this.spawnMapPoolItem()) {
-              break;
-            }
+            this.spawnRandomWorldDrop();
           }
         }
 
-        trySpawnAmbientMapItem(deltaTime) {
-          const mapConfig = this.getCurrentMapConfig();
-          const interval = this.normalizeNonNegativeNumber(mapConfig.ambientSpawnInterval);
+        tryRegenerateResources(deltaTime) {
+          const interval = this.getConfiguredResourceRegenInterval();
+          const amount = this.getConfiguredResourceRegenAmount();
 
-          if (interval <= 0) {
-            this._ambientSpawnProgressSeconds = 0;
+          if (interval <= 0 || amount <= 0 || runtimeProgress.currentCoins >= runtimeProgress.maxCoins) {
+            runtimeProgress.resourceRegenProgressSeconds = 0;
             return false;
           }
 
-          this._ambientSpawnProgressSeconds += deltaTime;
+          runtimeProgress.resourceRegenProgressSeconds += deltaTime;
+          let regenerated = false;
+
+          while (runtimeProgress.resourceRegenProgressSeconds >= interval && runtimeProgress.currentCoins < runtimeProgress.maxCoins) {
+            runtimeProgress.resourceRegenProgressSeconds -= interval;
+            runtimeProgress.currentCoins = Math.min(runtimeProgress.maxCoins, runtimeProgress.currentCoins + amount);
+            regenerated = true;
+          }
+
+          return regenerated;
+        }
+
+        trySpawnWorldDrops(deltaTime) {
+          const interval = this.getConfiguredWorldDropInterval();
+          const amount = this.getConfiguredWorldDropAmount();
+
+          if (!this.worldDropEnabled || interval <= 0 || amount <= 0) {
+            runtimeProgress.worldDropProgressSeconds = 0;
+            return false;
+          }
+
+          runtimeProgress.worldDropProgressSeconds += deltaTime;
           let spawned = false;
 
-          while (this._ambientSpawnProgressSeconds >= interval) {
-            this._ambientSpawnProgressSeconds -= interval;
+          while (runtimeProgress.worldDropProgressSeconds >= interval) {
+            runtimeProgress.worldDropProgressSeconds -= interval;
 
-            if (!this.spawnMapPoolItem()) {
-              break;
+            for (let index = 0; index < amount; index += 1) {
+              if (this.spawnRandomWorldDrop()) {
+                spawned = true;
+              }
             }
-
-            spawned = true;
           }
 
           return spawned;
         }
 
-        spawnMapPoolItem() {
-          if (!this.coinSpawner) {
-            return false;
-          }
-
-          if (this.getBoardItemCount() >= this.getConfiguredBoardItemLimit()) {
-            return false;
-          }
-
+        spawnRandomWorldDrop(request = null) {
           const mapPoolItem = this.pickRandomMapPoolItem();
 
           if (!mapPoolItem) {
             return false;
           }
 
-          return !!this.coinSpawner.spawnCoin(mapPoolItem.prefab);
+          return !!this.spawnCatalogItem(mapPoolItem, request);
+        }
+
+        spawnCatalogItem(item, request = null) {
+          if (!this.coinSpawner || !(item != null && item.prefab)) {
+            return null;
+          }
+
+          return this.coinSpawner.spawnCoin(item.prefab, request);
         }
 
         pickRandomMapPoolItem() {
-          var _dropPool$Math$floor;
+          var _dropPool;
 
-          const dropPool = this.getResolvedCatalog().filter(item => item.allowDropOnCurrentMap && !!item.prefab);
+          const dropPool = this.getResolvedCatalog().filter(item => item.allowDropOnCurrentMap && !!item.prefab && item.weight > 0);
 
           if (dropPool.length === 0) {
             return null;
           }
 
-          return (_dropPool$Math$floor = dropPool[Math.floor(Math.random() * dropPool.length)]) != null ? _dropPool$Math$floor : null;
-        }
+          const totalWeight = dropPool.reduce((sum, item) => sum + item.weight, 0);
 
-        tryRegenerateCoins(deltaTime) {
-          const regenInterval = runtimeProgress.coinRegenInterval;
-
-          if (regenInterval <= 0 || runtimeProgress.currentCoins >= runtimeProgress.maxCoins) {
-            runtimeProgress.regenProgressSeconds = 0;
-            return false;
+          if (totalWeight <= 0) {
+            return null;
           }
 
-          runtimeProgress.regenProgressSeconds += deltaTime;
-          let regenerated = false;
+          let roll = Math.random() * totalWeight;
 
-          while (runtimeProgress.regenProgressSeconds >= regenInterval && runtimeProgress.currentCoins < runtimeProgress.maxCoins) {
-            runtimeProgress.regenProgressSeconds -= regenInterval;
-            runtimeProgress.currentCoins += 1;
-            regenerated = true;
+          for (const item of dropPool) {
+            roll -= item.weight;
+
+            if (roll < 0) {
+              return item;
+            }
           }
 
-          return regenerated;
+          return (_dropPool = dropPool[dropPool.length - 1]) != null ? _dropPool : null;
         }
 
         syncStateFromResources() {
@@ -620,8 +629,8 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
             return;
           }
 
-          if (runtimeProgress.currentCoins < this.getConfiguredSpawnCost()) {
-            this._state = RoundState.NoCoins;
+          if (runtimeProgress.currentCoins < 0) {
+            this._state = RoundState.LowResources;
             return;
           }
 
@@ -635,25 +644,26 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           const latestDroppedItem = runtimeProgress.lastDroppedItemId ? this.findResolvedCatalogItemById(runtimeProgress.lastDroppedItemId) : null;
           const unlockedItems = resolvedCatalog.filter(item => item.isSpawnUnlocked).map(item => item.itemName);
           const pocketSummary = resolvedCatalog.map(item => `${item.itemName} ${item.ownedCount}`).join(' / ');
+          const worldDropSummary = this.worldDropEnabled ? `${this.getConfiguredWorldDropAmount()} items / ${this.getConfiguredWorldDropInterval()}s` : 'disabled';
 
           if (this.scoreLabel) {
-            this.scoreLabel.string = `投放资源: ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins} | 自动恢复 ${runtimeProgress.coinRegenInterval}s`;
+            this.scoreLabel.string = `Resource: ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins} | Regen ${this.getConfiguredResourceRegenAmount()} / ${this.getConfiguredResourceRegenInterval()}s`;
           }
 
           if (this.dropCountLabel) {
             var _currentSpawnItem$ite;
 
-            this.dropCountLabel.string = `当前投放物: ${(_currentSpawnItem$ite = currentSpawnItem == null ? void 0 : currentSpawnItem.itemName) != null ? _currentSpawnItem$ite : '未设置'} | 已解锁: ${unlockedItems.join(' / ') || '无'}`;
+            this.dropCountLabel.string = `Spawn item: ${(_currentSpawnItem$ite = currentSpawnItem == null ? void 0 : currentSpawnItem.itemName) != null ? _currentSpawnItem$ite : 'None'} | World drop: ${worldDropSummary}`;
           }
 
           if (this.spawnCountLabel) {
             var _latestDroppedItem$it;
 
-            this.spawnCountLabel.string = `最近掉落: ${(_latestDroppedItem$it = latestDroppedItem == null ? void 0 : latestDroppedItem.itemName) != null ? _latestDroppedItem$it : '暂无'} | 口袋: ${pocketSummary || '暂无物品'}`;
+            this.spawnCountLabel.string = `Latest drop: ${(_latestDroppedItem$it = latestDroppedItem == null ? void 0 : latestDroppedItem.itemName) != null ? _latestDroppedItem$it : 'None'} | Collection: ${pocketSummary || 'None'} | Unlocked: ${unlockedItems.join(' / ') || 'None'}`;
           }
 
           if (this.statusLabel) {
-            this.statusLabel.string = `地图: ${mapConfig.mapName} | ${this.getStateText()} | ${this._statusText}`;
+            this.statusLabel.string = `Map: ${mapConfig.mapName} | ${this.getStateText()} | ${this._statusText}`;
           }
         }
 
@@ -685,21 +695,19 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           if (mapId === 'Map02') {
             return {
               mapId: 'Map02',
-              mapName: 'Map02 预留地图',
+              mapName: 'Map02 Reserve',
               sceneName: SHARED_SCENE_NAME,
-              ambientSpawnInterval: this.normalizeNonNegativeNumber(this.map02AmbientSpawnInterval, 6),
-              initialAmbientItemCount: this.normalizeNonNegativeInteger(this.map02InitialMapItemCount, 3),
-              riskLevelHint: this.normalizePositiveNumber(this.map02RiskLevelHint, 2)
+              initialMapItemCount: this.normalizeNonNegativeInteger(this.map02InitialMapItemCount, 3),
+              riskLevelHint: this.normalizeNonNegativeNumber(this.map02RiskLevelHint, 2)
             };
           }
 
           return {
             mapId: 'Map01',
-            mapName: 'Map01 基础地图',
+            mapName: 'Map01 Base',
             sceneName: SHARED_SCENE_NAME,
-            ambientSpawnInterval: this.normalizeNonNegativeNumber(this.map01AmbientSpawnInterval, 8),
-            initialAmbientItemCount: this.normalizeNonNegativeInteger(this.map01InitialMapItemCount, 2),
-            riskLevelHint: this.normalizePositiveNumber(this.map01RiskLevelHint, 1)
+            initialMapItemCount: this.normalizeNonNegativeInteger(this.map01InitialMapItemCount, 2),
+            riskLevelHint: this.normalizeNonNegativeNumber(this.map01RiskLevelHint, 1)
           };
         }
 
@@ -710,14 +718,14 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
         getStateText() {
           switch (this._state) {
             case RoundState.Playing:
-              return '状态: 进行中';
+              return 'State: Playing';
 
-            case RoundState.NoCoins:
-              return '状态: 资源不足';
+            case RoundState.LowResources:
+              return 'State: Resource below zero, spawning still allowed';
 
             case RoundState.Ready:
             default:
-              return '状态: 准备中';
+              return 'State: Ready';
           }
         }
 
@@ -781,7 +789,9 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
             error: Error()
           }), ItemPrefabConfig) : ItemPrefabConfig).readFromPrefab(config.prefab, config.itemId, fallbackName);
           return {
-            itemName: prefabConfig.itemName || fallbackName
+            itemName: prefabConfig.itemName || fallbackName,
+            value: this.normalizeNonNegativeInteger(prefabConfig.value, 1),
+            weight: this.normalizeNonNegativeNumber(prefabConfig.weight, 1)
           };
         }
 
@@ -805,16 +815,6 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           return currentSpawnItem;
         }
 
-        getBoardItemCount() {
-          var _this$coinSpawner$coi, _this$coinSpawner;
-
-          return (_this$coinSpawner$coi = (_this$coinSpawner = this.coinSpawner) == null || (_this$coinSpawner = _this$coinSpawner.coinRoot) == null ? void 0 : _this$coinSpawner.children.length) != null ? _this$coinSpawner$coi : 0;
-        }
-
-        getConfiguredBoardItemLimit() {
-          return Math.max(1, this.normalizeNonNegativeInteger(this.maxBoardItemCount, 12));
-        }
-
         getConfiguredInitialCoins() {
           return this.normalizeNonNegativeInteger(this.startCoins);
         }
@@ -823,8 +823,20 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           return this.normalizeNonNegativeInteger(this.maxCoins);
         }
 
-        getConfiguredCoinRegenInterval() {
-          return this.normalizeNonNegativeNumber(this.coinRegenInterval);
+        getConfiguredResourceRegenInterval() {
+          return this.normalizeNonNegativeNumber(this.resourceRegenInterval, 1);
+        }
+
+        getConfiguredResourceRegenAmount() {
+          return this.normalizeNonNegativeInteger(this.resourceRegenAmount, 1);
+        }
+
+        getConfiguredWorldDropInterval() {
+          return this.normalizeNonNegativeNumber(this.worldDropInterval, 5);
+        }
+
+        getConfiguredWorldDropAmount() {
+          return this.normalizeNonNegativeInteger(this.worldDropAmount, 1);
         }
 
         getConfiguredSpawnCost() {
@@ -855,14 +867,6 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           return spaced.charAt(0).toUpperCase() + spaced.slice(1);
         }
 
-        normalizePositiveNumber(value, fallback = 1) {
-          if (!Number.isFinite(value)) {
-            return fallback;
-          }
-
-          return Math.max(0, value);
-        }
-
         normalizeNonNegativeNumber(value, fallback = 0) {
           if (!Number.isFinite(value)) {
             return fallback;
@@ -877,6 +881,14 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           }
 
           return Math.max(0, Math.round(value));
+        }
+
+        normalizeFiniteInteger(value, fallback = 0) {
+          if (!Number.isFinite(value)) {
+            return fallback;
+          }
+
+          return Math.round(value);
         }
 
       }, (_descriptor8 = _applyDecoratedDescriptor(_class5.prototype, "coinSpawner", [_dec8], {
@@ -907,40 +919,40 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
         initializer: function () {
           return 300;
         }
-      }), _descriptor12 = _applyDecoratedDescriptor(_class5.prototype, "coinRegenInterval", [_dec12], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function () {
-          return 15;
-        }
-      }), _descriptor13 = _applyDecoratedDescriptor(_class5.prototype, "spawnCostPerCoin", [_dec13], {
+      }), _descriptor12 = _applyDecoratedDescriptor(_class5.prototype, "resourceRegenInterval", [_dec12], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 1;
         }
-      }), _descriptor14 = _applyDecoratedDescriptor(_class5.prototype, "itemCatalog", [_dec14], {
+      }), _descriptor13 = _applyDecoratedDescriptor(_class5.prototype, "resourceRegenAmount", [_dec13], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function () {
+          return 1;
+        }
+      }), _descriptor14 = _applyDecoratedDescriptor(_class5.prototype, "spawnCostPerCoin", [_dec14], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function () {
+          return 1;
+        }
+      }), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "itemCatalog", [_dec15], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return [];
         }
-      }), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "map01InitialMapItemCount", [_dec15], {
+      }), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "map01InitialMapItemCount", [_dec16], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 2;
-        }
-      }), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "map01AmbientSpawnInterval", [_dec16], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function () {
-          return 8;
         }
       }), _descriptor17 = _applyDecoratedDescriptor(_class5.prototype, "map01RiskLevelHint", [_dec17], {
         configurable: true,
@@ -956,56 +968,63 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
         initializer: function () {
           return 3;
         }
-      }), _descriptor19 = _applyDecoratedDescriptor(_class5.prototype, "map02AmbientSpawnInterval", [_dec19], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function () {
-          return 6;
-        }
-      }), _descriptor20 = _applyDecoratedDescriptor(_class5.prototype, "map02RiskLevelHint", [_dec20], {
+      }), _descriptor19 = _applyDecoratedDescriptor(_class5.prototype, "map02RiskLevelHint", [_dec19], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return 2;
         }
-      }), _descriptor21 = _applyDecoratedDescriptor(_class5.prototype, "maxBoardItemCount", [_dec21], {
+      }), _descriptor20 = _applyDecoratedDescriptor(_class5.prototype, "worldDropEnabled", [_dec20], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
-          return 12;
+          return true;
         }
-      }), _descriptor22 = _applyDecoratedDescriptor(_class5.prototype, "scoreLabel", [_dec22], {
+      }), _descriptor21 = _applyDecoratedDescriptor(_class5.prototype, "worldDropInterval", [_dec21], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
-          return null;
+          return 5;
         }
-      }), _descriptor23 = _applyDecoratedDescriptor(_class5.prototype, "dropCountLabel", [_dec23], {
+      }), _descriptor22 = _applyDecoratedDescriptor(_class5.prototype, "worldDropAmount", [_dec22], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
-          return null;
+          return 1;
         }
-      }), _descriptor24 = _applyDecoratedDescriptor(_class5.prototype, "spawnCountLabel", [_dec24], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function () {
-          return null;
-        }
-      }), _descriptor25 = _applyDecoratedDescriptor(_class5.prototype, "statusLabel", [_dec25], {
+      }), _descriptor23 = _applyDecoratedDescriptor(_class5.prototype, "scoreLabel", [_dec23], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function () {
           return null;
         }
-      }), _descriptor26 = _applyDecoratedDescriptor(_class5.prototype, "showColliderDebug", [property], {
+      }), _descriptor24 = _applyDecoratedDescriptor(_class5.prototype, "dropCountLabel", [_dec24], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function () {
+          return null;
+        }
+      }), _descriptor25 = _applyDecoratedDescriptor(_class5.prototype, "spawnCountLabel", [_dec25], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function () {
+          return null;
+        }
+      }), _descriptor26 = _applyDecoratedDescriptor(_class5.prototype, "statusLabel", [_dec26], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function () {
+          return null;
+        }
+      }), _descriptor27 = _applyDecoratedDescriptor(_class5.prototype, "showColliderDebug", [property], {
         configurable: true,
         enumerable: true,
         writable: true,

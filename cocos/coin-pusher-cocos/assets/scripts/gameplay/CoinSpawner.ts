@@ -6,6 +6,11 @@ const LOCAL_RIGHT = new Vec3(1, 0, 0);
 const LOCAL_UP = new Vec3(0, 1, 0);
 const LOCAL_FORWARD = new Vec3(0, 0, 1);
 
+export interface CoinSpawnRequest {
+    worldPosition?: Vec3 | null;
+    randomizeAroundPosition?: boolean;
+}
+
 function randomRange(min: number, max: number): number {
     return min + Math.random() * (max - min);
 }
@@ -68,7 +73,7 @@ export class CoinSpawner extends Component {
     private readonly _spawnTorque = new Vec3();
     private readonly _itemNormal = new Vec3();
 
-    public spawnCoin(itemPrefab: Prefab | null): CoinBehaviour | null {
+    public spawnCoin(itemPrefab: Prefab | null, request: CoinSpawnRequest | null = null): CoinBehaviour | null {
         if (!itemPrefab) {
             warn('[CoinSpawner] item prefab is not assigned.');
             return null;
@@ -78,14 +83,15 @@ export class CoinSpawner extends Component {
         const parent = this.coinRoot ?? this.node;
         parent.addChild(itemNode);
 
-        const basePosition = this.spawnPoint ? this.spawnPoint.worldPosition : this.node.worldPosition;
+        const basePosition = this.resolveBasePosition(request);
+        const shouldRandomize = this.shouldRandomizePosition(request);
         const rotationSource = this.spawnPoint ?? this.node;
         rotationSource.getWorldRotation(this._spawnBaseRotation);
 
         itemNode.setWorldPosition(new Vec3(
-            basePosition.x + randomRange(-this.spawnSpreadX, this.spawnSpreadX),
+            basePosition.x + (shouldRandomize ? randomRange(-this.spawnSpreadX, this.spawnSpreadX) : 0),
             basePosition.y + this.spawnHeightOffset,
-            basePosition.z + randomRange(-this.spawnSpreadZ, this.spawnSpreadZ),
+            basePosition.z + (shouldRandomize ? randomRange(-this.spawnSpreadZ, this.spawnSpreadZ) : 0),
         ));
 
         const tiltX = this.baseTiltXDegrees + randomRange(-this.randomTiltXDegrees, this.randomTiltXDegrees);
@@ -130,5 +136,21 @@ export class CoinSpawner extends Component {
 
         this._nextCoinId += 1;
         return item;
+    }
+
+    private resolveBasePosition(request: CoinSpawnRequest | null): Vec3 {
+        if (request?.worldPosition) {
+            return request.worldPosition;
+        }
+
+        return this.spawnPoint ? this.spawnPoint.worldPosition : this.node.worldPosition;
+    }
+
+    private shouldRandomizePosition(request: CoinSpawnRequest | null): boolean {
+        if (typeof request?.randomizeAroundPosition === 'boolean') {
+            return request.randomizeAroundPosition;
+        }
+
+        return !request?.worldPosition;
     }
 }

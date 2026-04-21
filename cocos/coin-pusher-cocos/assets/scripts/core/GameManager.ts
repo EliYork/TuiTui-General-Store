@@ -1,6 +1,17 @@
-import { _decorator, Component, director, Enum, Event, Label, Prefab, warn, PhysicsSystem, EPhysicsDrawFlags } from 'cc';
+import {
+    _decorator,
+    Component,
+    director,
+    Enum,
+    Event,
+    Label,
+    Prefab,
+    warn,
+    PhysicsSystem,
+    EPhysicsDrawFlags,
+} from 'cc';
 import { CoinBehaviour } from '../gameplay/CoinBehaviour';
-import { CoinSpawner } from '../gameplay/CoinSpawner';
+import { CoinSpawner, CoinSpawnRequest } from '../gameplay/CoinSpawner';
 import { ItemPrefabConfig, ItemPrefabRuntimeConfig } from '../gameplay/ItemPrefabConfig';
 
 const { ccclass, property } = _decorator;
@@ -12,7 +23,7 @@ type ResolvedPrefabMetadata = Omit<ItemPrefabRuntimeConfig, 'itemId'>;
 enum RoundState {
     Ready = 'Ready',
     Playing = 'Playing',
-    NoCoins = 'NoCoins',
+    LowResources = 'LowResources',
 }
 
 enum MapSelection {
@@ -48,8 +59,7 @@ interface MapConfig {
     mapId: MapId;
     mapName: string;
     sceneName: string;
-    ambientSpawnInterval: number;
-    initialAmbientItemCount: number;
+    initialMapItemCount: number;
     riskLevelHint: number;
 }
 
@@ -64,8 +74,8 @@ interface RuntimePersistentProgress {
     currentMapId: MapId;
     currentCoins: number;
     maxCoins: number;
-    coinRegenInterval: number;
-    regenProgressSeconds: number;
+    resourceRegenProgressSeconds: number;
+    worldDropProgressSeconds: number;
     currentSpawnItemId: string;
     lastDroppedItemId: string;
     itemProgress: Record<string, RuntimeItemProgress>;
@@ -124,8 +134,8 @@ const runtimeProgress: RuntimePersistentProgress = {
     currentMapId: 'Map01',
     currentCoins: 0,
     maxCoins: 0,
-    coinRegenInterval: 0,
-    regenProgressSeconds: 0,
+    resourceRegenProgressSeconds: 0,
+    worldDropProgressSeconds: 0,
     currentSpawnItemId: '',
     lastDroppedItemId: '',
     itemProgress: {},
@@ -139,26 +149,26 @@ export class GameManager extends Component {
     @property({ type: Enum(MapSelection), tooltip: 'Inspector map selection used on first boot and by applyInspectorMapSelection().' })
     public mapSelection = MapSelection.Map01;
 
-    @property({ tooltip: 'Initial active-spawn resource written into the persistent runtime data on first boot.' })
+    @property({ tooltip: 'Initial active-spawn resource written into the runtime progress on first boot.' })
     public startCoins = 300;
 
-    @property({ tooltip: 'Natural regeneration cap. Active-spawn resource may exceed this only if you later add external rewards.' })
+    @property({ tooltip: 'Resource cap used only by automatic regeneration. Drop rewards may exceed this value.' })
     public maxCoins = 300;
 
-    @property({ tooltip: 'Seconds needed to regenerate 1 active-spawn resource while currentCoins is below maxCoins.' })
-    public coinRegenInterval = 15;
+    @property({ tooltip: 'Seconds between each automatic resource regeneration tick.' })
+    public resourceRegenInterval = 1;
 
-    @property({ tooltip: 'How many active-spawn resources are consumed per spawn button click.' })
+    @property({ tooltip: 'How much resource is restored on each regeneration tick.' })
+    public resourceRegenAmount = 1;
+
+    @property({ tooltip: 'How much resource is consumed per manual spawn. This is tracked, but no longer blocks spawning.' })
     public spawnCostPerCoin = 1;
 
-    @property({ type: [CatalogItemConfig], tooltip: 'Logic-only item catalog. Shape and collider parameters now live on each item prefab.' })
+    @property({ type: [CatalogItemConfig], tooltip: 'Logic-only item catalog. Each item prefab is a complete runtime object.' })
     public itemCatalog: CatalogItemConfig[] = [];
 
     @property({ tooltip: 'How many map-pool items should be seeded onto the board when Map01 starts.' })
     public map01InitialMapItemCount = 2;
-
-    @property({ tooltip: 'Seconds between automatic Map01 map-pool spawns. Set 0 to disable ambient map refresh.' })
-    public map01AmbientSpawnInterval = 8;
 
     @property({ tooltip: 'Map01 future leak-risk hint. Reserved for later board-difficulty tuning.' })
     public map01RiskLevelHint = 1;
@@ -166,14 +176,17 @@ export class GameManager extends Component {
     @property({ tooltip: 'How many map-pool items should be seeded onto the board when Map02 starts.' })
     public map02InitialMapItemCount = 3;
 
-    @property({ tooltip: 'Seconds between automatic Map02 map-pool spawns. Set 0 to disable ambient map refresh.' })
-    public map02AmbientSpawnInterval = 6;
-
     @property({ tooltip: 'Map02 future leak-risk hint. Reserved for later board-difficulty tuning.' })
     public map02RiskLevelHint = 2;
 
-    @property({ tooltip: 'Simple board safety cap so ambient map refresh does not flood the scene while idle.' })
-    public maxBoardItemCount = 12;
+    @property({ tooltip: 'Enable or disable timed world drops without affecting manual spawn or resource recovery.' })
+    public worldDropEnabled = true;
+
+    @property({ tooltip: 'Seconds between each timed world drop batch.' })
+    public worldDropInterval = 5;
+
+    @property({ tooltip: 'How many random map-pool items are spawned each time the world drop timer fires.' })
+    public worldDropAmount = 1;
 
     @property(Label)
     public scoreLabel: Label | null = null;
@@ -187,37 +200,35 @@ export class GameManager extends Component {
     @property(Label)
     public statusLabel: Label | null = null;
 
+    @property
+    public showColliderDebug = false;
+
     private _state = RoundState.Ready;
     private _sessionSpawnedCoinCount = 0;
-    private _statusText = '准备进入持续存档';
-    private _ambientSpawnProgressSeconds = 0;
+    private _statusText = 'Preparing runtime progress';
 
-	@property
-	public showColliderDebug = false;
+    protected start(): void {
+        PhysicsSystem.instance.enable = true;
 
-	protected start(): void {
-		PhysicsSystem.instance.enable = true;
+        if (this.showColliderDebug) {
+            PhysicsSystem.instance.debugDrawFlags =
+                EPhysicsDrawFlags.WIRE_FRAME | EPhysicsDrawFlags.AABB;
+        } else {
+            PhysicsSystem.instance.debugDrawFlags = 0;
+        }
 
-		if (this.showColliderDebug) {
-			PhysicsSystem.instance.debugDrawFlags =
-				EPhysicsDrawFlags.WIRE_FRAME | EPhysicsDrawFlags.AABB;
-		} else {
-			PhysicsSystem.instance.debugDrawFlags = 0;
-		}
-		
         this.ensureRuntimeProgress();
         this._sessionSpawnedCoinCount = 0;
-        this._ambientSpawnProgressSeconds = 0;
         this.syncStateFromResources();
-        this.seedInitialMapItems();
 
         const missingPrefabs = this.getResolvedCatalog().filter((item) => !item.prefab);
         if (missingPrefabs.length > 0) {
-            this.setStatus(`请先在 GameManager.itemCatalog 绑定 prefab: ${missingPrefabs.map((item) => item.itemName).join(' / ')}`);
+            this.setStatus(`Assign prefabs in GameManager.itemCatalog: ${missingPrefabs.map((item) => item.itemName).join(' / ')}`);
             return;
         }
 
-        this.setStatus(`当前地图: ${this.getCurrentMapConfig().mapName}`);
+        this.seedInitialMapItems();
+        this.setStatus(`Current map: ${this.getCurrentMapConfig().mapName}`);
     }
 
     protected update(deltaTime: number): void {
@@ -227,12 +238,12 @@ export class GameManager extends Component {
 
         let shouldRefreshUi = false;
 
-        if (this.tryRegenerateCoins(deltaTime)) {
+        if (this.tryRegenerateResources(deltaTime)) {
             this.syncStateFromResources();
             shouldRefreshUi = true;
         }
 
-        if (this.trySpawnAmbientMapItem(deltaTime)) {
+        if (this.trySpawnWorldDrops(deltaTime)) {
             shouldRefreshUi = true;
         }
 
@@ -242,55 +253,41 @@ export class GameManager extends Component {
     }
 
     public spawnCoinFromButton(): boolean {
-        const spawnCost = this.getConfiguredSpawnCost();
         const currentSpawnItem = this.getCurrentSpawnItem();
-
         if (!this.coinSpawner) {
             warn('[GameManager] coinSpawner is not assigned.');
-            this.setStatus('缺少 CoinSpawner 引用');
+            this.setStatus('Missing CoinSpawner reference');
             return false;
         }
 
         if (!currentSpawnItem) {
-            this.setStatus('当前没有可投放物，请先检查图鉴配置');
+            this.setStatus('No active spawn item is currently available');
             return false;
         }
 
-        if (runtimeProgress.currentCoins < spawnCost) {
-            this.syncStateFromResources();
-            this.setStatus('投放资源不足');
-            return false;
-        }
-
-        const spawnedCoin = this.coinSpawner.spawnCoin(currentSpawnItem.prefab);
-        if (!spawnedCoin) {
-            this.setStatus('投放失败');
+        const spawnedItem = this.spawnCatalogItem(currentSpawnItem);
+        if (!spawnedItem) {
+            this.setStatus('Spawn failed');
             return false;
         }
 
         this._sessionSpawnedCoinCount += 1;
-        runtimeProgress.currentCoins -= spawnCost;
+        runtimeProgress.currentCoins -= this.getConfiguredSpawnCost();
         this.syncStateFromResources();
-
-        if (runtimeProgress.currentCoins < spawnCost) {
-            this.setStatus(`投出 ${currentSpawnItem.itemName} 后，投放资源不足`);
-            return true;
-        }
-
-        this.setStatus(`已投放 ${currentSpawnItem.itemName}`);
+        this.setStatus(`Spawned ${currentSpawnItem.itemName}, resource ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins}`);
         return true;
     }
 
-    public resolveCoinDrop(coin: CoinBehaviour): void {
-        if (!coin.tryMarkScored()) {
+    public resolveCoinDrop(item: CoinBehaviour): void {
+        if (!item.tryMarkScored()) {
             return;
         }
 
-        const collectedItem = this.findResolvedCatalogItemById(coin.itemId);
+        const collectedItem = this.findResolvedCatalogItemById(item.itemId);
         if (!collectedItem) {
-            warn(`[GameManager] Dropped item is missing catalog registration: ${coin.itemId || coin.node.name}`);
-            this.setStatus(`掉落物未登记: ${coin.itemTypeLabel}`);
-            coin.onScored();
+            warn(`[GameManager] Dropped item is missing catalog registration: ${item.itemId || item.node.name}`);
+            this.setStatus(`Dropped item is not registered: ${item.itemTypeLabel}`);
+            item.onScored();
             return;
         }
 
@@ -298,6 +295,7 @@ export class GameManager extends Component {
         progress.ownedCount += 1;
         progress.isDiscovered = true;
         runtimeProgress.lastDroppedItemId = collectedItem.itemId;
+        runtimeProgress.currentCoins += collectedItem.value;
 
         let unlockedItemName = '';
         if (!progress.isSpawnUnlocked && progress.ownedCount >= collectedItem.unlockRequiredCount) {
@@ -307,21 +305,24 @@ export class GameManager extends Component {
 
         this.ensureRuntimeProgress();
         this.syncStateFromResources();
-        coin.onScored();
+        item.onScored();
 
+        const rewardText = `resource +${collectedItem.value}`;
         if (unlockedItemName) {
-            this.setStatus(`收到 ${collectedItem.itemName} x1，已解锁可投放: ${unlockedItemName}`);
+            this.setStatus(
+                `Received ${collectedItem.itemName} x1, ${rewardText}, owned ${progress.ownedCount}, unlocked spawn: ${unlockedItemName}`,
+            );
             return;
         }
 
-        this.setStatus(`收到 ${collectedItem.itemName} x1，口袋 ${progress.ownedCount}`);
+        this.setStatus(`Received ${collectedItem.itemName} x1, ${rewardText}, owned ${progress.ownedCount}`);
     }
 
     public restartGame(): void {
         const currentScene = director.getScene();
         if (!currentScene) {
             warn('[GameManager] restartGame failed: current scene is missing.');
-            this.setStatus('重开失败：当前场景不存在');
+            this.setStatus('Restart failed: current scene is missing');
             return;
         }
 
@@ -341,7 +342,7 @@ export class GameManager extends Component {
     }
 
     public canSpawnCoin(): boolean {
-        return !!this.coinSpawner && !!this.getCurrentSpawnItem() && runtimeProgress.currentCoins >= this.getConfiguredSpawnCost();
+        return !!this.coinSpawner && !!this.getCurrentSpawnItem();
     }
 
     public onSpawnItemButtonClicked(_event: Event | null, itemId: string): void {
@@ -351,23 +352,23 @@ export class GameManager extends Component {
     public selectSpawnItemById(itemId: string): boolean {
         const nextItem = this.findResolvedCatalogItemById(itemId);
         if (!nextItem) {
-            this.setStatus(`未找到投放物: ${itemId}`);
+            this.setStatus(`Unknown spawn item: ${itemId}`);
             return false;
         }
 
         if (!nextItem.isSpawnUnlocked) {
-            this.setStatus(`${nextItem.itemName} 还没有解锁投放`);
+            this.setStatus(`${nextItem.itemName} is not unlocked for spawning yet`);
             return false;
         }
 
         if (!nextItem.prefab) {
-            this.setStatus(`${nextItem.itemName} 缺少 prefab 绑定`);
+            this.setStatus(`${nextItem.itemName} is missing its prefab`);
             return false;
         }
 
         runtimeProgress.currentSpawnItemId = nextItem.itemId;
         this.refreshUi();
-        this.setStatus(`当前投放物切换为 ${nextItem.itemName}`);
+        this.setStatus(`Active spawn item switched to ${nextItem.itemName}`);
         return true;
     }
 
@@ -377,17 +378,16 @@ export class GameManager extends Component {
         if (!runtimeProgress.initialized) {
             runtimeProgress.initialized = true;
             runtimeProgress.currentMapId = this.getMapIdFromSelection(this.mapSelection);
-            runtimeProgress.currentCoins = this.getConfiguredInitialCoins();
             runtimeProgress.maxCoins = this.getConfiguredMaxCoins();
-            runtimeProgress.coinRegenInterval = this.getConfiguredCoinRegenInterval();
-            runtimeProgress.regenProgressSeconds = 0;
+            runtimeProgress.currentCoins = this.getConfiguredInitialCoins();
+            runtimeProgress.resourceRegenProgressSeconds = 0;
+            runtimeProgress.worldDropProgressSeconds = 0;
             runtimeProgress.currentSpawnItemId = '';
             runtimeProgress.lastDroppedItemId = '';
             runtimeProgress.itemProgress = {};
         } else {
             runtimeProgress.maxCoins = this.getConfiguredMaxCoins();
-            runtimeProgress.currentCoins = Math.max(0, runtimeProgress.currentCoins);
-            runtimeProgress.coinRegenInterval = this.getConfiguredCoinRegenInterval();
+            runtimeProgress.currentCoins = this.normalizeFiniteInteger(runtimeProgress.currentCoins, 0);
         }
 
         for (const config of catalogConfigs) {
@@ -434,12 +434,12 @@ export class GameManager extends Component {
         const nextConfig = this.getMapConfig(mapId);
         if (!nextConfig) {
             warn(`[GameManager] Unknown map id: ${mapId}`);
-            this.setStatus('地图切换失败');
+            this.setStatus('Map switch failed');
             return;
         }
 
         runtimeProgress.currentMapId = mapId;
-        this._ambientSpawnProgressSeconds = 0;
+        runtimeProgress.worldDropProgressSeconds = 0;
         this.syncStateFromResources();
 
         const currentSceneName = director.getScene()?.name ?? '';
@@ -449,88 +449,105 @@ export class GameManager extends Component {
         }
 
         this.seedInitialMapItems();
-        this.setStatus(`已切换到 ${nextConfig.mapName}`);
+        this.setStatus(`Switched to ${nextConfig.mapName}`);
     }
 
     private seedInitialMapItems(): void {
         const mapConfig = this.getCurrentMapConfig();
-        const initialCount = this.normalizeNonNegativeInteger(mapConfig.initialAmbientItemCount);
-
+        const initialCount = this.normalizeNonNegativeInteger(mapConfig.initialMapItemCount);
         for (let index = 0; index < initialCount; index += 1) {
-            if (!this.spawnMapPoolItem()) {
-                break;
-            }
+            this.spawnRandomWorldDrop();
         }
     }
 
-    private trySpawnAmbientMapItem(deltaTime: number): boolean {
-        const mapConfig = this.getCurrentMapConfig();
-        const interval = this.normalizeNonNegativeNumber(mapConfig.ambientSpawnInterval);
-        if (interval <= 0) {
-            this._ambientSpawnProgressSeconds = 0;
+    private tryRegenerateResources(deltaTime: number): boolean {
+        const interval = this.getConfiguredResourceRegenInterval();
+        const amount = this.getConfiguredResourceRegenAmount();
+        if (interval <= 0 || amount <= 0 || runtimeProgress.currentCoins >= runtimeProgress.maxCoins) {
+            runtimeProgress.resourceRegenProgressSeconds = 0;
             return false;
         }
 
-        this._ambientSpawnProgressSeconds += deltaTime;
+        runtimeProgress.resourceRegenProgressSeconds += deltaTime;
+        let regenerated = false;
+
+        while (
+            runtimeProgress.resourceRegenProgressSeconds >= interval &&
+            runtimeProgress.currentCoins < runtimeProgress.maxCoins
+        ) {
+            runtimeProgress.resourceRegenProgressSeconds -= interval;
+            runtimeProgress.currentCoins = Math.min(
+                runtimeProgress.maxCoins,
+                runtimeProgress.currentCoins + amount,
+            );
+            regenerated = true;
+        }
+
+        return regenerated;
+    }
+
+    private trySpawnWorldDrops(deltaTime: number): boolean {
+        const interval = this.getConfiguredWorldDropInterval();
+        const amount = this.getConfiguredWorldDropAmount();
+        if (!this.worldDropEnabled || interval <= 0 || amount <= 0) {
+            runtimeProgress.worldDropProgressSeconds = 0;
+            return false;
+        }
+
+        runtimeProgress.worldDropProgressSeconds += deltaTime;
         let spawned = false;
 
-        while (this._ambientSpawnProgressSeconds >= interval) {
-            this._ambientSpawnProgressSeconds -= interval;
-            if (!this.spawnMapPoolItem()) {
-                break;
+        while (runtimeProgress.worldDropProgressSeconds >= interval) {
+            runtimeProgress.worldDropProgressSeconds -= interval;
+            for (let index = 0; index < amount; index += 1) {
+                if (this.spawnRandomWorldDrop()) {
+                    spawned = true;
+                }
             }
-            spawned = true;
         }
 
         return spawned;
     }
 
-    private spawnMapPoolItem(): boolean {
-        if (!this.coinSpawner) {
-            return false;
-        }
-
-        if (this.getBoardItemCount() >= this.getConfiguredBoardItemLimit()) {
-            return false;
-        }
-
+    private spawnRandomWorldDrop(request: CoinSpawnRequest | null = null): boolean {
         const mapPoolItem = this.pickRandomMapPoolItem();
         if (!mapPoolItem) {
             return false;
         }
 
-        return !!this.coinSpawner.spawnCoin(mapPoolItem.prefab);
+        return !!this.spawnCatalogItem(mapPoolItem, request);
+    }
+
+    private spawnCatalogItem(item: ResolvedCatalogItem | null, request: CoinSpawnRequest | null = null): CoinBehaviour | null {
+        if (!this.coinSpawner || !item?.prefab) {
+            return null;
+        }
+
+        return this.coinSpawner.spawnCoin(item.prefab, request);
     }
 
     private pickRandomMapPoolItem(): ResolvedCatalogItem | null {
-        const dropPool = this.getResolvedCatalog().filter((item) => item.allowDropOnCurrentMap && !!item.prefab);
+        const dropPool = this.getResolvedCatalog().filter(
+            (item) => item.allowDropOnCurrentMap && !!item.prefab && item.weight > 0,
+        );
         if (dropPool.length === 0) {
             return null;
         }
 
-        return dropPool[Math.floor(Math.random() * dropPool.length)] ?? null;
-    }
-
-    private tryRegenerateCoins(deltaTime: number): boolean {
-        const regenInterval = runtimeProgress.coinRegenInterval;
-        if (regenInterval <= 0 || runtimeProgress.currentCoins >= runtimeProgress.maxCoins) {
-            runtimeProgress.regenProgressSeconds = 0;
-            return false;
+        const totalWeight = dropPool.reduce((sum, item) => sum + item.weight, 0);
+        if (totalWeight <= 0) {
+            return null;
         }
 
-        runtimeProgress.regenProgressSeconds += deltaTime;
-
-        let regenerated = false;
-        while (
-            runtimeProgress.regenProgressSeconds >= regenInterval &&
-            runtimeProgress.currentCoins < runtimeProgress.maxCoins
-        ) {
-            runtimeProgress.regenProgressSeconds -= regenInterval;
-            runtimeProgress.currentCoins += 1;
-            regenerated = true;
+        let roll = Math.random() * totalWeight;
+        for (const item of dropPool) {
+            roll -= item.weight;
+            if (roll < 0) {
+                return item;
+            }
         }
 
-        return regenerated;
+        return dropPool[dropPool.length - 1] ?? null;
     }
 
     private syncStateFromResources(): void {
@@ -539,8 +556,8 @@ export class GameManager extends Component {
             return;
         }
 
-        if (runtimeProgress.currentCoins < this.getConfiguredSpawnCost()) {
-            this._state = RoundState.NoCoins;
+        if (runtimeProgress.currentCoins < 0) {
+            this._state = RoundState.LowResources;
             return;
         }
 
@@ -556,21 +573,24 @@ export class GameManager extends Component {
             : null;
         const unlockedItems = resolvedCatalog.filter((item) => item.isSpawnUnlocked).map((item) => item.itemName);
         const pocketSummary = resolvedCatalog.map((item) => `${item.itemName} ${item.ownedCount}`).join(' / ');
+        const worldDropSummary = this.worldDropEnabled
+            ? `${this.getConfiguredWorldDropAmount()} items / ${this.getConfiguredWorldDropInterval()}s`
+            : 'disabled';
 
         if (this.scoreLabel) {
-            this.scoreLabel.string = `投放资源: ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins} | 自动恢复 ${runtimeProgress.coinRegenInterval}s`;
+            this.scoreLabel.string = `Resource: ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins} | Regen ${this.getConfiguredResourceRegenAmount()} / ${this.getConfiguredResourceRegenInterval()}s`;
         }
 
         if (this.dropCountLabel) {
-            this.dropCountLabel.string = `当前投放物: ${currentSpawnItem?.itemName ?? '未设置'} | 已解锁: ${unlockedItems.join(' / ') || '无'}`;
+            this.dropCountLabel.string = `Spawn item: ${currentSpawnItem?.itemName ?? 'None'} | World drop: ${worldDropSummary}`;
         }
 
         if (this.spawnCountLabel) {
-            this.spawnCountLabel.string = `最近掉落: ${latestDroppedItem?.itemName ?? '暂无'} | 口袋: ${pocketSummary || '暂无物品'}`;
+            this.spawnCountLabel.string = `Latest drop: ${latestDroppedItem?.itemName ?? 'None'} | Collection: ${pocketSummary || 'None'} | Unlocked: ${unlockedItems.join(' / ') || 'None'}`;
         }
 
         if (this.statusLabel) {
-            this.statusLabel.string = `地图: ${mapConfig.mapName} | ${this.getStateText()} | ${this._statusText}`;
+            this.statusLabel.string = `Map: ${mapConfig.mapName} | ${this.getStateText()} | ${this._statusText}`;
         }
     }
 
@@ -598,21 +618,19 @@ export class GameManager extends Component {
         if (mapId === 'Map02') {
             return {
                 mapId: 'Map02',
-                mapName: 'Map02 预留地图',
+                mapName: 'Map02 Reserve',
                 sceneName: SHARED_SCENE_NAME,
-                ambientSpawnInterval: this.normalizeNonNegativeNumber(this.map02AmbientSpawnInterval, 6),
-                initialAmbientItemCount: this.normalizeNonNegativeInteger(this.map02InitialMapItemCount, 3),
-                riskLevelHint: this.normalizePositiveNumber(this.map02RiskLevelHint, 2),
+                initialMapItemCount: this.normalizeNonNegativeInteger(this.map02InitialMapItemCount, 3),
+                riskLevelHint: this.normalizeNonNegativeNumber(this.map02RiskLevelHint, 2),
             };
         }
 
         return {
             mapId: 'Map01',
-            mapName: 'Map01 基础地图',
+            mapName: 'Map01 Base',
             sceneName: SHARED_SCENE_NAME,
-            ambientSpawnInterval: this.normalizeNonNegativeNumber(this.map01AmbientSpawnInterval, 8),
-            initialAmbientItemCount: this.normalizeNonNegativeInteger(this.map01InitialMapItemCount, 2),
-            riskLevelHint: this.normalizePositiveNumber(this.map01RiskLevelHint, 1),
+            initialMapItemCount: this.normalizeNonNegativeInteger(this.map01InitialMapItemCount, 2),
+            riskLevelHint: this.normalizeNonNegativeNumber(this.map01RiskLevelHint, 1),
         };
     }
 
@@ -623,12 +641,12 @@ export class GameManager extends Component {
     private getStateText(): string {
         switch (this._state) {
         case RoundState.Playing:
-            return '状态: 进行中';
-        case RoundState.NoCoins:
-            return '状态: 资源不足';
+            return 'State: Playing';
+        case RoundState.LowResources:
+            return 'State: Resource below zero, spawning still allowed';
         case RoundState.Ready:
         default:
-            return '状态: 准备中';
+            return 'State: Ready';
         }
     }
 
@@ -692,6 +710,8 @@ export class GameManager extends Component {
 
         return {
             itemName: prefabConfig.itemName || fallbackName,
+            value: this.normalizeNonNegativeInteger(prefabConfig.value, 1),
+            weight: this.normalizeNonNegativeNumber(prefabConfig.weight, 1),
         };
     }
 
@@ -712,14 +732,6 @@ export class GameManager extends Component {
         return currentSpawnItem;
     }
 
-    private getBoardItemCount(): number {
-        return this.coinSpawner?.coinRoot?.children.length ?? 0;
-    }
-
-    private getConfiguredBoardItemLimit(): number {
-        return Math.max(1, this.normalizeNonNegativeInteger(this.maxBoardItemCount, 12));
-    }
-
     private getConfiguredInitialCoins(): number {
         return this.normalizeNonNegativeInteger(this.startCoins);
     }
@@ -728,8 +740,20 @@ export class GameManager extends Component {
         return this.normalizeNonNegativeInteger(this.maxCoins);
     }
 
-    private getConfiguredCoinRegenInterval(): number {
-        return this.normalizeNonNegativeNumber(this.coinRegenInterval);
+    private getConfiguredResourceRegenInterval(): number {
+        return this.normalizeNonNegativeNumber(this.resourceRegenInterval, 1);
+    }
+
+    private getConfiguredResourceRegenAmount(): number {
+        return this.normalizeNonNegativeInteger(this.resourceRegenAmount, 1);
+    }
+
+    private getConfiguredWorldDropInterval(): number {
+        return this.normalizeNonNegativeNumber(this.worldDropInterval, 5);
+    }
+
+    private getConfiguredWorldDropAmount(): number {
+        return this.normalizeNonNegativeInteger(this.worldDropAmount, 1);
     }
 
     private getConfiguredSpawnCost(): number {
@@ -759,14 +783,6 @@ export class GameManager extends Component {
         return spaced.charAt(0).toUpperCase() + spaced.slice(1);
     }
 
-    private normalizePositiveNumber(value: number, fallback = 1): number {
-        if (!Number.isFinite(value)) {
-            return fallback;
-        }
-
-        return Math.max(0, value);
-    }
-
     private normalizeNonNegativeNumber(value: number, fallback = 0): number {
         if (!Number.isFinite(value)) {
             return fallback;
@@ -781,5 +797,13 @@ export class GameManager extends Component {
         }
 
         return Math.max(0, Math.round(value));
+    }
+
+    private normalizeFiniteInteger(value: number, fallback = 0): number {
+        if (!Number.isFinite(value)) {
+            return fallback;
+        }
+
+        return Math.round(value);
     }
 }

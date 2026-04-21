@@ -997,7 +997,7 @@
       ]
     },
     "cce:/internal/x/prerequisite-imports": {
-      "mTimestamp": 4416677.1795,
+      "mTimestamp": 8093501.2362,
       "chunkId": "6d8fd2b0177941b032ddc0733af48a561fb60657",
       "imports": [
         {
@@ -1849,7 +1849,7 @@
     },
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/core/GameManager.ts": {
       "mTimestamp": {
-        "mtime": 1776768208375.7048,
+        "mtime": 1776778703947.075,
         "uuid": "6bf28501-5fb5-4b59-92ea-2a723c3f027e"
       },
       "chunkId": "7e0d17b40a9513aab3872a981088d039553c9992",
@@ -1868,12 +1868,12 @@
           "value": "cc",
           "loc": {
             "start": {
-              "line": 1,
-              "column": 116
+              "line": 12,
+              "column": 7
             },
             "end": {
-              "line": 1,
-              "column": 120
+              "line": 12,
+              "column": 11
             }
           }
         },
@@ -1882,12 +1882,12 @@
           "resolved": "__unresolved_1",
           "loc": {
             "start": {
-              "line": 3,
-              "column": 28
+              "line": 14,
+              "column": 46
             },
             "end": {
-              "line": 3,
-              "column": 53
+              "line": 14,
+              "column": 71
             }
           }
         },
@@ -1896,11 +1896,11 @@
           "resolved": "__unresolved_2",
           "loc": {
             "start": {
-              "line": 4,
+              "line": 15,
               "column": 58
             },
             "end": {
-              "line": 4,
+              "line": 15,
               "column": 88
             }
           }
@@ -2038,7 +2038,7 @@
     },
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/gameplay/CoinSpawner.ts": {
       "mTimestamp": {
-        "mtime": 1776768165481.8516,
+        "mtime": 1776777459042.679,
         "uuid": "08942fc9-9f2e-4fe0-b2a7-7b42dce00ae9"
       },
       "chunkId": "71fc892358fe813b1cd5fcf757cfa6a8e06fd4e6",
@@ -2363,7 +2363,7 @@
     },
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/gameplay/ItemPrefabConfig.ts": {
       "mTimestamp": {
-        "mtime": 1776768165366.8984,
+        "mtime": 1776778552297.2368,
         "uuid": "540b4dc9-7880-47fe-960c-6d5e852f658b"
       },
       "chunkId": "fd28f1626fbf18718b2a54dfc6e4bdc9b0e38a45",

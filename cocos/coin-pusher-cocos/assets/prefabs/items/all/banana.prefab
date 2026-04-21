@@ -247,10 +247,10 @@
     "_center": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0.1,
+      "y": 0.07,
       "z": 0
     },
-    "_radius": 0.1,
+    "_radius": 0.08,
     "_cylinderHeight": 0.5,
     "_direction": 2,
     "_id": ""
@@ -273,6 +273,8 @@
     },
     "itemId": "banana",
     "itemName": "Banana",
+    "value": 1,
+    "weight": 1,
     "_id": ""
   },
   {
@@ -318,6 +320,7 @@
       "__id__": 0
     },
     "fileId": "16OBo99Z5euZlDtLLBPWxx",
+    "instance": null,
     "targetOverrides": null
   }
 ]

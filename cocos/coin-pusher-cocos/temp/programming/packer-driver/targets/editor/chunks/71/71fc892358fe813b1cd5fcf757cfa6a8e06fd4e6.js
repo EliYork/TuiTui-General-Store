@@ -107,7 +107,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _
           this._itemNormal = new Vec3();
         }
 
-        spawnCoin(itemPrefab) {
+        spawnCoin(itemPrefab, request = null) {
           var _this$coinRoot, _this$spawnPoint;
 
           if (!itemPrefab) {
@@ -118,10 +118,11 @@ System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _
           const itemNode = instantiate(itemPrefab);
           const parent = (_this$coinRoot = this.coinRoot) != null ? _this$coinRoot : this.node;
           parent.addChild(itemNode);
-          const basePosition = this.spawnPoint ? this.spawnPoint.worldPosition : this.node.worldPosition;
+          const basePosition = this.resolveBasePosition(request);
+          const shouldRandomize = this.shouldRandomizePosition(request);
           const rotationSource = (_this$spawnPoint = this.spawnPoint) != null ? _this$spawnPoint : this.node;
           rotationSource.getWorldRotation(this._spawnBaseRotation);
-          itemNode.setWorldPosition(new Vec3(basePosition.x + randomRange(-this.spawnSpreadX, this.spawnSpreadX), basePosition.y + this.spawnHeightOffset, basePosition.z + randomRange(-this.spawnSpreadZ, this.spawnSpreadZ)));
+          itemNode.setWorldPosition(new Vec3(basePosition.x + (shouldRandomize ? randomRange(-this.spawnSpreadX, this.spawnSpreadX) : 0), basePosition.y + this.spawnHeightOffset, basePosition.z + (shouldRandomize ? randomRange(-this.spawnSpreadZ, this.spawnSpreadZ) : 0)));
           const tiltX = this.baseTiltXDegrees + randomRange(-this.randomTiltXDegrees, this.randomTiltXDegrees);
           const tiltZ = this.baseTiltZDegrees + randomRange(-this.randomTiltZDegrees, this.randomTiltZDegrees);
           const yaw = this.spawnYawDegrees + randomRange(-this.randomYawDegrees, this.randomYawDegrees);
@@ -151,6 +152,22 @@ System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _
           item.applyLaunchImpulse(this._spawnImpulse, this._spawnTorque);
           this._nextCoinId += 1;
           return item;
+        }
+
+        resolveBasePosition(request) {
+          if (request != null && request.worldPosition) {
+            return request.worldPosition;
+          }
+
+          return this.spawnPoint ? this.spawnPoint.worldPosition : this.node.worldPosition;
+        }
+
+        shouldRandomizePosition(request) {
+          if (typeof (request == null ? void 0 : request.randomizeAroundPosition) === 'boolean') {
+            return request.randomizeAroundPosition;
+          }
+
+          return !(request != null && request.worldPosition);
         }
 
       }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "spawnPoint", [_dec2], {
