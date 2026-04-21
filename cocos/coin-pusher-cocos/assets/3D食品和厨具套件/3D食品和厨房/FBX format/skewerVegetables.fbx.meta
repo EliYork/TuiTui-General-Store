@@ -1,0 +1,243 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5",
+  "files": [],
+  "subMetas": {
+    "ee480": {
+      "importer": "gltf-mesh",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@ee480",
+      "displayName": "",
+      "id": "ee480",
+      "name": "skewerVegetables-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 20
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e23b1": {
+      "importer": "gltf-mesh",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@e23b1",
+      "displayName": "",
+      "id": "e23b1",
+      "name": "meat-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 32
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "555e8": {
+      "importer": "gltf-mesh",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@555e8",
+      "displayName": "",
+      "id": "555e8",
+      "name": "meat-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 32
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "6cef4": {
+      "importer": "gltf-mesh",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@6cef4",
+      "displayName": "",
+      "id": "6cef4",
+      "name": "meat-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 32
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "fd96a": {
+      "importer": "gltf-mesh",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@fd96a",
+      "displayName": "",
+      "id": "fd96a",
+      "name": "vegetables-4.mesh",
+      "userData": {
+        "gltfIndex": 4,
+        "triangleCount": 20
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a873e": {
+      "importer": "gltf-mesh",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@a873e",
+      "displayName": "",
+      "id": "a873e",
+      "name": "vegetables-5.mesh",
+      "userData": {
+        "gltfIndex": 5,
+        "triangleCount": 20
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f6c22": {
+      "importer": "gltf-material",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@f6c22",
+      "displayName": "",
+      "id": "f6c22",
+      "name": "brownLight.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ee7d1": {
+      "importer": "gltf-material",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@ee7d1",
+      "displayName": "",
+      "id": "ee7d1",
+      "name": "brownDark.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "00fbf": {
+      "importer": "gltf-material",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@00fbf",
+      "displayName": "",
+      "id": "00fbf",
+      "name": "green.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "92dfd": {
+      "importer": "gltf-material",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@92dfd",
+      "displayName": "",
+      "id": "92dfd",
+      "name": "red.material",
+      "userData": {
+        "gltfIndex": 3
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "8baab": {
+      "importer": "gltf-scene",
+      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@8baab",
+      "displayName": "",
+      "id": "8baab",
+      "name": "skewerVegetables.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@ee480",
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@e23b1",
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@555e8",
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@6cef4",
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@fd96a",
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@a873e"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@f6c22",
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@ee7d1",
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@00fbf",
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@92dfd"
+      ],
+      "scenes": [
+        "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5@8baab"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

@@ -1,8 +1,20 @@
-import { _decorator, Component, Quat, RigidBody, Vec3 } from 'cc';
+import { _decorator, Color, Component, MeshRenderer, Node, Quat, RigidBody, Vec3 } from 'cc';
 
 const { ccclass, property } = _decorator;
 const WORLD_UP = new Vec3(0, 1, 0);
 const LOCAL_UP = new Vec3(0, 1, 0);
+const NORMAL_COIN_COLOR = new Color(255, 255, 255, 255);
+const SPECIAL_COIN_COLOR = new Color(255, 215, 0, 255);
+const TOY_CAR_COLOR = new Color(255, 106, 0, 255);
+const DEFAULT_VISUAL_SCALE = new Vec3(1, 1, 1);
+const SPECIAL_VISUAL_SCALE = new Vec3(1.12, 1.2, 1.12);
+const TOY_CAR_VISUAL_SCALE = new Vec3(1.35, 0.85, 0.85);
+
+enum RewardKind {
+    NormalCoin = 'NormalCoin',
+    SpecialCoin = 'SpecialCoin',
+    ToyCar = 'ToyCar',
+}
 
 @ccclass('CoinBehaviour')
 export class CoinBehaviour extends Component {
@@ -55,9 +67,13 @@ export class CoinBehaviour extends Component {
     private readonly _coinNormal = new Vec3();
     private readonly _worldRotation = new Quat();
     private readonly _zeroVelocity = new Vec3();
+    private readonly _defaultDisplayScale = new Vec3(DEFAULT_VISUAL_SCALE.x, DEFAULT_VISUAL_SCALE.y, DEFAULT_VISUAL_SCALE.z);
     private _body: RigidBody | null = null;
+    private _displayRoot: Node | null = null;
+    private _displayRenderer: MeshRenderer | null = null;
     private _coinId = 0;
     private _hasScored = false;
+    private _rewardKind = RewardKind.NormalCoin;
     private _aliveSeconds = 0;
 
     public get coinId(): number {
@@ -68,8 +84,29 @@ export class CoinBehaviour extends Component {
         return this._hasScored;
     }
 
+    public get isSpecialReward(): boolean {
+        return this._rewardKind === RewardKind.SpecialCoin;
+    }
+
+    public get isToyCarReward(): boolean {
+        return this._rewardKind === RewardKind.ToyCar;
+    }
+
+    public get coinTypeLabel(): string {
+        switch (this._rewardKind) {
+        case RewardKind.SpecialCoin:
+            return '\u5956\u52b1 coin';
+        case RewardKind.ToyCar:
+            return 'ToyCar';
+        case RewardKind.NormalCoin:
+        default:
+            return '\u666e\u901a coin';
+        }
+    }
+
     protected onLoad(): void {
         this._body = this.getComponent(RigidBody);
+        this.cacheDisplayTargets();
         if (this._body) {
             this._body.sleepThreshold = this.sleepThreshold;
         }
@@ -78,8 +115,10 @@ export class CoinBehaviour extends Component {
     public initialize(coinId: number): void {
         this._coinId = coinId;
         this._hasScored = false;
+        this._rewardKind = RewardKind.NormalCoin;
         this._aliveSeconds = 0;
-        this.node.name = `Coin_${coinId}`;
+        this.updateRewardName();
+        this.applyPresentation();
 
         if (!this._body) {
             return;
@@ -89,6 +128,27 @@ export class CoinBehaviour extends Component {
         this._body.wakeUp();
         this._body.setLinearVelocity(this._zeroVelocity);
         this._body.setAngularVelocity(this._zeroVelocity);
+    }
+
+    public configureAsNormal(scoreValue: number): void {
+        this.coinValue = scoreValue;
+        this._rewardKind = RewardKind.NormalCoin;
+        this.updateRewardName();
+        this.applyPresentation();
+    }
+
+    public configureAsSpecial(scoreValue: number): void {
+        this.coinValue = scoreValue;
+        this._rewardKind = RewardKind.SpecialCoin;
+        this.updateRewardName();
+        this.applyPresentation();
+    }
+
+    public configureAsToyCar(scoreValue: number): void {
+        this.coinValue = scoreValue;
+        this._rewardKind = RewardKind.ToyCar;
+        this.updateRewardName();
+        this.applyPresentation();
     }
 
     protected update(deltaTime: number): void {
@@ -230,6 +290,44 @@ export class CoinBehaviour extends Component {
         if (out.y < 0) {
             Vec3.multiplyScalar(out, out, -1);
         }
+    }
+
+    private cacheDisplayTargets(): void {
+        const renderers = this.node.getComponentsInChildren(MeshRenderer);
+        this._displayRenderer = renderers.length > 0 ? renderers[0] : null;
+        this._displayRoot = this.node.getChildByName('CoinMesh') ?? this._displayRenderer?.node ?? null;
+
+        if (this._displayRoot) {
+            this._displayRoot.getScale(this._defaultDisplayScale);
+        }
+    }
+
+    private updateRewardName(): void {
+        this.node.name = `${this._rewardKind}_${this._coinId}`;
+    }
+
+    private applyPresentation(): void {
+        switch (this._rewardKind) {
+        case RewardKind.SpecialCoin:
+            this.applyDisplayTransform(SPECIAL_VISUAL_SCALE, SPECIAL_COIN_COLOR);
+            return;
+        case RewardKind.ToyCar:
+            this.applyDisplayTransform(TOY_CAR_VISUAL_SCALE, TOY_CAR_COLOR);
+            return;
+        case RewardKind.NormalCoin:
+        default:
+            this.applyDisplayTransform(this._defaultDisplayScale, NORMAL_COIN_COLOR);
+            return;
+        }
+    }
+
+    private applyDisplayTransform(scale: Vec3, color: Color): void {
+        if (this._displayRoot) {
+            this._displayRoot.setScale(scale);
+        }
+
+        const materialInstance = this._displayRenderer?.getMaterialInstance(0);
+        materialInstance?.setProperty('mainColor', color);
     }
 }
 

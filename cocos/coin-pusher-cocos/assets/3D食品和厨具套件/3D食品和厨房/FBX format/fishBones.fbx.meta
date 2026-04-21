@@ -1,0 +1,97 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "c0f0879a-c0b9-4c78-9733-b16338a2e7a7",
+  "files": [],
+  "subMetas": {
+    "012e5": {
+      "importer": "gltf-mesh",
+      "uuid": "c0f0879a-c0b9-4c78-9733-b16338a2e7a7@012e5",
+      "displayName": "",
+      "id": "012e5",
+      "name": "fishBones.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 384
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0f293": {
+      "importer": "gltf-material",
+      "uuid": "c0f0879a-c0b9-4c78-9733-b16338a2e7a7@0f293",
+      "displayName": "",
+      "id": "0f293",
+      "name": "greyLight.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "28a44": {
+      "importer": "gltf-scene",
+      "uuid": "c0f0879a-c0b9-4c78-9733-b16338a2e7a7@28a44",
+      "displayName": "",
+      "id": "28a44",
+      "name": "fishBones.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "c0f0879a-c0b9-4c78-9733-b16338a2e7a7@012e5"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "c0f0879a-c0b9-4c78-9733-b16338a2e7a7@0f293"
+      ],
+      "scenes": [
+        "c0f0879a-c0b9-4c78-9733-b16338a2e7a7@28a44"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "eebbc24c-9e48-4cd4-b1d3-b1908e21148c",
+  "files": [],
+  "subMetas": {
+    "f998d": {
+      "importer": "gltf-mesh",
+      "uuid": "eebbc24c-9e48-4cd4-b1d3-b1908e21148c@f998d",
+      "displayName": "",
+      "id": "f998d",
+      "name": "cupSaucer.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 116
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0ee4f": {
+      "importer": "gltf-material",
+      "uuid": "eebbc24c-9e48-4cd4-b1d3-b1908e21148c@0ee4f",
+      "displayName": "",
+      "id": "0ee4f",
+      "name": "_defaultMat.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "b5aba": {
+      "importer": "gltf-scene",
+      "uuid": "eebbc24c-9e48-4cd4-b1d3-b1908e21148c@b5aba",
+      "displayName": "",
+      "id": "b5aba",
+      "name": "cupSaucer.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "eebbc24c-9e48-4cd4-b1d3-b1908e21148c@f998d"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "eebbc24c-9e48-4cd4-b1d3-b1908e21148c@0ee4f"
+      ],
+      "scenes": [
+        "eebbc24c-9e48-4cd4-b1d3-b1908e21148c@b5aba"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

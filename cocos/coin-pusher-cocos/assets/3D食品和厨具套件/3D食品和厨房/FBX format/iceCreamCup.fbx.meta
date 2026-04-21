@@ -1,0 +1,97 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "9f9e4165-778d-402c-89c8-2961b86b5473",
+  "files": [],
+  "subMetas": {
+    "75328": {
+      "importer": "gltf-mesh",
+      "uuid": "9f9e4165-778d-402c-89c8-2961b86b5473@75328",
+      "displayName": "",
+      "id": "75328",
+      "name": "iceCreamCup.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 68
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f6c22": {
+      "importer": "gltf-material",
+      "uuid": "9f9e4165-778d-402c-89c8-2961b86b5473@f6c22",
+      "displayName": "",
+      "id": "f6c22",
+      "name": "brownLight.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ae96c": {
+      "importer": "gltf-scene",
+      "uuid": "9f9e4165-778d-402c-89c8-2961b86b5473@ae96c",
+      "displayName": "",
+      "id": "ae96c",
+      "name": "iceCreamCup.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "9f9e4165-778d-402c-89c8-2961b86b5473@75328"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "9f9e4165-778d-402c-89c8-2961b86b5473@f6c22"
+      ],
+      "scenes": [
+        "9f9e4165-778d-402c-89c8-2961b86b5473@ae96c"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

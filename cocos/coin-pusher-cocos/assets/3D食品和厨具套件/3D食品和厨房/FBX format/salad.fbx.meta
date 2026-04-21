@@ -1,0 +1,148 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "0e6e91f6-b048-4320-b02d-2ab9a014b186",
+  "files": [],
+  "subMetas": {
+    "7caf1": {
+      "importer": "gltf-mesh",
+      "uuid": "0e6e91f6-b048-4320-b02d-2ab9a014b186@7caf1",
+      "displayName": "",
+      "id": "7caf1",
+      "name": "salad_Material0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 188
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "cdda2": {
+      "importer": "gltf-material",
+      "uuid": "0e6e91f6-b048-4320-b02d-2ab9a014b186@cdda2",
+      "displayName": "",
+      "id": "cdda2",
+      "name": "brown.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "00fbf": {
+      "importer": "gltf-material",
+      "uuid": "0e6e91f6-b048-4320-b02d-2ab9a014b186@00fbf",
+      "displayName": "",
+      "id": "00fbf",
+      "name": "green.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "92dfd": {
+      "importer": "gltf-material",
+      "uuid": "0e6e91f6-b048-4320-b02d-2ab9a014b186@92dfd",
+      "displayName": "",
+      "id": "92dfd",
+      "name": "red.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "c9ff8": {
+      "importer": "gltf-material",
+      "uuid": "0e6e91f6-b048-4320-b02d-2ab9a014b186@c9ff8",
+      "displayName": "",
+      "id": "c9ff8",
+      "name": "greenDark.material",
+      "userData": {
+        "gltfIndex": 3
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "3809d": {
+      "importer": "gltf-scene",
+      "uuid": "0e6e91f6-b048-4320-b02d-2ab9a014b186@3809d",
+      "displayName": "",
+      "id": "3809d",
+      "name": "salad.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "0e6e91f6-b048-4320-b02d-2ab9a014b186@7caf1"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "0e6e91f6-b048-4320-b02d-2ab9a014b186@cdda2",
+        "0e6e91f6-b048-4320-b02d-2ab9a014b186@00fbf",
+        "0e6e91f6-b048-4320-b02d-2ab9a014b186@92dfd",
+        "0e6e91f6-b048-4320-b02d-2ab9a014b186@c9ff8"
+      ],
+      "scenes": [
+        "0e6e91f6-b048-4320-b02d-2ab9a014b186@3809d"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

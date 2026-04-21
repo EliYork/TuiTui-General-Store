@@ -1,0 +1,148 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "5d0b441c-94a6-40e6-8cbf-62b492570f30",
+  "files": [],
+  "subMetas": {
+    "4485d": {
+      "importer": "gltf-mesh",
+      "uuid": "5d0b441c-94a6-40e6-8cbf-62b492570f30@4485d",
+      "displayName": "",
+      "id": "4485d",
+      "name": "wholeHam_Material0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 128
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ee7d1": {
+      "importer": "gltf-material",
+      "uuid": "5d0b441c-94a6-40e6-8cbf-62b492570f30@ee7d1",
+      "displayName": "",
+      "id": "ee7d1",
+      "name": "brownDark.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0ee4f": {
+      "importer": "gltf-material",
+      "uuid": "5d0b441c-94a6-40e6-8cbf-62b492570f30@0ee4f",
+      "displayName": "",
+      "id": "0ee4f",
+      "name": "_defaultMat.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f6c22": {
+      "importer": "gltf-material",
+      "uuid": "5d0b441c-94a6-40e6-8cbf-62b492570f30@f6c22",
+      "displayName": "",
+      "id": "f6c22",
+      "name": "brownLight.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "07910": {
+      "importer": "gltf-material",
+      "uuid": "5d0b441c-94a6-40e6-8cbf-62b492570f30@07910",
+      "displayName": "",
+      "id": "07910",
+      "name": "orange.material",
+      "userData": {
+        "gltfIndex": 3
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "707ca": {
+      "importer": "gltf-scene",
+      "uuid": "5d0b441c-94a6-40e6-8cbf-62b492570f30@707ca",
+      "displayName": "",
+      "id": "707ca",
+      "name": "wholeHam.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "5d0b441c-94a6-40e6-8cbf-62b492570f30@4485d"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "5d0b441c-94a6-40e6-8cbf-62b492570f30@ee7d1",
+        "5d0b441c-94a6-40e6-8cbf-62b492570f30@0ee4f",
+        "5d0b441c-94a6-40e6-8cbf-62b492570f30@f6c22",
+        "5d0b441c-94a6-40e6-8cbf-62b492570f30@07910"
+      ],
+      "scenes": [
+        "5d0b441c-94a6-40e6-8cbf-62b492570f30@707ca"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

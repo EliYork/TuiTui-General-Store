@@ -1,0 +1,188 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae",
+  "files": [],
+  "subMetas": {
+    "77206": {
+      "importer": "gltf-material",
+      "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae@77206",
+      "displayName": "",
+      "id": "77206",
+      "name": "yellow.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "6cde8": {
+      "importer": "gltf-mesh",
+      "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae@6cde8",
+      "displayName": "",
+      "id": "6cde8",
+      "name": "bunBottom.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 56
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "883d8": {
+      "importer": "gltf-mesh",
+      "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae@883d8",
+      "displayName": "",
+      "id": "883d8",
+      "name": "bunTop.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 60
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a5293": {
+      "importer": "gltf-mesh",
+      "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae@a5293",
+      "displayName": "",
+      "id": "a5293",
+      "name": "cheese.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 10
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ebc61": {
+      "importer": "gltf-mesh",
+      "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae@ebc61",
+      "displayName": "",
+      "id": "ebc61",
+      "name": "patty.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 100
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f6c22": {
+      "importer": "gltf-material",
+      "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae@f6c22",
+      "displayName": "",
+      "id": "f6c22",
+      "name": "brownLight.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ee7d1": {
+      "importer": "gltf-material",
+      "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae@ee7d1",
+      "displayName": "",
+      "id": "ee7d1",
+      "name": "brownDark.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "2f40b": {
+      "importer": "gltf-scene",
+      "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae@2f40b",
+      "displayName": "",
+      "id": "2f40b",
+      "name": "burgerCheese.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "376934dc-f096-4e85-8f73-a272e630b6ae@6cde8",
+        "376934dc-f096-4e85-8f73-a272e630b6ae@883d8",
+        "376934dc-f096-4e85-8f73-a272e630b6ae@a5293",
+        "376934dc-f096-4e85-8f73-a272e630b6ae@ebc61"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "376934dc-f096-4e85-8f73-a272e630b6ae@f6c22",
+        "376934dc-f096-4e85-8f73-a272e630b6ae@77206",
+        "376934dc-f096-4e85-8f73-a272e630b6ae@ee7d1"
+      ],
+      "scenes": [
+        "376934dc-f096-4e85-8f73-a272e630b6ae@2f40b"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

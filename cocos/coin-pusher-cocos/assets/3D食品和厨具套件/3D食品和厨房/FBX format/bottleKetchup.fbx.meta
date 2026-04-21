@@ -1,0 +1,97 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "88bc13fe-60bc-4b4f-80c6-4cb80c9809d6",
+  "files": [],
+  "subMetas": {
+    "11e4e": {
+      "importer": "gltf-mesh",
+      "uuid": "88bc13fe-60bc-4b4f-80c6-4cb80c9809d6@11e4e",
+      "displayName": "",
+      "id": "11e4e",
+      "name": "bottleKetchup.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 96
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "92dfd": {
+      "importer": "gltf-material",
+      "uuid": "88bc13fe-60bc-4b4f-80c6-4cb80c9809d6@92dfd",
+      "displayName": "",
+      "id": "92dfd",
+      "name": "red.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "4d873": {
+      "importer": "gltf-scene",
+      "uuid": "88bc13fe-60bc-4b4f-80c6-4cb80c9809d6@4d873",
+      "displayName": "",
+      "id": "4d873",
+      "name": "bottleKetchup.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "88bc13fe-60bc-4b4f-80c6-4cb80c9809d6@11e4e"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "88bc13fe-60bc-4b4f-80c6-4cb80c9809d6@92dfd"
+      ],
+      "scenes": [
+        "88bc13fe-60bc-4b4f-80c6-4cb80c9809d6@4d873"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "afc69372-3c19-4dc2-9b01-9052ae7d5055",
+  "files": [],
+  "subMetas": {
+    "ee39d": {
+      "importer": "gltf-mesh",
+      "uuid": "afc69372-3c19-4dc2-9b01-9052ae7d5055@ee39d",
+      "displayName": "",
+      "id": "ee39d",
+      "name": "cuttingBoardRound_Material0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 156
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f6c22": {
+      "importer": "gltf-material",
+      "uuid": "afc69372-3c19-4dc2-9b01-9052ae7d5055@f6c22",
+      "displayName": "",
+      "id": "f6c22",
+      "name": "brownLight.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "cdda2": {
+      "importer": "gltf-material",
+      "uuid": "afc69372-3c19-4dc2-9b01-9052ae7d5055@cdda2",
+      "displayName": "",
+      "id": "cdda2",
+      "name": "brown.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "254fc": {
+      "importer": "gltf-scene",
+      "uuid": "afc69372-3c19-4dc2-9b01-9052ae7d5055@254fc",
+      "displayName": "",
+      "id": "254fc",
+      "name": "cuttingBoardRound.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "afc69372-3c19-4dc2-9b01-9052ae7d5055@ee39d"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "afc69372-3c19-4dc2-9b01-9052ae7d5055@f6c22",
+        "afc69372-3c19-4dc2-9b01-9052ae7d5055@cdda2"
+      ],
+      "scenes": [
+        "afc69372-3c19-4dc2-9b01-9052ae7d5055@254fc"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

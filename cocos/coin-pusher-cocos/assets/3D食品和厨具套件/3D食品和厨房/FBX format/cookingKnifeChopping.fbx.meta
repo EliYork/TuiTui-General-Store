@@ -1,0 +1,131 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5",
+  "files": [],
+  "subMetas": {
+    "00bd7": {
+      "importer": "gltf-mesh",
+      "uuid": "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@00bd7",
+      "displayName": "",
+      "id": "00bd7",
+      "name": "cookingKnifeChopping_Material0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 64
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ab42b": {
+      "importer": "gltf-material",
+      "uuid": "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@ab42b",
+      "displayName": "",
+      "id": "ab42b",
+      "name": "brownDarkest.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0f293": {
+      "importer": "gltf-material",
+      "uuid": "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@0f293",
+      "displayName": "",
+      "id": "0f293",
+      "name": "greyLight.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "b31f4": {
+      "importer": "gltf-material",
+      "uuid": "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@b31f4",
+      "displayName": "",
+      "id": "b31f4",
+      "name": "white.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "d8244": {
+      "importer": "gltf-scene",
+      "uuid": "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@d8244",
+      "displayName": "",
+      "id": "d8244",
+      "name": "cookingKnifeChopping.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@00bd7"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@ab42b",
+        "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@0f293",
+        "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@b31f4"
+      ],
+      "scenes": [
+        "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5@d8244"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

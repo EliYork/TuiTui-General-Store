@@ -1,7 +1,7 @@
 System.register(["cc"], function (_export, _context) {
   "use strict";
 
-  var _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Component, Quat, RigidBody, Vec3, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _crd, ccclass, property, WORLD_UP, LOCAL_UP, CoinBehaviour;
+  var _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Color, Component, MeshRenderer, Quat, RigidBody, Vec3, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _crd, ccclass, property, WORLD_UP, LOCAL_UP, NORMAL_COIN_COLOR, SPECIAL_COIN_COLOR, TOY_CAR_COLOR, DEFAULT_VISUAL_SCALE, SPECIAL_VISUAL_SCALE, TOY_CAR_VISUAL_SCALE, RewardKind, CoinBehaviour;
 
   function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -33,7 +33,9 @@ System.register(["cc"], function (_export, _context) {
       __checkObsolete__ = _cc.__checkObsolete__;
       __checkObsoleteInNamespace__ = _cc.__checkObsoleteInNamespace__;
       _decorator = _cc._decorator;
+      Color = _cc.Color;
       Component = _cc.Component;
+      MeshRenderer = _cc.MeshRenderer;
       Quat = _cc.Quat;
       RigidBody = _cc.RigidBody;
       Vec3 = _cc.Vec3;
@@ -43,7 +45,7 @@ System.register(["cc"], function (_export, _context) {
 
       _cclegacy._RF.push({}, "162c9rkczlAM4/X9f6TaVBV", "CoinBehaviour", undefined);
 
-      __checkObsolete__(['_decorator', 'Component', 'Quat', 'RigidBody', 'Vec3']);
+      __checkObsolete__(['_decorator', 'Color', 'Component', 'MeshRenderer', 'Node', 'Quat', 'RigidBody', 'Vec3']);
 
       ({
         ccclass,
@@ -51,6 +53,19 @@ System.register(["cc"], function (_export, _context) {
       } = _decorator);
       WORLD_UP = new Vec3(0, 1, 0);
       LOCAL_UP = new Vec3(0, 1, 0);
+      NORMAL_COIN_COLOR = new Color(255, 255, 255, 255);
+      SPECIAL_COIN_COLOR = new Color(255, 215, 0, 255);
+      TOY_CAR_COLOR = new Color(255, 106, 0, 255);
+      DEFAULT_VISUAL_SCALE = new Vec3(1, 1, 1);
+      SPECIAL_VISUAL_SCALE = new Vec3(1.12, 1.2, 1.12);
+      TOY_CAR_VISUAL_SCALE = new Vec3(1.35, 0.85, 0.85);
+
+      RewardKind = /*#__PURE__*/function (RewardKind) {
+        RewardKind["NormalCoin"] = "NormalCoin";
+        RewardKind["SpecialCoin"] = "SpecialCoin";
+        RewardKind["ToyCar"] = "ToyCar";
+        return RewardKind;
+      }(RewardKind || {});
 
       _export("CoinBehaviour", CoinBehaviour = (_dec = ccclass('CoinBehaviour'), _dec2 = property({
         tooltip: 'How long the spawn stabilizer should suppress tumble right after the coin is created.'
@@ -116,9 +131,13 @@ System.register(["cc"], function (_export, _context) {
           this._coinNormal = new Vec3();
           this._worldRotation = new Quat();
           this._zeroVelocity = new Vec3();
+          this._defaultDisplayScale = new Vec3(DEFAULT_VISUAL_SCALE.x, DEFAULT_VISUAL_SCALE.y, DEFAULT_VISUAL_SCALE.z);
           this._body = null;
+          this._displayRoot = null;
+          this._displayRenderer = null;
           this._coinId = 0;
           this._hasScored = false;
+          this._rewardKind = RewardKind.NormalCoin;
           this._aliveSeconds = 0;
         }
 
@@ -130,8 +149,31 @@ System.register(["cc"], function (_export, _context) {
           return this._hasScored;
         }
 
+        get isSpecialReward() {
+          return this._rewardKind === RewardKind.SpecialCoin;
+        }
+
+        get isToyCarReward() {
+          return this._rewardKind === RewardKind.ToyCar;
+        }
+
+        get coinTypeLabel() {
+          switch (this._rewardKind) {
+            case RewardKind.SpecialCoin:
+              return '\u5956\u52b1 coin';
+
+            case RewardKind.ToyCar:
+              return 'ToyCar';
+
+            case RewardKind.NormalCoin:
+            default:
+              return '\u666e\u901a coin';
+          }
+        }
+
         onLoad() {
           this._body = this.getComponent(RigidBody);
+          this.cacheDisplayTargets();
 
           if (this._body) {
             this._body.sleepThreshold = this.sleepThreshold;
@@ -141,8 +183,10 @@ System.register(["cc"], function (_export, _context) {
         initialize(coinId) {
           this._coinId = coinId;
           this._hasScored = false;
+          this._rewardKind = RewardKind.NormalCoin;
           this._aliveSeconds = 0;
-          this.node.name = "Coin_" + coinId;
+          this.updateRewardName();
+          this.applyPresentation();
 
           if (!this._body) {
             return;
@@ -155,6 +199,27 @@ System.register(["cc"], function (_export, _context) {
           this._body.setLinearVelocity(this._zeroVelocity);
 
           this._body.setAngularVelocity(this._zeroVelocity);
+        }
+
+        configureAsNormal(scoreValue) {
+          this.coinValue = scoreValue;
+          this._rewardKind = RewardKind.NormalCoin;
+          this.updateRewardName();
+          this.applyPresentation();
+        }
+
+        configureAsSpecial(scoreValue) {
+          this.coinValue = scoreValue;
+          this._rewardKind = RewardKind.SpecialCoin;
+          this.updateRewardName();
+          this.applyPresentation();
+        }
+
+        configureAsToyCar(scoreValue) {
+          this.coinValue = scoreValue;
+          this._rewardKind = RewardKind.ToyCar;
+          this.updateRewardName();
+          this.applyPresentation();
         }
 
         update(deltaTime) {
@@ -288,6 +353,50 @@ System.register(["cc"], function (_export, _context) {
           if (out.y < 0) {
             Vec3.multiplyScalar(out, out, -1);
           }
+        }
+
+        cacheDisplayTargets() {
+          var _ref, _this$node$getChildBy, _this$_displayRendere;
+
+          var renderers = this.node.getComponentsInChildren(MeshRenderer);
+          this._displayRenderer = renderers.length > 0 ? renderers[0] : null;
+          this._displayRoot = (_ref = (_this$node$getChildBy = this.node.getChildByName('CoinMesh')) != null ? _this$node$getChildBy : (_this$_displayRendere = this._displayRenderer) == null ? void 0 : _this$_displayRendere.node) != null ? _ref : null;
+
+          if (this._displayRoot) {
+            this._displayRoot.getScale(this._defaultDisplayScale);
+          }
+        }
+
+        updateRewardName() {
+          this.node.name = this._rewardKind + "_" + this._coinId;
+        }
+
+        applyPresentation() {
+          switch (this._rewardKind) {
+            case RewardKind.SpecialCoin:
+              this.applyDisplayTransform(SPECIAL_VISUAL_SCALE, SPECIAL_COIN_COLOR);
+              return;
+
+            case RewardKind.ToyCar:
+              this.applyDisplayTransform(TOY_CAR_VISUAL_SCALE, TOY_CAR_COLOR);
+              return;
+
+            case RewardKind.NormalCoin:
+            default:
+              this.applyDisplayTransform(this._defaultDisplayScale, NORMAL_COIN_COLOR);
+              return;
+          }
+        }
+
+        applyDisplayTransform(scale, color) {
+          var _this$_displayRendere2;
+
+          if (this._displayRoot) {
+            this._displayRoot.setScale(scale);
+          }
+
+          var materialInstance = (_this$_displayRendere2 = this._displayRenderer) == null ? void 0 : _this$_displayRendere2.getMaterialInstance(0);
+          materialInstance == null || materialInstance.setProperty('mainColor', color);
         }
 
       }, (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "coinValue", [property], {

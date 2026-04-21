@@ -1,0 +1,186 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214",
+  "files": [],
+  "subMetas": {
+    "77206": {
+      "importer": "gltf-material",
+      "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214@77206",
+      "displayName": "",
+      "id": "77206",
+      "name": "yellow.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "7b1a6": {
+      "importer": "gltf-mesh",
+      "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214@7b1a6",
+      "displayName": "",
+      "id": "7b1a6",
+      "name": "hotDog.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 82
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "a6a2e": {
+      "importer": "gltf-mesh",
+      "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214@a6a2e",
+      "displayName": "",
+      "id": "a6a2e",
+      "name": "sauce_Material0.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 98
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0a5ee": {
+      "importer": "gltf-mesh",
+      "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214@0a5ee",
+      "displayName": "",
+      "id": "0a5ee",
+      "name": "sausage.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 92
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f6c22": {
+      "importer": "gltf-material",
+      "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214@f6c22",
+      "displayName": "",
+      "id": "f6c22",
+      "name": "brownLight.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "92dfd": {
+      "importer": "gltf-material",
+      "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214@92dfd",
+      "displayName": "",
+      "id": "92dfd",
+      "name": "red.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "cdda2": {
+      "importer": "gltf-material",
+      "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214@cdda2",
+      "displayName": "",
+      "id": "cdda2",
+      "name": "brown.material",
+      "userData": {
+        "gltfIndex": 3
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "1516c": {
+      "importer": "gltf-scene",
+      "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214@1516c",
+      "displayName": "",
+      "id": "1516c",
+      "name": "hotDog.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "65d5b046-e67e-4955-9b9c-43bff8526214@7b1a6",
+        "65d5b046-e67e-4955-9b9c-43bff8526214@a6a2e",
+        "65d5b046-e67e-4955-9b9c-43bff8526214@0a5ee"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "65d5b046-e67e-4955-9b9c-43bff8526214@f6c22",
+        "65d5b046-e67e-4955-9b9c-43bff8526214@77206",
+        "65d5b046-e67e-4955-9b9c-43bff8526214@92dfd",
+        "65d5b046-e67e-4955-9b9c-43bff8526214@cdda2"
+      ],
+      "scenes": [
+        "65d5b046-e67e-4955-9b9c-43bff8526214@1516c"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "c1bbf952-de1b-4b9c-902a-95525ba690b6",
+  "files": [],
+  "subMetas": {
+    "eed91": {
+      "importer": "gltf-mesh",
+      "uuid": "c1bbf952-de1b-4b9c-902a-95525ba690b6@eed91",
+      "displayName": "",
+      "id": "eed91",
+      "name": "avocadoHalf_Material0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 76
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0c4eb": {
+      "importer": "gltf-mesh",
+      "uuid": "c1bbf952-de1b-4b9c-902a-95525ba690b6@0c4eb",
+      "displayName": "",
+      "id": "0c4eb",
+      "name": "pit.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 44
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "00fbf": {
+      "importer": "gltf-material",
+      "uuid": "c1bbf952-de1b-4b9c-902a-95525ba690b6@00fbf",
+      "displayName": "",
+      "id": "00fbf",
+      "name": "green.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ab42b": {
+      "importer": "gltf-material",
+      "uuid": "c1bbf952-de1b-4b9c-902a-95525ba690b6@ab42b",
+      "displayName": "",
+      "id": "ab42b",
+      "name": "brownDarkest.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ee7d1": {
+      "importer": "gltf-material",
+      "uuid": "c1bbf952-de1b-4b9c-902a-95525ba690b6@ee7d1",
+      "displayName": "",
+      "id": "ee7d1",
+      "name": "brownDark.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "d3d82": {
+      "importer": "gltf-scene",
+      "uuid": "c1bbf952-de1b-4b9c-902a-95525ba690b6@d3d82",
+      "displayName": "",
+      "id": "d3d82",
+      "name": "avocadoHalf.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "c1bbf952-de1b-4b9c-902a-95525ba690b6@eed91",
+        "c1bbf952-de1b-4b9c-902a-95525ba690b6@0c4eb"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "c1bbf952-de1b-4b9c-902a-95525ba690b6@00fbf",
+        "c1bbf952-de1b-4b9c-902a-95525ba690b6@ab42b",
+        "c1bbf952-de1b-4b9c-902a-95525ba690b6@ee7d1"
+      ],
+      "scenes": [
+        "c1bbf952-de1b-4b9c-902a-95525ba690b6@d3d82"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

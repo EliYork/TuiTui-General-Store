@@ -1,0 +1,114 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "063751be-cb79-4cf8-8dcc-ad246a45f01d",
+  "files": [],
+  "subMetas": {
+    "625cc": {
+      "importer": "gltf-mesh",
+      "uuid": "063751be-cb79-4cf8-8dcc-ad246a45f01d@625cc",
+      "displayName": "",
+      "id": "625cc",
+      "name": "cookingSpatula_Material0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 72
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "cdda2": {
+      "importer": "gltf-material",
+      "uuid": "063751be-cb79-4cf8-8dcc-ad246a45f01d@cdda2",
+      "displayName": "",
+      "id": "cdda2",
+      "name": "brown.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "b31f4": {
+      "importer": "gltf-material",
+      "uuid": "063751be-cb79-4cf8-8dcc-ad246a45f01d@b31f4",
+      "displayName": "",
+      "id": "b31f4",
+      "name": "white.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "8fa4a": {
+      "importer": "gltf-scene",
+      "uuid": "063751be-cb79-4cf8-8dcc-ad246a45f01d@8fa4a",
+      "displayName": "",
+      "id": "8fa4a",
+      "name": "cookingSpatula.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "063751be-cb79-4cf8-8dcc-ad246a45f01d@625cc"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "063751be-cb79-4cf8-8dcc-ad246a45f01d@cdda2",
+        "063751be-cb79-4cf8-8dcc-ad246a45f01d@b31f4"
+      ],
+      "scenes": [
+        "063751be-cb79-4cf8-8dcc-ad246a45f01d@8fa4a"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

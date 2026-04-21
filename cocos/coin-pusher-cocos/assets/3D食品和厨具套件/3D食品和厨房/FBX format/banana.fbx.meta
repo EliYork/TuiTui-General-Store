@@ -1,0 +1,114 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "e67c414d-7697-4758-bc3a-aa9caa9a41af",
+  "files": [],
+  "subMetas": {
+    "77206": {
+      "importer": "gltf-material",
+      "uuid": "e67c414d-7697-4758-bc3a-aa9caa9a41af@77206",
+      "displayName": "",
+      "id": "77206",
+      "name": "yellow.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "533cb": {
+      "importer": "gltf-mesh",
+      "uuid": "e67c414d-7697-4758-bc3a-aa9caa9a41af@533cb",
+      "displayName": "",
+      "id": "533cb",
+      "name": "banana_Material0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 104
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "ee7d1": {
+      "importer": "gltf-material",
+      "uuid": "e67c414d-7697-4758-bc3a-aa9caa9a41af@ee7d1",
+      "displayName": "",
+      "id": "ee7d1",
+      "name": "brownDark.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "d609c": {
+      "importer": "gltf-scene",
+      "uuid": "e67c414d-7697-4758-bc3a-aa9caa9a41af@d609c",
+      "displayName": "",
+      "id": "d609c",
+      "name": "banana.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "e67c414d-7697-4758-bc3a-aa9caa9a41af@533cb"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "e67c414d-7697-4758-bc3a-aa9caa9a41af@ee7d1",
+        "e67c414d-7697-4758-bc3a-aa9caa9a41af@77206"
+      ],
+      "scenes": [
+        "e67c414d-7697-4758-bc3a-aa9caa9a41af@d609c"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "b3f0598a-19cb-4ce3-b8ec-ecce8c60fef6",
+  "files": [],
+  "subMetas": {
+    "e4c75": {
+      "importer": "gltf-mesh",
+      "uuid": "b3f0598a-19cb-4ce3-b8ec-ecce8c60fef6@e4c75",
+      "displayName": "",
+      "id": "e4c75",
+      "name": "utensilKnife.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 18
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "b31f4": {
+      "importer": "gltf-material",
+      "uuid": "b3f0598a-19cb-4ce3-b8ec-ecce8c60fef6@b31f4",
+      "displayName": "",
+      "id": "b31f4",
+      "name": "white.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "21a05": {
+      "importer": "gltf-scene",
+      "uuid": "b3f0598a-19cb-4ce3-b8ec-ecce8c60fef6@21a05",
+      "displayName": "",
+      "id": "21a05",
+      "name": "utensilKnife.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "b3f0598a-19cb-4ce3-b8ec-ecce8c60fef6@e4c75"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "b3f0598a-19cb-4ce3-b8ec-ecce8c60fef6@b31f4"
+      ],
+      "scenes": [
+        "b3f0598a-19cb-4ce3-b8ec-ecce8c60fef6@21a05"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}

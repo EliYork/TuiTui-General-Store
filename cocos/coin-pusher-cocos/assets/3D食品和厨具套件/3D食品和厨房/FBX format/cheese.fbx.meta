@@ -1,0 +1,340 @@
+{
+  "ver": "2.3.14",
+  "importer": "fbx",
+  "imported": true,
+  "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da",
+  "files": [],
+  "subMetas": {
+    "77206": {
+      "importer": "gltf-material",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@77206",
+      "displayName": "",
+      "id": "77206",
+      "name": "yellow.material",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "2a999": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@2a999",
+      "displayName": "",
+      "id": "2a999",
+      "name": "wedge_Material0-0.mesh",
+      "userData": {
+        "gltfIndex": 0,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "4f527": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@4f527",
+      "displayName": "",
+      "id": "4f527",
+      "name": "wedge_Material0-1.mesh",
+      "userData": {
+        "gltfIndex": 1,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "dc499": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@dc499",
+      "displayName": "",
+      "id": "dc499",
+      "name": "wedge_Material0-2.mesh",
+      "userData": {
+        "gltfIndex": 2,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "9357a": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@9357a",
+      "displayName": "",
+      "id": "9357a",
+      "name": "wedge_Material0-3.mesh",
+      "userData": {
+        "gltfIndex": 3,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "21cf7": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@21cf7",
+      "displayName": "",
+      "id": "21cf7",
+      "name": "wedge_Material0-4.mesh",
+      "userData": {
+        "gltfIndex": 4,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f9f3c": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@f9f3c",
+      "displayName": "",
+      "id": "f9f3c",
+      "name": "wedge_Material0-5.mesh",
+      "userData": {
+        "gltfIndex": 5,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "bace8": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@bace8",
+      "displayName": "",
+      "id": "bace8",
+      "name": "wedge_Material0-6.mesh",
+      "userData": {
+        "gltfIndex": 6,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "28f98": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@28f98",
+      "displayName": "",
+      "id": "28f98",
+      "name": "wedge_Material0-7.mesh",
+      "userData": {
+        "gltfIndex": 7,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "00740": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@00740",
+      "displayName": "",
+      "id": "00740",
+      "name": "wedge_Material0-8.mesh",
+      "userData": {
+        "gltfIndex": 8,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "e1662": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@e1662",
+      "displayName": "",
+      "id": "e1662",
+      "name": "wedge_Material0-9.mesh",
+      "userData": {
+        "gltfIndex": 9,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0fc77": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@0fc77",
+      "displayName": "",
+      "id": "0fc77",
+      "name": "wedge_Material0-10.mesh",
+      "userData": {
+        "gltfIndex": 10,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "5fd0b": {
+      "importer": "gltf-mesh",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@5fd0b",
+      "displayName": "",
+      "id": "5fd0b",
+      "name": "wedge_Material0-11.mesh",
+      "userData": {
+        "gltfIndex": 11,
+        "triangleCount": 48
+      },
+      "ver": "1.1.1",
+      "imported": true,
+      "files": [
+        ".bin",
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f6c22": {
+      "importer": "gltf-material",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@f6c22",
+      "displayName": "",
+      "id": "f6c22",
+      "name": "brownLight.material",
+      "userData": {
+        "gltfIndex": 1
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "0ee4f": {
+      "importer": "gltf-material",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@0ee4f",
+      "displayName": "",
+      "id": "0ee4f",
+      "name": "_defaultMat.material",
+      "userData": {
+        "gltfIndex": 2
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "188e3": {
+      "importer": "gltf-scene",
+      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da@188e3",
+      "displayName": "",
+      "id": "188e3",
+      "name": "cheese.prefab",
+      "userData": {
+        "gltfIndex": 0
+      },
+      "ver": "1.0.14",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "imageMetas": [],
+    "fbx": {
+      "smartMaterialEnabled": true,
+      "matchMeshNames": false
+    },
+    "assetFinder": {
+      "meshes": [
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@2a999",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@4f527",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@dc499",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@9357a",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@21cf7",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@f9f3c",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@bace8",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@28f98",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@00740",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@e1662",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@0fc77",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@5fd0b"
+      ],
+      "skeletons": [],
+      "textures": [],
+      "materials": [
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@77206",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@f6c22",
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@0ee4f"
+      ],
+      "scenes": [
+        "e0eb9c06-b861-4a1b-a3e8-1251489228da@188e3"
+      ]
+    },
+    "lods": {
+      "enable": false,
+      "hasBuiltinLOD": false,
+      "options": [
+        {
+          "screenRatio": 0.25,
+          "faceCount": 1
+        },
+        {
+          "screenRatio": 0.125,
+          "faceCount": 0.25
+        },
+        {
+          "screenRatio": 0.01,
+          "faceCount": 0.1
+        }
+      ]
+    }
+  }
+}
