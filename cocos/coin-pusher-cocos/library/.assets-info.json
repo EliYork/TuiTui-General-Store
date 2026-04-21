@@ -52,7 +52,7 @@
       "uuid": "8d52c82a-7d7f-4937-b184-5c14baafc30a"
     },
     "prefabs": {
-      "time": 1776603856375.9163,
+      "time": 1776754109894.0657,
       "uuid": "c2853625-8549-4d0a-893f-3e66f7e4367f"
     },
     "scenes": {
@@ -141,1440 +141,250 @@
       "time": 1776673412338.7341,
       "uuid": "f4c3f9c5-2d0e-4a72-a1df-40eb5e40a2e6"
     },
-    "3D食品和厨具套件.meta": {
-      "time": 1776753529408.3513
+    "prefabs\\items.meta": {
+      "time": 1776754109895.6719
     },
-    "3D食品和厨具套件\\3D食品和厨房.meta": {
-      "time": 1776753529409.3545
+    "prefabs\\items": {
+      "time": 1776754192092.6194,
+      "uuid": "09efc641-841e-4554-8f0b-63796f7eb6b0"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format.meta": {
-      "time": 1776753529408.3513
+    "prefabs\\items\\all.meta": {
+      "time": 1776754116096.1052
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format": {
-      "time": 1776753524040.6304,
-      "uuid": "9782ca1a-8a25-4d0a-920e-03eafd12c0e6"
+    "prefabs\\items\\all": {
+      "time": 1776754162183.7822,
+      "uuid": "98995ead-7638-49d6-9025-cdd8d27f49d6"
     },
-    "3D食品和厨具套件": {
-      "time": 1776753529406.337,
-      "uuid": "705f1465-d07e-4b3b-9e11-9aa0bf31992f"
+    "prefabs\\items\\all\\wineWhite.prefab.meta": {
+      "time": 1776754160837.5964
     },
-    "3D食品和厨具套件\\3D食品和厨房": {
-      "time": 1776753523686.1704,
-      "uuid": "3877dffa-af0b-4831-bff2-8c521d8ea505"
+    "prefabs\\items\\all\\wineWhite.prefab": {
+      "time": 1776754160835.5657,
+      "uuid": "181e6fb6-5b40-473a-953c-ec97b54020a9"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\License.txt.meta": {
-      "time": 1776753523322.2385
+    "prefabs\\items\\all\\wineRed.prefab.meta": {
+      "time": 1776754160898.3857
     },
-    "3D食品和厨具套件\\3D食品和厨房\\scene.scene.meta": {
-      "time": 1776753529593.7712
+    "prefabs\\items\\all\\wineRed.prefab": {
+      "time": 1776754160897.3887,
+      "uuid": "1303b140-7a31-480e-910f-e59c23f06a16"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\apple.fbx.meta": {
-      "time": 1776753529969.776
+    "prefabs\\items\\all\\wholerHam.prefab.meta": {
+      "time": 1776754160951.7815
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\appleHalf.fbx.meta": {
-      "time": 1776753530079.5767
+    "prefabs\\items\\all\\wholerHam.prefab": {
+      "time": 1776754160950.6584,
+      "uuid": "6051d5dd-bbb7-4a9d-b771-9126b23e1852"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\avocado.fbx.meta": {
-      "time": 1776753529964.6934
+    "prefabs\\items\\all\\wholeHam.prefab.meta": {
+      "time": 1776754161007.0647
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\avocadoHalf.fbx.meta": {
-      "time": 1776753530169.6753
+    "prefabs\\items\\all\\wholeHam.prefab": {
+      "time": 1776754161005.9111,
+      "uuid": "44a3b998-d754-4961-aec6-f744a69b277d"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bacon.fbx.meta": {
-      "time": 1776753530075.5422
+    "prefabs\\items\\all\\whisk.prefab.meta": {
+      "time": 1776754161056.4768
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\baconRaw.fbx.meta": {
-      "time": 1776753530228.2498
+    "prefabs\\items\\all\\whisk.prefab": {
+      "time": 1776754161055.4685,
+      "uuid": "a4fd1cec-4d01-43ae-a9bb-5381a5945b48"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bag.fbx.meta": {
-      "time": 1776753530225.239
+    "prefabs\\items\\all\\whippedCream.prefab.meta": {
+      "time": 1776754161100.2378
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bagFlat.fbx.meta": {
-      "time": 1776753530327.4634
+    "prefabs\\items\\all\\whippedCream.prefab": {
+      "time": 1776754161099.0806,
+      "uuid": "353e8002-5ae8-4500-84a8-db6fa13590fd"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\banana.fbx.meta": {
-      "time": 1776753530330.5818
+    "prefabs\\items\\all\\watermelon.prefab.meta": {
+      "time": 1776754161137.561
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\barrel.fbx.meta": {
-      "time": 1776753530335.645
+    "prefabs\\items\\all\\watermelon.prefab": {
+      "time": 1776754161136.5632,
+      "uuid": "a6666161-7a08-465b-8d37-ecf2145736bd"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\beet.fbx.meta": {
-      "time": 1776753530476.1921
+    "prefabs\\items\\all\\waffle.prefab.meta": {
+      "time": 1776754161200.037
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bottleKetchup.fbx.meta": {
-      "time": 1776753530470.1482
+    "prefabs\\items\\all\\waffle.prefab": {
+      "time": 1776754161199.0042,
+      "uuid": "fd1db43d-5c71-4e21-92f9-3837a91659cc"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bottleMusterd.fbx.meta": {
-      "time": 1776753530574.807
+    "prefabs\\items\\all\\utensilSpoon.prefab.meta": {
+      "time": 1776754161236.0908
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bottleOil.fbx.meta": {
-      "time": 1776753530630.3762
+    "prefabs\\items\\all\\utensilSpoon.prefab": {
+      "time": 1776754161235.0945,
+      "uuid": "bf0a8cd7-bbde-4483-9e11-1451c347f2c3"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bowl.fbx.meta": {
-      "time": 1776753530580.9746
+    "prefabs\\items\\all\\utensilKnife.prefab.meta": {
+      "time": 1776754161272.9058
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bowlBroth.fbx.meta": {
-      "time": 1776753530831.1318
+    "prefabs\\items\\all\\utensilKnife.prefab": {
+      "time": 1776754161271.9082,
+      "uuid": "8bc99924-91c2-4f29-a5c5-0fe6291d27a0"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bowlCereal.fbx.meta": {
-      "time": 1776753530736.5205
+    "prefabs\\items\\all\\utensilFork.prefab.meta": {
+      "time": 1776754161310.2761
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bowlSoup.fbx.meta": {
-      "time": 1776753530741.5579
+    "prefabs\\items\\all\\utensilFork.prefab": {
+      "time": 1776754161310.2761,
+      "uuid": "bc0e5267-594b-4c13-889b-6d2f82184745"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bread.fbx.meta": {
-      "time": 1776753530882.2646
+    "prefabs\\items\\all\\turkey.prefab.meta": {
+      "time": 1776754161358.3918
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\broccoli.fbx.meta": {
-      "time": 1776753530885.161
+    "prefabs\\items\\all\\turkey.prefab": {
+      "time": 1776754161356.9866,
+      "uuid": "2a73b2f3-7c77-4031-b243-53b7a37b5174"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\burger.fbx.meta": {
-      "time": 1776753531057.794
+    "prefabs\\items\\all\\tomatoSlice.prefab.meta": {
+      "time": 1776754161393.316
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\burgerCheese.fbx.meta": {
-      "time": 1776753530999.7485
+    "prefabs\\items\\all\\tomatoSlice.prefab": {
+      "time": 1776754161392.026,
+      "uuid": "ad7cdf8b-2546-43ac-a07b-694dec1cb9c2"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\burgerCheeseDouble.fbx.meta": {
-      "time": 1776753531054.3652
+    "prefabs\\items\\all\\tomato.prefab.meta": {
+      "time": 1776754161442.13
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\burgerDouble.fbx.meta": {
-      "time": 1776753531228.3762
+    "prefabs\\items\\all\\tomato.prefab": {
+      "time": 1776754161440.9817,
+      "uuid": "02a1ca41-be27-48b7-bc8e-5224078c51a4"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cabbage.fbx.meta": {
-      "time": 1776753531157.425
+    "prefabs\\items\\all\\tajineLid.prefab.meta": {
+      "time": 1776754161479.934
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cake.fbx.meta": {
-      "time": 1776753531226.3557
+    "prefabs\\items\\all\\tajineLid.prefab": {
+      "time": 1776754161477.9404,
+      "uuid": "fe12f002-cc51-4094-851c-5e81b701e887"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cakeBirthday.fbx.meta": {
-      "time": 1776753531439.542
+    "prefabs\\items\\all\\tajine.prefab.meta": {
+      "time": 1776754161512.2007
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cakeSlicer.fbx.meta": {
-      "time": 1776753531327.849
+    "prefabs\\items\\all\\tajine.prefab": {
+      "time": 1776754161511.1685,
+      "uuid": "b52bd1e5-42e7-4d94-bae6-c0e36a5186fc"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\can.fbx.meta": {
-      "time": 1776753531338.0823
+    "prefabs\\items\\all\\taco.prefab.meta": {
+      "time": 1776754161547.548
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\candyBar.fbx.meta": {
-      "time": 1776753531428.4717
+    "prefabs\\items\\all\\taco.prefab": {
+      "time": 1776754161546.51,
+      "uuid": "23abe818-6d5c-437d-a393-7b3044fb5c77"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\candyBarWrapper.fbx.meta": {
-      "time": 1776753531531.4692
+    "prefabs\\items\\all\\sushiSalmon.prefab.meta": {
+      "time": 1776754161665.0469
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\canOpen.fbx.meta": {
-      "time": 1776753531536.7314
+    "prefabs\\items\\all\\sushiSalmon.prefab": {
+      "time": 1776754161663.925,
+      "uuid": "69a013c1-d196-411b-b6dc-551fc5b0c107"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\canSmall.fbx.meta": {
-      "time": 1776753531635.0796
+    "prefabs\\items\\all\\sushiEgg.prefab.meta": {
+      "time": 1776754161708.8943
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\carrot.fbx.meta": {
-      "time": 1776753531641.116
+    "prefabs\\items\\all\\sushiEgg.prefab": {
+      "time": 1776754161707.8242,
+      "uuid": "ce115b6d-2d40-4e57-ac5a-ea15a456b5f7"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\carton.fbx.meta": {
-      "time": 1776753531686.3103
+    "prefabs\\items\\all\\sundae.prefab.meta": {
+      "time": 1776754161756.95
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cartonSmall.fbx.meta": {
-      "time": 1776753531791.608
+    "prefabs\\items\\all\\sundae.prefab": {
+      "time": 1776754161755.9258,
+      "uuid": "24e26faa-c78f-4a89-802d-6a8ebb23f500"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cauliflower.fbx.meta": {
-      "time": 1776753531784.5352
+    "prefabs\\items\\all\\sub.prefab.meta": {
+      "time": 1776754161791.5308
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\celeryStick.fbx.meta": {
-      "time": 1776753531788.5894
+    "prefabs\\items\\all\\sub.prefab": {
+      "time": 1776754161790.4587,
+      "uuid": "42d454c8-b1bc-4122-859a-20f11bc4f149"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cheese.fbx.meta": {
-      "time": 1776753532000.8313
+    "prefabs\\items\\all\\styrofoamDinner.prefab.meta": {
+      "time": 1776754161832.6602
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cheeseCut.fbx.meta": {
-      "time": 1776753531933.1077
+    "prefabs\\items\\all\\styrofoamDinner.prefab": {
+      "time": 1776754161831.2134,
+      "uuid": "2cebd38a-e131-4fe4-8b5b-c72f5541c24d"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cheeseSlicer.fbx.meta": {
-      "time": 1776753532061.994
+    "prefabs\\items\\all\\styrofoam.prefab.meta": {
+      "time": 1776754161873.2947
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cherries.fbx.meta": {
-      "time": 1776753532059.6467
+    "prefabs\\items\\all\\styrofoam.prefab": {
+      "time": 1776754161870.8174,
+      "uuid": "99f8d746-7c5a-466f-85f6-6fe9ee491bfe"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chinese.fbx.meta": {
-      "time": 1776753532156.3726
+    "prefabs\\items\\all\\strawberry.prefab.meta": {
+      "time": 1776754161928.8184
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chocolate.fbx.meta": {
-      "time": 1776753532209.7798
+    "prefabs\\items\\all\\strawberry.prefab": {
+      "time": 1776754161927.821,
+      "uuid": "690a56e4-6684-459b-98f4-7abaa0b11031"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chocolateWrapper.fbx.meta": {
-      "time": 1776753532213.802
+    "prefabs\\items\\all\\steamer.prefab.meta": {
+      "time": 1776754161973.2905
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chopstick.fbx.meta": {
-      "time": 1776753532269.7397
+    "prefabs\\items\\all\\steamer.prefab": {
+      "time": 1776754161971.1228,
+      "uuid": "5ff9f11e-238f-43d0-a182-47f003b9ef85"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chopstickFancy.fbx.meta": {
-      "time": 1776753532274.7725
+    "prefabs\\items\\all\\soy.prefab.meta": {
+      "time": 1776754162004.7617
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cocktail.fbx.meta": {
-      "time": 1776753532391.606
+    "prefabs\\items\\all\\soy.prefab": {
+      "time": 1776754162003.688,
+      "uuid": "e429dd15-0e3f-4ce7-9ae8-7bc348b505c1"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\coconut.fbx.meta": {
-      "time": 1776753532361.751
+    "prefabs\\items\\all\\sodaGlass.prefab.meta": {
+      "time": 1776754162036.21
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\coconutHalf.fbx.meta": {
-      "time": 1776753532479.2683
+    "prefabs\\items\\all\\sodaGlass.prefab": {
+      "time": 1776754162035.1875,
+      "uuid": "c9cf576b-99d8-43e8-ba6d-99c16a7e06ef"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookie.fbx.meta": {
-      "time": 1776753532553.9524
+    "prefabs\\items\\all\\sodaCanCrushed.prefab.meta": {
+      "time": 1776754162078.2869
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookieChocolate.fbx.meta": {
-      "time": 1776753532554.9736
+    "prefabs\\items\\all\\sodaCanCrushed.prefab": {
+      "time": 1776754162075.7705,
+      "uuid": "0c7759df-8dea-4614-978e-b8ebf43d8b89"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingFork.fbx.meta": {
-      "time": 1776753532556.982
+    "prefabs\\items\\all\\sodaCan.prefab.meta": {
+      "time": 1776754162123.1377
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingKnife.fbx.meta": {
-      "time": 1776753532658.3948
+    "prefabs\\items\\all\\sodaCan.prefab": {
+      "time": 1776754162123.1377,
+      "uuid": "005f15c8-21f9-4590-9640-014acf4eb1c3"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingKnifeChopping.fbx.meta": {
-      "time": 1776753532660.619
+    "prefabs\\items\\all\\sodaBottle.prefab.meta": {
+      "time": 1776754162186.9011
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingSpatula.fbx.meta": {
-      "time": 1776753532736.329
+    "prefabs\\items\\all\\sodaBottle.prefab": {
+      "time": 1776754162184.7783,
+      "uuid": "4cb25723-84fb-401b-a9c6-2f1f805425c7"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingSpoon.fbx.meta": {
-      "time": 1776753532856.5564
+    "prefabs\\items\\maps.meta": {
+      "time": 1776754192092.6194
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\corn.fbx.meta": {
-      "time": 1776753532776.9456
+    "prefabs\\items\\maps": {
+      "time": 1776754210936.831,
+      "uuid": "136450a1-502b-46e8-89f0-63411279afe6"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cornDog.fbx.meta": {
-      "time": 1776753532959.3477
+    "prefabs\\items\\maps\\map01.meta": {
+      "time": 1776754203722.6653
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\croissant.fbx.meta": {
-      "time": 1776753532912.0315
+    "prefabs\\items\\maps\\map01": {
+      "time": 1776754203720.6326,
+      "uuid": "4ad92485-0c97-4869-a641-347cbdbc0b7a"
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cup.fbx.meta": {
-      "time": 1776753533010.5398
+    "prefabs\\items\\maps\\map02.meta": {
+      "time": 1776754210936.831
     },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cupcake.fbx.meta": {
-      "time": 1776753533112.419
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cupSaucer.fbx.meta": {
-      "time": 1776753533058.723
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cupTea.fbx.meta": {
-      "time": 1776753533116.4387
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cupThea.fbx.meta": {
-      "time": 1776753533176.2285
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cuttingBoard.fbx.meta": {
-      "time": 1776753533211.515
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cuttingBoardJapanese.fbx.meta": {
-      "time": 1776753533297.3337
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cuttingBoardRound.fbx.meta": {
-      "time": 1776753533347.5234
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\dimSum.fbx.meta": {
-      "time": 1776753533361.8025
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\donut.fbx.meta": {
-      "time": 1776753533448.2747
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\donutChocolate.fbx.meta": {
-      "time": 1776753533450.2869
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\donutSprinkles.fbx.meta": {
-      "time": 1776753533595.8757
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\egg.fbx.meta": {
-      "time": 1776753533547.66
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\eggCooked.fbx.meta": {
-      "time": 1776753533612.21
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\eggCup.fbx.meta": {
-      "time": 1776753533695.9124
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\eggHalf.fbx.meta": {
-      "time": 1776753533700.9363
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\eggplant.fbx.meta": {
-      "time": 1776753533798.3606
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fish.fbx.meta": {
-      "time": 1776753533811.6914
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fishBones.fbx.meta": {
-      "time": 1776753533801.4768
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\frappe.fbx.meta": {
-      "time": 1776753533918.374
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fries.fbx.meta": {
-      "time": 1776753533912.3347
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\friesEmpty.fbx.meta": {
-      "time": 1776753533994.8782
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\frikandelSpeciaal.fbx.meta": {
-      "time": 1776753534130.683
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fryingPan.fbx.meta": {
-      "time": 1776753534078.4475
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fryingPanLid.fbx.meta": {
-      "time": 1776753534183.9941
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\gingerBread.fbx.meta": {
-      "time": 1776753534200.8035
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\gingerBreadCutter.fbx.meta": {
-      "time": 1776753534197.5725
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\glass.fbx.meta": {
-      "time": 1776753534285.8435
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\glassWine.fbx.meta": {
-      "time": 1776753534353.0496
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\grapes.fbx.meta": {
-      "time": 1776753534408.0605
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\honey.fbx.meta": {
-      "time": 1776753534462.064
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\hotDog.fbx.meta": {
-      "time": 1776753534522.564
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\hotDogRaw.fbx.meta": {
-      "time": 1776753534477.8577
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCream.fbx.meta": {
-      "time": 1776753534529.0479
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCreamCone.fbx.meta": {
-      "time": 1776753534571.2534
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCreamCup.fbx.meta": {
-      "time": 1776753534687.1936
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCreamScoop.fbx.meta": {
-      "time": 1776753534749.6904
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCreamScoopMint.fbx.meta": {
-      "time": 1776753534744.6616
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\knifeBlock.fbx.meta": {
-      "time": 1776753534773.2065
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\leek.fbx.meta": {
-      "time": 1776753534778.2283
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\lemon.fbx.meta": {
-      "time": 1776753534928.1873
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\lemonHalf.fbx.meta": {
-      "time": 1776753534979.2458
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\loaf.fbx.meta": {
-      "time": 1776753534976.2146
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\loafBaguette.fbx.meta": {
-      "time": 1776753535076.6975
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\loafRound.fbx.meta": {
-      "time": 1776753535078.7092
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\lollypop.fbx.meta": {
-      "time": 1776753535166.2842
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\makiRoe.fbx.meta": {
-      "time": 1776753535183.4878
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\makiSalmon.fbx.meta": {
-      "time": 1776753535186.4966
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\makiVegetable.fbx.meta": {
-      "time": 1776753535311.885
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatCooked.fbx.meta": {
-      "time": 1776753535313.9143
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatPatty.fbx.meta": {
-      "time": 1776753535411.8984
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatRaw.fbx.meta": {
-      "time": 1776753535415.9219
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatRibs.fbx.meta": {
-      "time": 1776753535413.9092
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatSausage.fbx.meta": {
-      "time": 1776753535587.6868
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatTenderizer.fbx.meta": {
-      "time": 1776753535589.696
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mincemeatPie.fbx.meta": {
-      "time": 1776753535584.173
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mortar.fbx.meta": {
-      "time": 1776753535725.5696
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mortarPestle.fbx.meta": {
-      "time": 1776753535729.736
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\muffin.fbx.meta": {
-      "time": 1776753535825.3103
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mug.fbx.meta": {
-      "time": 1776753535828.3628
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mushroom.fbx.meta": {
-      "time": 1776753535928.8694
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mushroomHalf.fbx.meta": {
-      "time": 1776753535930.9858
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mussel.fbx.meta": {
-      "time": 1776753535924.848
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\musselOpen.fbx.meta": {
-      "time": 1776753536070.0818
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\onion.fbx.meta": {
-      "time": 1776753536065.8132
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\onionHalf.fbx.meta": {
-      "time": 1776753536129.1345
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\orange.fbx.meta": {
-      "time": 1776753536174.0137
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pan.fbx.meta": {
-      "time": 1776753536169.9424
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pancakes.fbx.meta": {
-      "time": 1776753536341.2195
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\panStew.fbx.meta": {
-      "time": 1776753536298.7732
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\paprika.fbx.meta": {
-      "time": 1776753536271.4778
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\paprikaSlice.fbx.meta": {
-      "time": 1776753536345.236
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\peanutButter.fbx.meta": {
-      "time": 1776753536473.6753
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pear.fbx.meta": {
-      "time": 1776753536476.6924
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pearHalf.fbx.meta": {
-      "time": 1776753536537.1963
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pepper.fbx.meta": {
-      "time": 1776753536613.98
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pepperMill.fbx.meta": {
-      "time": 1776753536611.968
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pie.fbx.meta": {
-      "time": 1776753536639.4602
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pineapple.fbx.meta": {
-      "time": 1776753536713.342
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pizza.fbx.meta": {
-      "time": 1776753536773.1184
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pizzaBox.fbx.meta": {
-      "time": 1776753536777.4524
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pizzaCutter.fbx.meta": {
-      "time": 1776753536892.069
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plate.fbx.meta": {
-      "time": 1776753536880.182
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateBroken.fbx.meta": {
-      "time": 1776753536996.4763
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateDeep.fbx.meta": {
-      "time": 1776753537011.8445
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateDinner.fbx.meta": {
-      "time": 1776753537060.4023
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateRectangle.fbx.meta": {
-      "time": 1776753537099.228
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateSauerkraut.fbx.meta": {
-      "time": 1776753537144.7424
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\popsicle.fbx.meta": {
-      "time": 1776753537191.8628
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\popsicleChocolate.fbx.meta": {
-      "time": 1776753537231.431
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\popsicleStick.fbx.meta": {
-      "time": 1776753537316.1543
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pot.fbx.meta": {
-      "time": 1776753537367.7046
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\potLid.fbx.meta": {
-      "time": 1776753537419.2083
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\potStew.fbx.meta": {
-      "time": 1776753537476.9292
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\potStewLid.fbx.meta": {
-      "time": 1776753537471.396
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pudding.fbx.meta": {
-      "time": 1776753537490.5928
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pumpkin.fbx.meta": {
-      "time": 1776753537569.6375
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pumpkinBasic.fbx.meta": {
-      "time": 1776753537617.7595
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\radish.fbx.meta": {
-      "time": 1776753537667.7307
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\riceBall.fbx.meta": {
-      "time": 1776753537663.3496
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\rollingPin.fbx.meta": {
-      "time": 1776753537713.948
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\salad.fbx.meta": {
-      "time": 1776753537831.4875
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sandwich.fbx.meta": {
-      "time": 1776753537941.3342
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sausage.fbx.meta": {
-      "time": 1776753537854.0952
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sausageHalf.fbx.meta": {
-      "time": 1776753537968.994
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\shakerPepper.fbx.meta": {
-      "time": 1776753537944.4314
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\shakerSalt.fbx.meta": {
-      "time": 1776753537971.4138
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\skewer.fbx.meta": {
-      "time": 1776753538135.0698
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\skewerVegetables.fbx.meta": {
-      "time": 1776753538154.805
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\soda.fbx.meta": {
-      "time": 1776753538197.2434
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sodaBottle.fbx.meta": {
-      "time": 1776753538244.1824
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sodaCan.fbx.meta": {
-      "time": 1776753538289.5066
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sodaCanCrushed.fbx.meta": {
-      "time": 1776753538331.769
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sodaGlass.fbx.meta": {
-      "time": 1776753538389.5503
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\soy.fbx.meta": {
-      "time": 1776753538386.0276
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\steamer.fbx.meta": {
-      "time": 1776753538445.127
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\strawberry.fbx.meta": {
-      "time": 1776753538549.3567
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\styrofoam.fbx.meta": {
-      "time": 1776753538580.0837
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\styrofoamDinner.fbx.meta": {
-      "time": 1776753538613.218
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sub.fbx.meta": {
-      "time": 1776753538720.2227
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sundae.fbx.meta": {
-      "time": 1776753538679.9626
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sushiEgg.fbx.meta": {
-      "time": 1776753538723.2385
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sushiSalmon.fbx.meta": {
-      "time": 1776753538771.954
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\taco.fbx.meta": {
-      "time": 1776753538887.1091
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\tajine.fbx.meta": {
-      "time": 1776753538950.39
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\tajineLid.fbx.meta": {
-      "time": 1776753538952.3828
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\tomato.fbx.meta": {
-      "time": 1776753539013.9229
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\tomatoSlice.fbx.meta": {
-      "time": 1776753539017.0059
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\turkey.fbx.meta": {
-      "time": 1776753539069.8538
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\utensilFork.fbx.meta": {
-      "time": 1776753539140.0244
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\utensilKnife.fbx.meta": {
-      "time": 1776753539224.9712
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\utensilSpoon.fbx.meta": {
-      "time": 1776753539251.2434
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\waffle.fbx.meta": {
-      "time": 1776753539284.61
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\watermelon.fbx.meta": {
-      "time": 1776753539470.0332
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\whippedCream.fbx.meta": {
-      "time": 1776753539344.1838
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\whisk.fbx.meta": {
-      "time": 1776753539389.1528
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\wholeHam.fbx.meta": {
-      "time": 1776753539479.2168
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\wholerHam.fbx.meta": {
-      "time": 1776753539497.4048
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\wineRed.fbx.meta": {
-      "time": 1776753539529.3403
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\wineWhite.fbx.meta": {
-      "time": 1776753539536.4788
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\License.txt": {
-      "time": 1776753523329.0752,
-      "uuid": "41e57100-4363-481e-8fa2-22657b5b6586"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\scene.scene": {
-      "time": 1776753772119.7102,
-      "uuid": "7b029136-dd73-4a47-a0c2-48ff1d96a189"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\avocado.fbx": {
-      "time": 1776753523511.2505,
-      "uuid": "5c087151-cfd4-4bb6-9b7f-c985dd8fb550"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\apple.fbx": {
-      "time": 1776753523541.9844,
-      "uuid": "e71e0f01-7f1c-420f-a15c-495483ccde74"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bacon.fbx": {
-      "time": 1776753523623.1365,
-      "uuid": "8675e32c-44a7-416c-b3e6-4fb11ce57259"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\appleHalf.fbx": {
-      "time": 1776753523500.1907,
-      "uuid": "f960ba58-ad63-44aa-8548-772a270cd13d"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\avocadoHalf.fbx": {
-      "time": 1776753523616.0474,
-      "uuid": "c1bbf952-de1b-4b9c-902a-95525ba690b6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bag.fbx": {
-      "time": 1776753523608.235,
-      "uuid": "10f5d14b-196b-4749-b51a-dd7595778312"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\baconRaw.fbx": {
-      "time": 1776753523412.7893,
-      "uuid": "5b2fec90-776b-4f4b-b5a3-2faa689e0996"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bagFlat.fbx": {
-      "time": 1776753523637.8062,
-      "uuid": "a6a212bc-1a4b-4fd5-95e5-5ba9313727ba"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\banana.fbx": {
-      "time": 1776753523629.6997,
-      "uuid": "e67c414d-7697-4758-bc3a-aa9caa9a41af"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\barrel.fbx": {
-      "time": 1776753523583.13,
-      "uuid": "4ea7a7b0-d024-4987-85ec-e3c4808598ad"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bottleKetchup.fbx": {
-      "time": 1776753523618.0671,
-      "uuid": "88bc13fe-60bc-4b4f-80c6-4cb80c9809d6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\beet.fbx": {
-      "time": 1776753523471.2693,
-      "uuid": "6d05edab-2231-4712-9027-1c887e36786e"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bottleMusterd.fbx": {
-      "time": 1776753523627.33,
-      "uuid": "167bf7ea-292e-497a-980b-fd7aa008b7cf"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bowl.fbx": {
-      "time": 1776753523408.638,
-      "uuid": "db83ea4a-be52-4315-ac7c-0b856c3bec47"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bottleOil.fbx": {
-      "time": 1776753523438.5266,
-      "uuid": "ddae4c57-3051-483e-adec-4e5de46b2c96"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bowlCereal.fbx": {
-      "time": 1776753523449.8594,
-      "uuid": "ebd413eb-6a9a-4fd9-ac03-217902f633f3"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bowlSoup.fbx": {
-      "time": 1776753523456.12,
-      "uuid": "1ea489d7-7ac1-4e40-bd3b-9fb3d8e52ff1"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bowlBroth.fbx": {
-      "time": 1776753523444.7188,
-      "uuid": "66ec541c-762a-483b-af13-2de8e0957958"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\bread.fbx": {
-      "time": 1776753523330.4111,
-      "uuid": "a1f69fdb-22db-455b-9f3b-e90969f0b12f"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\broccoli.fbx": {
-      "time": 1776753523600.9175,
-      "uuid": "31856770-9b22-4b6c-a5f8-396c914501c5"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\burgerCheese.fbx": {
-      "time": 1776753523531.1926,
-      "uuid": "376934dc-f096-4e85-8f73-a272e630b6ae"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\burgerCheeseDouble.fbx": {
-      "time": 1776753523603.021,
-      "uuid": "6828082d-fd36-4930-9bf6-ac09904dd8e7"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\burger.fbx": {
-      "time": 1776753523611.3313,
-      "uuid": "bccce70e-563c-4ea3-8acf-fd478593f6eb"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cabbage.fbx": {
-      "time": 1776753523660.0657,
-      "uuid": "e0fa4a20-0dad-43ce-bea9-836a5473ec79"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cake.fbx": {
-      "time": 1776753523399.3308,
-      "uuid": "a69b4769-2f98-48c9-b966-faf5c1222085"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\burgerDouble.fbx": {
-      "time": 1776753523409.67,
-      "uuid": "4d7e0eb5-a82b-4109-93d0-9e8506adafa6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cakeSlicer.fbx": {
-      "time": 1776753523460.5857,
-      "uuid": "ed27f704-7d35-498d-a4a0-9e9e8a92b9a9"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\can.fbx": {
-      "time": 1776753523417.9746,
-      "uuid": "24a79dff-53fd-47a8-8a6c-594c0fe73171"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\candyBar.fbx": {
-      "time": 1776753523509.2573,
-      "uuid": "4a0c0577-bbf5-45cf-a9c5-522569551d97"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cakeBirthday.fbx": {
-      "time": 1776753523535.3074,
-      "uuid": "adef6235-8035-4245-bbd0-f49b995d3658"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\candyBarWrapper.fbx": {
-      "time": 1776753523584.1775,
-      "uuid": "4f3660a9-687c-460f-8947-880d0c733df3"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\canOpen.fbx": {
-      "time": 1776753523424.6345,
-      "uuid": "e1434e1f-3243-4500-a609-f13ae307281f"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\canSmall.fbx": {
-      "time": 1776753523431.1907,
-      "uuid": "403b8d5e-0aad-4113-b73f-07aa275609d8"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\carrot.fbx": {
-      "time": 1776753523468.1792,
-      "uuid": "50eb82f5-090e-4211-9d4e-9a8da2275bbb"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\carton.fbx": {
-      "time": 1776753523567.563,
-      "uuid": "26f5ad7f-44c7-4572-bb3e-c6ed2ef8cdb1"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cauliflower.fbx": {
-      "time": 1776753523391.0637,
-      "uuid": "f8deb53a-30ec-46a7-8057-418dc0b47338"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\celeryStick.fbx": {
-      "time": 1776753523626.254,
-      "uuid": "caf9083f-592c-4acb-ab65-a4b8149cb443"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cartonSmall.fbx": {
-      "time": 1776753523392.0742,
-      "uuid": "a02d9abe-255b-4590-8d7e-73a4998ba212"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cheeseCut.fbx": {
-      "time": 1776753523411.777,
-      "uuid": "eda8e137-c330-4aaf-9dc3-be1f37e70d91"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cheese.fbx": {
-      "time": 1776753523563.9836,
-      "uuid": "e0eb9c06-b861-4a1b-a3e8-1251489228da"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cherries.fbx": {
-      "time": 1776753523554.7546,
-      "uuid": "deb2eef0-5ee0-46d2-ba06-26e61ac3a37d"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cheeseSlicer.fbx": {
-      "time": 1776753523356.2532,
-      "uuid": "34fa9258-85ff-48da-a885-ae91696232c8"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chinese.fbx": {
-      "time": 1776753523368.7395,
-      "uuid": "2209e4ea-bf1f-468b-8fdb-2a2ad40f7d67"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chocolate.fbx": {
-      "time": 1776753523575.6113,
-      "uuid": "b9ef8057-5512-495b-b83b-43e9093f8ff9"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chocolateWrapper.fbx": {
-      "time": 1776753523332.9294,
-      "uuid": "b9d187eb-d357-4a14-b5f0-c07fa2510a94"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chopstick.fbx": {
-      "time": 1776753523496.1736,
-      "uuid": "44210a6c-3684-4252-8121-70d66ef9a640"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\chopstickFancy.fbx": {
-      "time": 1776753523597.2795,
-      "uuid": "9ae97558-b148-48c3-8e35-bc32e8c9f158"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\coconut.fbx": {
-      "time": 1776753523473.4524,
-      "uuid": "96481a05-cd96-4444-bbb2-7365cbc0da39"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cocktail.fbx": {
-      "time": 1776753523347.978,
-      "uuid": "5c2f9c18-4d13-4731-8478-ccd96e8059a2"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\coconutHalf.fbx": {
-      "time": 1776753523428.1162,
-      "uuid": "3a8fcaed-baed-4dc5-b797-616085d48de5"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookie.fbx": {
-      "time": 1776753523499.194,
-      "uuid": "ee71d782-de58-4ac1-9ada-1d49a3edcb7a"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookieChocolate.fbx": {
-      "time": 1776753523406.5298,
-      "uuid": "dc9c0565-8aa1-4328-927c-ab402a769386"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingFork.fbx": {
-      "time": 1776753523504.6216,
-      "uuid": "f06f2436-180d-40e7-a9fb-abbe1c06974b"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingKnife.fbx": {
-      "time": 1776753523437.4934,
-      "uuid": "3e2839ca-f56f-43e0-8741-e9f47f655f1a"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingKnifeChopping.fbx": {
-      "time": 1776753523470.2317,
-      "uuid": "25a479ee-78a6-4c8f-a422-ebb7faaeb6d5"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingSpatula.fbx": {
-      "time": 1776753523549.1367,
-      "uuid": "063751be-cb79-4cf8-8dcc-ad246a45f01d"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\corn.fbx": {
-      "time": 1776753523358.282,
-      "uuid": "aaad2a4c-dc0f-4f13-84a0-c67f90f37cba"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cookingSpoon.fbx": {
-      "time": 1776753523520.8289,
-      "uuid": "776d294e-eae7-41ce-9053-598f17c8f776"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\croissant.fbx": {
-      "time": 1776753523457.1167,
-      "uuid": "a26f9b78-ffdd-49fe-b41e-d5620b05f321"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cornDog.fbx": {
-      "time": 1776753523396.266,
-      "uuid": "b303c564-81cd-4bc9-a306-605126a0ea45"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cup.fbx": {
-      "time": 1776753523561.9592,
-      "uuid": "457b7311-bfac-4c03-8188-6b2706656922"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cupSaucer.fbx": {
-      "time": 1776753523396.266,
-      "uuid": "eebbc24c-9e48-4cd4-b1d3-b1908e21148c"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cupcake.fbx": {
-      "time": 1776753523589.38,
-      "uuid": "c0ea90ac-40ce-406e-a4a9-28110fbc9451"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cupTea.fbx": {
-      "time": 1776753523359.3918,
-      "uuid": "6ebb7fe9-7517-4ba8-9f97-e110cac44ffe"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cupThea.fbx": {
-      "time": 1776753523352.0054,
-      "uuid": "72ece4c4-586c-493a-ad0c-ea47cfd6641c"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cuttingBoard.fbx": {
-      "time": 1776753523480.6494,
-      "uuid": "6b150aa3-a065-47c7-93ed-a9dde0ee9efc"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cuttingBoardJapanese.fbx": {
-      "time": 1776753523431.1907,
-      "uuid": "07348cf2-ef95-4b82-a4b2-bb1d38685073"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\cuttingBoardRound.fbx": {
-      "time": 1776753523652.7004,
-      "uuid": "afc69372-3c19-4dc2-9b01-9052ae7d5055"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\dimSum.fbx": {
-      "time": 1776753523571.061,
-      "uuid": "63819e65-9213-4445-af8a-e9a24fb35891"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\donut.fbx": {
-      "time": 1776753523587.3108,
-      "uuid": "2ff2a9cc-27db-49d8-801d-41958818baee"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\donutChocolate.fbx": {
-      "time": 1776753523354.2114,
-      "uuid": "f4ad903c-4a12-457f-84f6-b7273c032e95"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\egg.fbx": {
-      "time": 1776753523653.8425,
-      "uuid": "5ff7aa10-2d6f-4d68-b77a-90982c971733"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\donutSprinkles.fbx": {
-      "time": 1776753523566.4246,
-      "uuid": "bbbaddc7-9b55-44f4-b444-48322abd292f"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\eggCooked.fbx": {
-      "time": 1776753523591.4653,
-      "uuid": "2c32647d-3d43-42ee-8fe4-30c5bcaf6484"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\eggCup.fbx": {
-      "time": 1776753523389.003,
-      "uuid": "515b7a08-0433-4e25-8cd1-0c2a25b9078e"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\eggHalf.fbx": {
-      "time": 1776753523495.1626,
-      "uuid": "0b4a100a-d31e-42a7-b60e-d9dd5e4505c2"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\eggplant.fbx": {
-      "time": 1776753523662.1716,
-      "uuid": "892ef6c8-3cee-412f-9ba5-936c3fc5311b"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fishBones.fbx": {
-      "time": 1776753523544.9868,
-      "uuid": "c0f0879a-c0b9-4c78-9733-b16338a2e7a7"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fish.fbx": {
-      "time": 1776753523607.232,
-      "uuid": "c723ab6f-0517-4959-af43-ec104043fefd"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fries.fbx": {
-      "time": 1776753523551.2375,
-      "uuid": "bfe390bb-2279-4f4e-adc9-990757d1e630"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\frappe.fbx": {
-      "time": 1776753523538.8835,
-      "uuid": "1a505f93-f9f1-43c7-9485-d3cbdaea7f75"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\friesEmpty.fbx": {
-      "time": 1776753523379.7212,
-      "uuid": "224026fe-73eb-4aa3-a052-48e5d43bdcbc"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fryingPan.fbx": {
-      "time": 1776753523429.1587,
-      "uuid": "2c6be8df-6365-4d0d-9bb9-8c53ab7cf812"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\frikandelSpeciaal.fbx": {
-      "time": 1776753523466.1135,
-      "uuid": "9eabf623-a7d1-4931-b173-1265d1911620"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\fryingPanLid.fbx": {
-      "time": 1776753523474.4595,
-      "uuid": "45e78836-5106-46f7-b306-72e411503e37"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\gingerBreadCutter.fbx": {
-      "time": 1776753523519.8267,
-      "uuid": "558fbf86-a8d6-4daf-b791-810a73625980"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\gingerBread.fbx": {
-      "time": 1776753523621.117,
-      "uuid": "40b0ab0c-2e46-4c02-b17a-d7ad0dfe1b32"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\glass.fbx": {
-      "time": 1776753523650.3352,
-      "uuid": "45b285fd-af55-4229-8614-7a8acc4475c9"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\glassWine.fbx": {
-      "time": 1776753523476.5208,
-      "uuid": "774ebd93-d0fe-4132-93d9-b192ec7a7117"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\grapes.fbx": {
-      "time": 1776753523543.9905,
-      "uuid": "c73939e2-225c-4d82-844f-58ed87d1cc58"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\honey.fbx": {
-      "time": 1776753523497.1775,
-      "uuid": "5d4d5bc4-7413-413f-af37-f749a4fecaea"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\hotDogRaw.fbx": {
-      "time": 1776753523623.1365,
-      "uuid": "c37eccf3-aa1e-4f18-93fc-3061edf2d9ce"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\hotDog.fbx": {
-      "time": 1776753523385.9,
-      "uuid": "65d5b046-e67e-4955-9b9c-43bff8526214"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCream.fbx": {
-      "time": 1776753523528.1375,
-      "uuid": "aee2993c-cd98-45f5-9041-4dd0633c9b39"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCreamCone.fbx": {
-      "time": 1776753523565.4282,
-      "uuid": "204e929e-b9bc-4c5f-9036-62cedf846491"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCreamCup.fbx": {
-      "time": 1776753523380.7192,
-      "uuid": "9f9e4165-778d-402c-89c8-2961b86b5473"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCreamScoopMint.fbx": {
-      "time": 1776753523556.8115,
-      "uuid": "9761a7c1-a053-4dde-aee3-e1468ece1fc2"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\iceCreamScoop.fbx": {
-      "time": 1776753523647.2773,
-      "uuid": "c477280e-d339-4a92-9e2c-ae9a8d714652"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\knifeBlock.fbx": {
-      "time": 1776753523572.2026,
-      "uuid": "f81a97bf-298a-4e18-831a-f8c5baee6162"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\leek.fbx": {
-      "time": 1776753523530.151,
-      "uuid": "1c9d2177-4093-43ea-a95b-c2dbb505ee6e"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\lemon.fbx": {
-      "time": 1776753523628.4082,
-      "uuid": "54c41ec8-f87f-42ad-9afd-f454b2ca0287"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\loaf.fbx": {
-      "time": 1776753523365.7498,
-      "uuid": "79071002-b591-4d37-bb86-a1e59f416822"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\lemonHalf.fbx": {
-      "time": 1776753523363.6707,
-      "uuid": "72b2e3a9-831e-408f-8437-aeaa15ddf56c"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\loafBaguette.fbx": {
-      "time": 1776753523620.084,
-      "uuid": "ba9d1d87-531d-4d85-aab0-e3716075edec"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\loafRound.fbx": {
-      "time": 1776753523386.9875,
-      "uuid": "80ed7eb4-1073-4786-b9ae-c38160c274ec"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\lollypop.fbx": {
-      "time": 1776753523574.6057,
-      "uuid": "48bcbf42-0861-4307-a013-c5545852eddc"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\makiRoe.fbx": {
-      "time": 1776753523568.5894,
-      "uuid": "c21440c4-50d0-4aca-b575-a49dec11e95e"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\makiSalmon.fbx": {
-      "time": 1776753523631.7358,
-      "uuid": "c1d2dfb7-51d1-4c3a-99b2-332cc6b2c501"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\makiVegetable.fbx": {
-      "time": 1776753523646.2678,
-      "uuid": "9e43a77b-3f37-4352-b5b8-45a15174be5a"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatCooked.fbx": {
-      "time": 1776753523537.4,
-      "uuid": "e7aefd3f-9d6b-411b-b45e-3025f5921b01"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatPatty.fbx": {
-      "time": 1776753523524.0215,
-      "uuid": "8fb499d2-20e7-411d-b350-34eb0b7c2b00"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatRibs.fbx": {
-      "time": 1776753523447.7693,
-      "uuid": "c7275ed1-c642-4dd1-83f6-8b03ab6abcb5"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatRaw.fbx": {
-      "time": 1776753523401.421,
-      "uuid": "1eb0f1e1-ae07-4ff2-9d94-7ea46fde191d"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mincemeatPie.fbx": {
-      "time": 1776753523490.9536,
-      "uuid": "1d012c37-4d51-4272-b9d6-7ad2b4cbc6d9"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatSausage.fbx": {
-      "time": 1776753523536.3845,
-      "uuid": "409c256f-cea3-4beb-a043-8f04e9c06d01"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\meatTenderizer.fbx": {
-      "time": 1776753523344.6584,
-      "uuid": "4e5b9dfe-ae48-415e-89c4-0d169ab952e6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mortar.fbx": {
-      "time": 1776753523651.45,
-      "uuid": "5f605ccd-db20-4e0a-ba0f-3f763d16d2e8"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mortarPestle.fbx": {
-      "time": 1776753523508.1165,
-      "uuid": "929c64cc-30fa-4b8f-86a6-f31b0ffc2274"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\muffin.fbx": {
-      "time": 1776753523502.442,
-      "uuid": "c9b65bde-26ab-439c-95e6-0afce9ab7609"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mug.fbx": {
-      "time": 1776753523453.1184,
-      "uuid": "856149cb-bd6f-4365-8387-09a80d323661"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mussel.fbx": {
-      "time": 1776753523661.1294,
-      "uuid": "e7213d3e-d132-415f-ab17-ac59f3b55ad4"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mushroom.fbx": {
-      "time": 1776753523377.2236,
-      "uuid": "8aed2dfd-7ff7-4ba5-828f-7480d238cfee"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\mushroomHalf.fbx": {
-      "time": 1776753523647.2773,
-      "uuid": "2cac8805-f988-402a-beff-b97034f19764"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\onion.fbx": {
-      "time": 1776753523442.6985,
-      "uuid": "efc366e7-5315-4392-81a3-8ed42b0d8f6a"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\musselOpen.fbx": {
-      "time": 1776753523656.9421,
-      "uuid": "765e37ad-49d0-4d1d-9957-f67295628f80"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\onionHalf.fbx": {
-      "time": 1776753523349.9905,
-      "uuid": "895d4ab4-eb35-42f7-a4c1-68d1e4385dda"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pan.fbx": {
-      "time": 1776753523507.098,
-      "uuid": "f9a2d832-462c-4aeb-9239-5561ed346aa6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\orange.fbx": {
-      "time": 1776753523555.7822,
-      "uuid": "c65c76b0-36e9-412d-a1af-b67fb2a18383"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\paprika.fbx": {
-      "time": 1776753523594.4553,
-      "uuid": "e66ea72e-379e-4b15-9237-8cd6a77e0fb6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\panStew.fbx": {
-      "time": 1776753523615.0383,
-      "uuid": "d779bc0b-758a-4324-8399-c311b84c9cc0"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pancakes.fbx": {
-      "time": 1776753523346.807,
-      "uuid": "97ff55a9-5fbf-480b-846f-a3e73aa51f4c"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\paprikaSlice.fbx": {
-      "time": 1776753523427.064,
-      "uuid": "505389c3-4151-4a8a-ae6e-a7cadd7e2ab9"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\peanutButter.fbx": {
-      "time": 1776753523598.8303,
-      "uuid": "59aeccef-5672-4067-9089-77e33144f167"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pear.fbx": {
-      "time": 1776753523518.7295,
-      "uuid": "baeeb807-2200-4b06-8e76-afa4bb1eaabf"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pearHalf.fbx": {
-      "time": 1776753523366.746,
-      "uuid": "d2f566ec-9a04-4a7e-a387-28de75d14750"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pepperMill.fbx": {
-      "time": 1776753523516.6904,
-      "uuid": "0e054e25-3ddd-4e71-b0de-12586c3dccd6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pepper.fbx": {
-      "time": 1776753523558.8604,
-      "uuid": "0a11bdc4-3f76-4251-a9fe-cb9045aca2b1"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pie.fbx": {
-      "time": 1776753523604.0334,
-      "uuid": "27dbcd3f-b5ea-44af-abaf-090a2833aec9"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pineapple.fbx": {
-      "time": 1776753523498.185,
-      "uuid": "08ce88f3-254f-47f0-b694-53bb7482e998"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pizza.fbx": {
-      "time": 1776753523624.2126,
-      "uuid": "5238946d-2424-4ddd-a818-da479c2a2909"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pizzaBox.fbx": {
-      "time": 1776753523387.9973,
-      "uuid": "3c65bb36-6c5f-463a-af52-45f7efbaa997"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plate.fbx": {
-      "time": 1776753523653.8425,
-      "uuid": "073183a8-13d2-4187-a5c8-b9960f2f5037"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pizzaCutter.fbx": {
-      "time": 1776753523390.0518,
-      "uuid": "6bacea32-56ac-4a41-9a97-550295c2503e"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateBroken.fbx": {
-      "time": 1776753523612.968,
-      "uuid": "5c0a93c2-6425-48b8-ae56-0c863a525cb7"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateDeep.fbx": {
-      "time": 1776753523539.9033,
-      "uuid": "1656deee-a8d9-48ed-b720-1ecdab9fe222"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateDinner.fbx": {
-      "time": 1776753523353.1963,
-      "uuid": "e0f72e14-a6e8-4f64-94d0-cbbd2b30c3f2"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateRectangle.fbx": {
-      "time": 1776753523478.5835,
-      "uuid": "bfd556b8-edd7-4722-a48e-80dcd2c5d671"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\plateSauerkraut.fbx": {
-      "time": 1776753523586.2957,
-      "uuid": "ba1e31c9-c7a7-42a6-99d0-fd63190dcbcb"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\popsicle.fbx": {
-      "time": 1776753523337.2117,
-      "uuid": "ee1de233-36f8-4e7d-9bb9-3a5221fea4a4"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\popsicleChocolate.fbx": {
-      "time": 1776753523378.22,
-      "uuid": "1b19c9f9-4346-4636-b15b-bcf1670429fd"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\popsicleStick.fbx": {
-      "time": 1776753523337.2117,
-      "uuid": "c6573fdb-7844-485b-8f85-0f7ca34c4f83"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pot.fbx": {
-      "time": 1776753523547.1165,
-      "uuid": "ba4db9cc-237a-4a9e-b78f-25273781166b"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\potLid.fbx": {
-      "time": 1776753523633.7588,
-      "uuid": "2c136be5-795b-427b-8871-6b40dad35266"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\potStewLid.fbx": {
-      "time": 1776753523361.4236,
-      "uuid": "54c199bd-7e55-493a-8f40-efe633402313"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\potStew.fbx": {
-      "time": 1776753523557.8381,
-      "uuid": "335a8be3-c428-446d-8fd9-03a15e0c8543"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pudding.fbx": {
-      "time": 1776753523481.704,
-      "uuid": "6c034407-a5dc-4240-8f07-a8f483386c91"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pumpkin.fbx": {
-      "time": 1776753523587.3108,
-      "uuid": "1f26fddd-f134-44bc-8e42-060170bd2953"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\pumpkinBasic.fbx": {
-      "time": 1776753523626.254,
-      "uuid": "955cc856-3a26-4d3a-9de8-557b9956a03c"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\riceBall.fbx": {
-      "time": 1776753523463.8425,
-      "uuid": "1953b347-2251-4bda-91e9-f47399f10bbe"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\radish.fbx": {
-      "time": 1776753523584.1775,
-      "uuid": "78db5304-742e-43af-8a8a-3c5fc0d9433a"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\rollingPin.fbx": {
-      "time": 1776753523477.552,
-      "uuid": "ac2be3ee-fff2-4288-aebb-2db7a274a46b"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\salad.fbx": {
-      "time": 1776753523527.127,
-      "uuid": "0e6e91f6-b048-4320-b02d-2ab9a014b186"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sausage.fbx": {
-      "time": 1776753523513.3245,
-      "uuid": "a745ca8f-95af-499d-aa3e-c9a3e110fda8"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sandwich.fbx": {
-      "time": 1776753523662.1716,
-      "uuid": "8d4a45f8-3cfa-4e73-87e2-b16508389bd2"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\shakerPepper.fbx": {
-      "time": 1776753523595.6233,
-      "uuid": "9e8f5f20-d7b6-42e2-b54f-f7639d65c4bf"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sausageHalf.fbx": {
-      "time": 1776753523434.3281,
-      "uuid": "dd077fc7-77a5-42fd-8a53-7ed8e6908890"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\shakerSalt.fbx": {
-      "time": 1776753523381.7158,
-      "uuid": "d7a0d6dc-fae4-4048-9de1-a940cfd7b2d8"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\skewer.fbx": {
-      "time": 1776753523494.1436,
-      "uuid": "3ee54f83-9c57-44ce-9080-11861fe94eb2"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\skewerVegetables.fbx": {
-      "time": 1776753523410.7659,
-      "uuid": "b47f9fd8-436e-4fe1-b2bf-a74db08b7aa5"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\soda.fbx": {
-      "time": 1776753523469.2224,
-      "uuid": "066b645f-01bf-45d6-9dd1-b7ae929f52cf"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sodaBottle.fbx": {
-      "time": 1776753523605.1323,
-      "uuid": "93de4409-873f-4bcc-ad77-6a988324a3a6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sodaCan.fbx": {
-      "time": 1776753523420.0056,
-      "uuid": "53681bd7-3378-4c6b-809e-6fdb2099b420"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sodaCanCrushed.fbx": {
-      "time": 1776753523341.6086,
-      "uuid": "89415233-a5a4-4d3a-a475-0973f8f06939"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\soy.fbx": {
-      "time": 1776753523350.9995,
-      "uuid": "e04c17fc-7ef4-453e-b8e7-31eff803b967"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sodaGlass.fbx": {
-      "time": 1776753523364.752,
-      "uuid": "c02e196c-ce0a-4c2d-a34b-2f3167437df6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\steamer.fbx": {
-      "time": 1776753523403.5393,
-      "uuid": "7f6dc4fc-7f7a-40ff-8e03-a903d765113b"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\strawberry.fbx": {
-      "time": 1776753523655.8994,
-      "uuid": "38f77846-9881-449a-ba24-061a25a2fb40"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\styrofoam.fbx": {
-      "time": 1776753523525.027,
-      "uuid": "0f41dde5-f2f0-4156-a68a-6b1324fc472d"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\styrofoamDinner.fbx": {
-      "time": 1776753523487.8013,
-      "uuid": "1f01914b-6093-4f1a-879f-309d75867ade"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sundae.fbx": {
-      "time": 1776753523534.2175,
-      "uuid": "eb108db3-b2ed-4dd0-9fb7-c1f338bf5d54"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sub.fbx": {
-      "time": 1776753523348.9844,
-      "uuid": "663840d7-712c-4cf8-b383-720a78a359b7"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sushiEgg.fbx": {
-      "time": 1776753523334.0542,
-      "uuid": "07e1dc47-78bb-4003-92e0-1fc0b9d437cd"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\sushiSalmon.fbx": {
-      "time": 1776753523573.5945,
-      "uuid": "98c92418-94ad-45f3-bfaf-8badb4a0a218"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\taco.fbx": {
-      "time": 1776753523580.4045,
-      "uuid": "2f2a7b7c-d229-4868-ba4b-73d3a46c9a61"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\tajine.fbx": {
-      "time": 1776753523633.7588,
-      "uuid": "f171caf5-5980-4906-bf19-e446340b6f89"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\tajineLid.fbx": {
-      "time": 1776753523639.8298,
-      "uuid": "4b3afe15-1aaf-4640-8212-089dddc82e00"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\tomato.fbx": {
-      "time": 1776753523462.8325,
-      "uuid": "8308be06-b89b-452d-8fd4-cca61bdb1e9b"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\tomatoSlice.fbx": {
-      "time": 1776753523374.196,
-      "uuid": "d71d63f5-d8e0-4e75-bb26-1cb2ce922ea3"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\turkey.fbx": {
-      "time": 1776753523486.7952,
-      "uuid": "6b0e3c26-5bae-44d3-8388-0352779a3c50"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\utensilFork.fbx": {
-      "time": 1776753523554.7546,
-      "uuid": "6fb53190-40e4-40f7-91d0-3b9a2eb2af94"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\utensilKnife.fbx": {
-      "time": 1776753523347.978,
-      "uuid": "b3f0598a-19cb-4ce3-b8ec-ecce8c60fef6"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\utensilSpoon.fbx": {
-      "time": 1776753523593.4585,
-      "uuid": "f4b6fdba-3b4b-4dca-9c54-0e35cc76c044"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\waffle.fbx": {
-      "time": 1776753523367.743,
-      "uuid": "ef2ba9f9-ebf4-46b0-a8da-34a604e56e3b"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\whippedCream.fbx": {
-      "time": 1776753523599.8857,
-      "uuid": "9728eee3-5bc9-45a6-9401-db68fba84cec"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\whisk.fbx": {
-      "time": 1776753523418.9895,
-      "uuid": "aef6a526-7cf2-4c3d-b311-a1354b42e32a"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\watermelon.fbx": {
-      "time": 1776753523560.919,
-      "uuid": "b70e484b-cd7e-4750-afd5-1cc2b900f02a"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\wholeHam.fbx": {
-      "time": 1776753523330.4111,
-      "uuid": "5d0b441c-94a6-40e6-8cbf-62b492570f30"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\wholerHam.fbx": {
-      "time": 1776753523532.2097,
-      "uuid": "303e7347-2e2e-49bf-8e29-5816c3916d7d"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\wineRed.fbx": {
-      "time": 1776753523400.411,
-      "uuid": "493a4eab-a064-47dc-bc18-b31979bc3667"
-    },
-    "3D食品和厨具套件\\3D食品和厨房\\FBX format\\wineWhite.fbx": {
-      "time": 1776753523635.7788,
-      "uuid": "306b8a2a-69da-4a19-bf14-19590cb7db8a"
+    "prefabs\\items\\maps\\map02": {
+      "time": 1776754210934.404,
+      "uuid": "9ea38186-fcf9-4047-8116-6309e1296283"
     }
   },
   "missing": {}

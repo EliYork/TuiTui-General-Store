@@ -4,6 +4,8 @@
         "cpu": "Intel(R) Core(TM) i5-14600K",
         "version": "Windows 11 Pro"
     },
-    "sceneListMap": {},
+    "sceneListMap": {
+        "7b029136-dd73-4a47-a0c2-48ff1d96a189": "C:\\coin-pusher\\cocos\\coin-pusher-cocos\\assets\\3D食品和厨具套件\\3D食品和厨房\\scene.scene"
+    },
     "deviceMd5": "48f73942225e50d88fb039087e48e461"
 }
