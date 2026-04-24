@@ -372,7 +372,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 579.7363465160075,
+    "_orthoHeight": 673.1851851851852,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -426,7 +426,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 140,
+      "y": 50,
       "z": 0
     },
     "_lrot": {
@@ -465,7 +465,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 600,
-      "height": 400
+      "height": 600
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -499,7 +499,7 @@
     "optionalCurvePower": 1,
     "holdEnabled": true,
     "spawnOnTouchStart": true,
-    "holdInterval": 0.18,
+    "holdInterval": 0.05,
     "debugLog": false,
     "_id": "3dhu9eexxMkYXYBWYJk2BX"
   },
@@ -524,6 +524,9 @@
     "spawnCostPerCoin": 1,
     "manualSpawnYOverrideEnabled": true,
     "manualSpawnY": 1,
+    "autoSpawnInterval": 0.5,
+    "autoSpawnX": 0,
+    "autoSpawnZ": -0.2,
     "itemCatalog": [
       {
         "__id__": 52
@@ -1863,8 +1866,8 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 2,
-      "z": 0
+      "y": 1,
+      "z": -0.2
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -2310,7 +2313,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -2340,7 +2343,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "Spawn",
+    "_string": "自动投放：关",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -2394,7 +2397,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -2520,8 +2523,11 @@
     "gameManager": {
       "__id__": 13
     },
-    "holdStartDelay": 0.25,
-    "holdSpawnInterval": 0.12,
+    "stateLabel": {
+      "__id__": 61
+    },
+    "autoSpawnOnText": "自动投放：开",
+    "autoSpawnOffText": "自动投放：关",
     "_id": "abw+YYrZFFVqohkfRPUuFk"
   },
   {

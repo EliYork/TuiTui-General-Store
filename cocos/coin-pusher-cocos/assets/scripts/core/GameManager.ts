@@ -18,6 +18,7 @@ import { ItemPrefabConfig, ItemPrefabRuntimeConfig } from '../gameplay/ItemPrefa
 
 const { ccclass, property } = _decorator;
 const SHARED_SCENE_NAME = 'Prototype01';
+const MIN_AUTO_SPAWN_INTERVAL = 0.05;
 
 type MapId = 'Map01' | 'Map02';
 type ResolvedPrefabMetadata = Omit<ItemPrefabRuntimeConfig, 'itemId'>;
@@ -172,6 +173,15 @@ export class GameManager extends Component {
     @property({ tooltip: 'World-space Y used by ManualSpawnArea spawns when the override is enabled.' })
     public manualSpawnY = 1;
 
+    @property({ tooltip: 'Seconds between automatic active-item spawns while auto spawn is enabled.' })
+    public autoSpawnInterval = 0.5;
+
+    @property({ tooltip: 'World-space X used by automatic active-item spawns.' })
+    public autoSpawnX = 0;
+
+    @property({ tooltip: 'World-space Z used by automatic active-item spawns.' })
+    public autoSpawnZ = -0.2;
+
     @property({ type: [CatalogItemConfig], tooltip: 'Logic-only item catalog. Each item prefab is a complete runtime object.' })
     public itemCatalog: CatalogItemConfig[] = [];
 
@@ -211,13 +221,18 @@ export class GameManager extends Component {
     @property
     public showColliderDebug = false;
 
+    public autoSpawnEnabled = false;
+
     private _state = RoundState.Ready;
     private _sessionSpawnedCoinCount = 0;
     private _statusText = 'Preparing runtime progress';
+    private _autoSpawnTimer = 0;
     private readonly _manualSpawnPosition = new Vec3();
 
     protected start(): void {
         PhysicsSystem.instance.enable = true;
+        this.autoSpawnEnabled = false;
+        this._autoSpawnTimer = 0;
 
         if (this.showColliderDebug) {
             PhysicsSystem.instance.debugDrawFlags =
@@ -253,6 +268,10 @@ export class GameManager extends Component {
         }
 
         if (this.trySpawnWorldDrops(deltaTime)) {
+            shouldRefreshUi = true;
+        }
+
+        if (this.updateAutoSpawn(deltaTime)) {
             shouldRefreshUi = true;
         }
 
@@ -303,6 +322,32 @@ export class GameManager extends Component {
         });
     }
 
+    public toggleAutoSpawn(): boolean {
+        return this.setAutoSpawnEnabled(!this.autoSpawnEnabled);
+    }
+
+    public setAutoSpawnEnabled(enabled: boolean): boolean {
+        if (!enabled) {
+            this.stopAutoSpawn('自动投放已关闭');
+            return false;
+        }
+
+        const stopReason = this.getAutoSpawnStopReason();
+        if (stopReason) {
+            this.stopAutoSpawn(stopReason);
+            return false;
+        }
+
+        this.autoSpawnEnabled = true;
+        this._autoSpawnTimer = 0;
+        this.setStatus('自动投放已开启');
+        return true;
+    }
+
+    public isAutoSpawnEnabled(): boolean {
+        return this.autoSpawnEnabled;
+    }
+
     private spawnCurrentSpawnItem(request: CoinSpawnRequest | null = null): boolean {
         const currentSpawnItem = this.getCurrentSpawnItem();
         if (!this.coinSpawner) {
@@ -327,6 +372,76 @@ export class GameManager extends Component {
         this.syncStateFromResources();
         this.setStatus(`Spawned ${currentSpawnItem.itemName}, resource ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins}`);
         return true;
+    }
+
+    private updateAutoSpawn(deltaTime: number): boolean {
+        if (!this.autoSpawnEnabled) {
+            return false;
+        }
+
+        this._autoSpawnTimer += deltaTime;
+        const interval = this.getConfiguredAutoSpawnInterval();
+        let changed = false;
+
+        while (this.autoSpawnEnabled && this._autoSpawnTimer >= interval) {
+            this._autoSpawnTimer -= interval;
+            changed = true;
+
+            if (!this.tryAutoSpawnOnce()) {
+                break;
+            }
+        }
+
+        return changed;
+    }
+
+    private tryAutoSpawnOnce(): boolean {
+        const stopReason = this.getAutoSpawnStopReason();
+        if (stopReason) {
+            this.stopAutoSpawn(stopReason);
+            return false;
+        }
+
+        if (!this.spawnCoinFromManualPosition(this.autoSpawnX, this.autoSpawnZ)) {
+            this.stopAutoSpawn('自动投放失败，已停止');
+            return false;
+        }
+
+        const stopReasonAfterSpawn = this.getAutoSpawnStopReason();
+        if (stopReasonAfterSpawn) {
+            this.stopAutoSpawn(stopReasonAfterSpawn);
+        }
+
+        return true;
+    }
+
+    private getAutoSpawnStopReason(): string {
+        if (!runtimeProgress.initialized) {
+            return '自动投放未就绪，已停止';
+        }
+
+        if (!this.coinSpawner) {
+            return '缺少投放器，自动投放已停止';
+        }
+
+        if (!this.getCurrentSpawnItem()) {
+            return '当前没有可投放物品，自动投放已停止';
+        }
+
+        if (runtimeProgress.currentCoins < this.getConfiguredSpawnCost()) {
+            return '资源不足，自动投放已停止';
+        }
+
+        return '';
+    }
+
+    private stopAutoSpawn(statusText = ''): void {
+        this.autoSpawnEnabled = false;
+        this._autoSpawnTimer = 0;
+
+        if (statusText) {
+            this.setStatus(statusText);
+        }
     }
 
     public resolveCoinDrop(item: CoinBehaviour): void {
@@ -370,14 +485,16 @@ export class GameManager extends Component {
     }
 
     public restartGame(): void {
-        const currentScene = director.getScene();
-        if (!currentScene) {
+        const sceneName = director.getScene()?.name || SHARED_SCENE_NAME;
+        if (!sceneName) {
             warn('[GameManager] restartGame failed: current scene is missing.');
             this.setStatus('Restart failed: current scene is missing');
             return;
         }
 
-        director.loadScene(currentScene.name);
+        this.stopAutoSpawn();
+        this.resetRuntimeProgress();
+        director.loadScene(sceneName);
     }
 
     public switchToMap01(): void {
@@ -454,6 +571,21 @@ export class GameManager extends Component {
         }
 
         this.ensureCurrentSpawnItemSelection(catalogConfigs);
+    }
+
+    private resetRuntimeProgress(): void {
+        runtimeProgress.initialized = false;
+        runtimeProgress.currentMapId = this.getMapIdFromSelection(this.mapSelection);
+        runtimeProgress.maxCoins = 0;
+        runtimeProgress.currentCoins = 0;
+        runtimeProgress.resourceRegenProgressSeconds = 0;
+        runtimeProgress.worldDropProgressSeconds = 0;
+        runtimeProgress.currentSpawnItemId = '';
+        runtimeProgress.lastDroppedItemId = '';
+        runtimeProgress.itemProgress = {};
+
+        this._sessionSpawnedCoinCount = 0;
+        this.syncStateFromResources();
     }
 
     private ensureCurrentSpawnItemSelection(catalogConfigs: NormalizedCatalogConfig[]): void {
@@ -805,6 +937,10 @@ export class GameManager extends Component {
 
     private getConfiguredWorldDropAmount(): number {
         return this.normalizeNonNegativeInteger(this.worldDropAmount, 1);
+    }
+
+    private getConfiguredAutoSpawnInterval(): number {
+        return Math.max(MIN_AUTO_SPAWN_INTERVAL, this.normalizeNonNegativeNumber(this.autoSpawnInterval, 0.5));
     }
 
     private getConfiguredSpawnCost(): number {

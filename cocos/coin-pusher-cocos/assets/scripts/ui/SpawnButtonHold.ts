@@ -1,109 +1,81 @@
-import { _decorator, Component, Node, warn } from 'cc';
+import { _decorator, Component, Label, Node, warn } from 'cc';
 import { GameManager } from '../core/GameManager';
 
 const { ccclass, property } = _decorator;
-const MIN_HOLD_START_DELAY = 0.05;
-const MIN_HOLD_SPAWN_INTERVAL = 0.02;
 
 @ccclass('SpawnButtonHold')
 export class SpawnButtonHold extends Component {
     @property(GameManager)
     public gameManager: GameManager | null = null;
 
-    @property({ tooltip: 'How long the button must be held before auto-spawn starts.' })
-    public holdStartDelay = 0.25;
+    @property(Label)
+    public stateLabel: Label | null = null;
 
-    @property({ tooltip: 'Seconds between each spawn while the button is held.' })
-    public holdSpawnInterval = 0.12;
+    @property({ tooltip: 'Text shown when automatic spawning is enabled.' })
+    public autoSpawnOnText = '自动投放：开';
 
-    private _isPressing = false;
-    private _holdModeStarted = false;
+    @property({ tooltip: 'Text shown when automatic spawning is disabled.' })
+    public autoSpawnOffText = '自动投放：关';
+
+    private _resolvedLabel: Label | null = null;
+
+    protected onLoad(): void {
+        this._resolvedLabel = this.stateLabel ?? this.findLabelInChildren(this.node);
+
+        if (!this.gameManager) {
+            warn('[SpawnButtonHold] gameManager is not assigned.');
+        }
+
+        this.refreshLabel();
+    }
 
     protected onEnable(): void {
-        this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
         this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
+        this.refreshLabel();
     }
 
     protected onDisable(): void {
-        this.node.off(Node.EventType.TOUCH_START, this.onTouchStart, this);
         this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
-        this.stopPressing();
     }
 
-    private onTouchStart(): void {
-        this.stopPressing();
-        this._isPressing = true;
-        this._holdModeStarted = false;
-        this.scheduleOnce(this.beginHoldSpawn, this.getHoldStartDelay());
+    protected update(): void {
+        this.refreshLabel();
     }
 
     private onTouchEnd(): void {
-        const shouldSpawnSingleCoin = this._isPressing && !this._holdModeStarted;
-        this.stopPressing();
-
-        if (shouldSpawnSingleCoin) {
-            this.trySpawnOnce();
-        }
-    }
-
-    private onTouchCancel(): void {
-        this.stopPressing();
-    }
-
-    private beginHoldSpawn(): void {
-        if (!this._isPressing) {
-            return;
-        }
-
-        this._holdModeStarted = true;
-        if (!this.trySpawnOnce()) {
-            return;
-        }
-
-        if (!this.gameManager?.canSpawnCoin()) {
-            return;
-        }
-
-        this.schedule(this.repeatHoldSpawn, this.getHoldSpawnInterval());
-    }
-
-    private repeatHoldSpawn(): void {
-        if (!this._isPressing) {
-            this.stopRepeating();
-            return;
-        }
-
-        if (!this.trySpawnOnce() || !this.gameManager?.canSpawnCoin()) {
-            this.stopRepeating();
-        }
-    }
-
-    private trySpawnOnce(): boolean {
         if (!this.gameManager) {
             warn('[SpawnButtonHold] gameManager is not assigned.');
-            return false;
+            return;
         }
 
-        return this.gameManager.spawnCoinFromButton();
+        this.gameManager.toggleAutoSpawn();
+        this.refreshLabel();
     }
 
-    private stopPressing(): void {
-        this._isPressing = false;
-        this.unschedule(this.beginHoldSpawn);
-        this.stopRepeating();
+    private refreshLabel(): void {
+        const label = this.stateLabel ?? this._resolvedLabel;
+        if (!label) {
+            return;
+        }
+
+        label.string = this.gameManager?.isAutoSpawnEnabled()
+            ? this.autoSpawnOnText
+            : this.autoSpawnOffText;
     }
 
-    private stopRepeating(): void {
-        this.unschedule(this.repeatHoldSpawn);
-    }
+    private findLabelInChildren(node: Node): Label | null {
+        const label = node.getComponent(Label);
+        if (label) {
+            return label;
+        }
 
-    private getHoldStartDelay(): number {
-        return Math.max(MIN_HOLD_START_DELAY, this.holdStartDelay);
-    }
+        for (const child of node.children) {
+            const childLabel = this.findLabelInChildren(child);
+            if (childLabel) {
+                return childLabel;
+            }
+        }
 
-    private getHoldSpawnInterval(): number {
-        return Math.max(MIN_HOLD_SPAWN_INTERVAL, this.holdSpawnInterval);
+        return null;
     }
 }
