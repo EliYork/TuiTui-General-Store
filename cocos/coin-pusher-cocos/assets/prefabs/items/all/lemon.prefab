@@ -247,11 +247,11 @@
     "_center": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0.1,
+      "y": 0.11,
       "z": 0
     },
-    "_radius": 0.12,
-    "_cylinderHeight": 0.1,
+    "_radius": 0.1,
+    "_cylinderHeight": 0.03,
     "_direction": 1,
     "_id": ""
   },
@@ -273,6 +273,8 @@
     },
     "itemId": "lemon",
     "itemName": "Lemon",
+    "value": 2,
+    "weight": 5,
     "_id": ""
   },
   {
@@ -318,6 +320,7 @@
       "__id__": 0
     },
     "fileId": "aflwxByptRU5ghmWLn45nI",
+    "instance": null,
     "targetOverrides": null
   }
 ]

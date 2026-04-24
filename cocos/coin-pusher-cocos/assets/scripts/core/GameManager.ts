@@ -5,6 +5,7 @@ import {
     Enum,
     Event,
     Label,
+    log,
     Prefab,
     Vec3,
     warn,
@@ -165,6 +166,12 @@ export class GameManager extends Component {
     @property({ tooltip: 'How much resource is consumed per manual spawn. This is tracked, but no longer blocks spawning.' })
     public spawnCostPerCoin = 1;
 
+    @property({ tooltip: 'Use manualSpawnY for ManualSpawnArea spawns instead of the SpawnRoot Y.' })
+    public manualSpawnYOverrideEnabled = true;
+
+    @property({ tooltip: 'World-space Y used by ManualSpawnArea spawns when the override is enabled.' })
+    public manualSpawnY = 1;
+
     @property({ type: [CatalogItemConfig], tooltip: 'Logic-only item catalog. Each item prefab is a complete runtime object.' })
     public itemCatalog: CatalogItemConfig[] = [];
 
@@ -258,7 +265,7 @@ export class GameManager extends Component {
         return this.spawnCurrentSpawnItem();
     }
 
-    public spawnCoinFromManualPosition(worldX: number, worldZ: number): boolean {
+    public spawnCoinFromManualPosition(worldX: number, worldZ: number, debugLog = false): boolean {
         if (!this.coinSpawner) {
             warn('[GameManager] coinSpawner is not assigned.');
             this.setStatus('Missing CoinSpawner reference');
@@ -269,13 +276,26 @@ export class GameManager extends Component {
         const baseX = basePosition.x;
         const baseY = basePosition.y;
         const baseZ = basePosition.z;
+        const spawnX = this.normalizeFiniteNumber(worldX, baseX);
+        const spawnY = this.manualSpawnYOverrideEnabled
+            ? this.normalizeFiniteNumber(this.manualSpawnY, baseY)
+            : baseY;
+        const spawnZ = this.normalizeFiniteNumber(worldZ, baseZ);
 
         Vec3.set(
             this._manualSpawnPosition,
-            this.normalizeFiniteNumber(worldX, baseX),
-            baseY,
-            this.normalizeFiniteNumber(worldZ, baseZ),
+            spawnX,
+            spawnY,
+            spawnZ,
         );
+
+        if (debugLog) {
+            log(
+                `[GameManager.manualSpawnAt] worldX=${formatNumber(spawnX)} `
+                + `fixedDepthZ=${formatNumber(spawnZ)} `
+                + `spawnY=${formatNumber(spawnY)}`,
+            );
+        }
 
         return this.spawnCurrentSpawnItem({
             worldPosition: this._manualSpawnPosition,
@@ -845,4 +865,8 @@ export class GameManager extends Component {
 
         return value;
     }
+}
+
+function formatNumber(value: number): string {
+    return Number.isFinite(value) ? value.toFixed(3) : String(value);
 }

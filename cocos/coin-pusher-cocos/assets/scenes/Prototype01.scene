@@ -487,9 +487,20 @@
     "gameManager": {
       "__id__": 13
     },
+    "worldCamera": {
+      "__id__": 6
+    },
     "worldLeftX": -0.8,
     "worldRightX": 0.8,
     "fixedDepthZ": 0.2,
+    "referencePlaneY": 0,
+    "xBias": 0,
+    "xScale": 1,
+    "optionalCurvePower": 1,
+    "holdEnabled": true,
+    "spawnOnTouchStart": true,
+    "holdInterval": 0.18,
+    "debugLog": false,
     "_id": "3dhu9eexxMkYXYBWYJk2BX"
   },
   {
@@ -511,6 +522,8 @@
     "resourceRegenInterval": 1,
     "resourceRegenAmount": 1,
     "spawnCostPerCoin": 1,
+    "manualSpawnYOverrideEnabled": true,
+    "manualSpawnY": 1,
     "itemCatalog": [
       {
         "__id__": 52
