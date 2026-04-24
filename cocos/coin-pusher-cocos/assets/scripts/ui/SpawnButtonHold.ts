@@ -1,4 +1,4 @@
-import { _decorator, Component, Label, Node, warn } from 'cc';
+import { _decorator, Button, Component, Label, Node, warn } from 'cc';
 import { GameManager } from '../core/GameManager';
 
 const { ccclass, property } = _decorator;
@@ -18,8 +18,10 @@ export class SpawnButtonHold extends Component {
     public autoSpawnOffText = '自动投放：关';
 
     private _resolvedLabel: Label | null = null;
+    private _button: Button | null = null;
 
     protected onLoad(): void {
+        this._button = this.getComponent(Button);
         this._resolvedLabel = this.stateLabel ?? this.findLabelInChildren(this.node);
 
         if (!this.gameManager) {
@@ -43,6 +45,10 @@ export class SpawnButtonHold extends Component {
     }
 
     private onTouchEnd(): void {
+        if (this._button && !this._button.interactable) {
+            return;
+        }
+
         if (!this.gameManager) {
             warn('[SpawnButtonHold] gameManager is not assigned.');
             return;

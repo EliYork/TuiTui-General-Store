@@ -50,6 +50,12 @@ export class CoinBehaviour extends Component {
     @property({ tooltip: 'Keep this low so the body does not fall asleep while still balancing on its edge.' })
     public sleepThreshold = 0.02;
 
+    @property({ tooltip: 'Destroy this unscored item if its world Y falls below this value.' })
+    public despawnBelowY = -10;
+
+    @property({ tooltip: 'Destroy this unscored item if it moves farther than this distance from world origin. Set 0 to disable.' })
+    public despawnBeyondDistance = 30;
+
     private readonly _linearVelocity = new Vec3();
     private readonly _angularVelocity = new Vec3();
     private readonly _parallelAngular = new Vec3();
@@ -59,6 +65,7 @@ export class CoinBehaviour extends Component {
     private readonly _flattenAxis = new Vec3();
     private readonly _itemNormal = new Vec3();
     private readonly _worldRotation = new Quat();
+    private readonly _worldPosition = new Vec3();
     private readonly _zeroVelocity = new Vec3();
     private _body: RigidBody | null = null;
     private _coinId = 0;
@@ -118,7 +125,16 @@ export class CoinBehaviour extends Component {
     }
 
     protected update(deltaTime: number): void {
-        if (!this._body || this._hasScored) {
+        if (this._hasScored) {
+            return;
+        }
+
+        if (this.isOutOfWorldBounds()) {
+            this.node.destroy();
+            return;
+        }
+
+        if (!this._body) {
             return;
         }
 
@@ -177,6 +193,16 @@ export class CoinBehaviour extends Component {
     private updateItemName(): void {
         const baseName = this._itemId || this._fallbackItemId || 'BoardItem';
         this.node.name = this._coinId > 0 ? `${baseName}_${this._coinId}` : baseName;
+    }
+
+    private isOutOfWorldBounds(): boolean {
+        this.node.getWorldPosition(this._worldPosition);
+        if (this._worldPosition.y < this.despawnBelowY) {
+            return true;
+        }
+
+        const maxDistance = Math.max(0, this.despawnBeyondDistance);
+        return maxDistance > 0 && Vec3.lengthSqr(this._worldPosition) > maxDistance * maxDistance;
     }
 
     private applySpawnAssist(): void {

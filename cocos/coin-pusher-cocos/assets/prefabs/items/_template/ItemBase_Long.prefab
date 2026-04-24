@@ -178,6 +178,8 @@
     "settleAssistAngularSpeed": 1.4,
     "settleAssistBlend": 7,
     "sleepThreshold": 0.02,
+    "despawnBelowY": -10,
+    "despawnBeyondDistance": 30,
     "_id": ""
   },
   {

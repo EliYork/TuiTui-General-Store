@@ -19,6 +19,8 @@ import { ItemPrefabConfig, ItemPrefabRuntimeConfig } from '../gameplay/ItemPrefa
 const { ccclass, property } = _decorator;
 const SHARED_SCENE_NAME = 'Prototype01';
 const MIN_AUTO_SPAWN_INTERVAL = 0.05;
+const INSUFFICIENT_RESOURCE_STATUS = '资源不足，无法投放';
+const AUTO_SPAWN_INSUFFICIENT_RESOURCE_STATUS = '资源不足，自动投放已停止';
 
 type MapId = 'Map01' | 'Map02';
 type ResolvedPrefabMetadata = Omit<ItemPrefabRuntimeConfig, 'itemId'>;
@@ -361,6 +363,11 @@ export class GameManager extends Component {
             return false;
         }
 
+        if (!this.canAffordSpawn()) {
+            this.setStatus(INSUFFICIENT_RESOURCE_STATUS);
+            return false;
+        }
+
         const spawnedItem = this.spawnCatalogItem(currentSpawnItem, request);
         if (!spawnedItem) {
             this.setStatus('Spawn failed');
@@ -428,8 +435,8 @@ export class GameManager extends Component {
             return '当前没有可投放物品，自动投放已停止';
         }
 
-        if (runtimeProgress.currentCoins < this.getConfiguredSpawnCost()) {
-            return '资源不足，自动投放已停止';
+        if (!this.canAffordSpawn()) {
+            return AUTO_SPAWN_INSUFFICIENT_RESOURCE_STATUS;
         }
 
         return '';
@@ -510,7 +517,11 @@ export class GameManager extends Component {
     }
 
     public canSpawnCoin(): boolean {
-        return !!this.coinSpawner && !!this.getCurrentSpawnItem();
+        return !!this.coinSpawner && !!this.getCurrentSpawnItem() && this.canAffordSpawn();
+    }
+
+    public canAffordSpawn(): boolean {
+        return runtimeProgress.currentCoins >= this.getConfiguredSpawnCost();
     }
 
     public onSpawnItemButtonClicked(_event: Event | null, itemId: string): void {

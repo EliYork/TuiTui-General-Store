@@ -517,7 +517,7 @@
       "__id__": 51
     },
     "mapSelection": 0,
-    "startCoins": 300,
+    "startCoins": 30,
     "maxCoins": 300,
     "resourceRegenInterval": 1,
     "resourceRegenAmount": 1,
@@ -1950,7 +1950,7 @@
       "__id__": 48
     },
     "spawnSpreadX": 0.18,
-    "spawnSpreadZ": 0.08,
+    "spawnSpreadZ": 0,
     "spawnHeightOffset": 0,
     "spawnYawDegrees": 0,
     "randomYawDegrees": 180,
