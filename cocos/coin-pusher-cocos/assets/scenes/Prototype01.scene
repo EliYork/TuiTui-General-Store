@@ -517,9 +517,9 @@
       "__id__": 51
     },
     "mapSelection": 0,
-    "startCoins": 30,
+    "startCoins": 300,
     "maxCoins": 300,
-    "resourceRegenInterval": 1,
+    "resourceRegenInterval": 5,
     "resourceRegenAmount": 1,
     "spawnCostPerCoin": 1,
     "manualSpawnYOverrideEnabled": true,
@@ -538,9 +538,9 @@
         "__id__": 54
       }
     ],
-    "map01InitialMapItemCount": 2,
+    "map01InitialMapItemCount": 1,
     "map01RiskLevelHint": 1,
-    "map02InitialMapItemCount": 3,
+    "map02InitialMapItemCount": 2,
     "map02RiskLevelHint": 2,
     "worldDropEnabled": true,
     "worldDropInterval": 5,
@@ -2023,7 +2023,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "积分: 0",
+    "_string": "资源：0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -2675,7 +2675,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "Restart",
+    "_string": "重新开始",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -2919,7 +2919,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 62.236328125,
+      "width": 91.123046875,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -2949,7 +2949,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "掉落: 0",
+    "_string": "掉落数：0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -3003,7 +3003,7 @@
     "__prefab": null,
     "_alignFlags": 9,
     "_target": null,
-    "_left": -500,
+    "_left": -514.443359375,
     "_right": 0,
     "_top": -270,
     "_bottom": 0,
@@ -3084,7 +3084,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 152.265625,
+      "width": 91.123046875,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -3114,7 +3114,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "已投: 0 / 剩余: 30",
+    "_string": "投放数：0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -3168,7 +3168,7 @@
     "__prefab": null,
     "_alignFlags": 9,
     "_target": null,
-    "_left": -500,
+    "_left": -469.4287109375,
     "_right": 0,
     "_top": -240,
     "_bottom": 0,
@@ -3496,7 +3496,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "map1",
+    "_string": "地图一",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -3822,7 +3822,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "map2",
+    "_string": "地图二",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -4148,7 +4148,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "Apple",
+    "_string": "苹果",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -4474,7 +4474,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "Banana",
+    "_string": "香蕉",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -4800,7 +4800,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "Lemon",
+    "_string": "柠檬",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -5015,7 +5015,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 62.236328125,
+      "width": 71.123046875,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -5037,7 +5037,7 @@
     "__prefab": null,
     "_alignFlags": 9,
     "_target": null,
-    "_left": -500,
+    "_left": -504.443359375,
     "_right": 0,
     "_top": -300,
     "_bottom": 0,

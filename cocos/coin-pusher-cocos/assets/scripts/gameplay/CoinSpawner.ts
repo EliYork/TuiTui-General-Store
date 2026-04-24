@@ -17,49 +17,96 @@ function randomRange(min: number, max: number): number {
 
 @ccclass('CoinSpawner')
 export class CoinSpawner extends Component {
-    @property(Node)
+    @property({
+        type: Node,
+        displayName: '投放点',
+        tooltip: '生成物体时参考的世界位置和朝向。为空时使用当前节点自身位置；绑定 SpawnPoint 可更直观地调整落点。',
+    })
     public spawnPoint: Node | null = null;
 
-    @property(Node)
+    @property({
+        type: Node,
+        displayName: '物体根节点',
+        tooltip: '新生成物体会挂到这个节点下，方便统一管理和清理。为空时会挂到 CoinSpawner 所在节点。',
+    })
     public coinRoot: Node | null = null;
 
-    @property
+    @property({
+        displayName: '随机 X 范围',
+        tooltip: '随机掉落时在 X 方向的散布范围。数值越大左右分布越宽；手动指定位置的投放不会使用这个随机范围。',
+    })
     public spawnSpreadX = 0.18;
 
-    @property
+    @property({
+        displayName: '随机 Z 范围',
+        tooltip: '随机掉落时在 Z 方向的散布范围。数值越大前后分布越散；手动指定位置的投放不会使用这个随机范围。',
+    })
     public spawnSpreadZ = 0.08;
 
-    @property
+    @property({
+        displayName: '生成高度偏移',
+        tooltip: '在基础投放点 Y 上额外增加的高度。数值越大生成越高，太小可能贴住台面，太大可能弹跳明显。',
+    })
     public spawnHeightOffset = 0;
 
-    @property({ tooltip: 'Base local yaw added on spawn. Keep at 0 unless the spawn point needs an offset.' })
+    @property({
+        displayName: '基础水平旋转',
+        tooltip: '生成时额外叠加的基础 Yaw 角度。通常保持 0，只有投放点朝向需要整体偏转时再调整。',
+    })
     public spawnYawDegrees = 0;
 
-    @property({ tooltip: 'Random yaw range around the item normal. This adds visual variation without making the body stand up.' })
+    @property({
+        displayName: '随机水平旋转',
+        tooltip: '生成时围绕物体法线随机旋转的角度范围。数值越大外观变化越多，但不会让物体明显竖起来。',
+    })
     public randomYawDegrees = 180;
 
-    @property({ tooltip: 'Small base tilt on the X axis. 0 means spawn almost flat.' })
+    @property({
+        displayName: '基础 X 倾斜',
+        tooltip: '生成时在 X 轴上的基础倾斜角。0 表示尽量平放，数值过大可能让物体更容易翻滚。',
+    })
     public baseTiltXDegrees = 0;
 
-    @property({ tooltip: 'Small base tilt on the Z axis. 0 means spawn almost flat.' })
+    @property({
+        displayName: '基础 Z 倾斜',
+        tooltip: '生成时在 Z 轴上的基础倾斜角。0 表示尽量平放，数值过大可能让物体更容易卡边或翻滚。',
+    })
     public baseTiltZDegrees = 0;
 
-    @property({ tooltip: 'Random X tilt range. Keep this small so the body does not spawn on edge.' })
+    @property({
+        displayName: '随机 X 倾斜',
+        tooltip: '生成时额外随机的 X 倾斜范围。保持较小可避免物体一生成就立起来。',
+    })
     public randomTiltXDegrees = 4;
 
-    @property({ tooltip: 'Random Z tilt range. Keep this small so the body does not spawn on edge.' })
+    @property({
+        displayName: '随机 Z 倾斜',
+        tooltip: '生成时额外随机的 Z 倾斜范围。保持较小可避免物体一生成就卡住或弹飞。',
+    })
     public randomTiltZDegrees = 4;
 
-    @property
+    @property({
+        displayName: '向上冲量',
+        tooltip: '生成后施加的向上冲量。数值越大越容易弹起，数值太小会显得投放缺少动感。',
+    })
     public launchUpImpulse = 0.008;
 
-    @property
+    @property({
+        displayName: '向前冲量',
+        tooltip: '生成后沿投放点前方施加的冲量。负值会向机器前方推进；绝对值越大初速度越明显。',
+    })
     public launchForwardImpulse = -0.02;
 
-    @property
+    @property({
+        displayName: '随机侧向冲量',
+        tooltip: '生成后左右方向的随机冲量范围。数值越大落点越不稳定，太大可能飞出机器区域。',
+    })
     public randomSideImpulse = 0.003;
 
-    @property
+    @property({
+        displayName: '随机旋转力矩',
+        tooltip: '生成后施加的随机旋转力矩。数值越大旋转越明显，太大可能导致物体翻滚过强。',
+    })
     public spinTorque = 0.0025;
 
     private _nextCoinId = 1;

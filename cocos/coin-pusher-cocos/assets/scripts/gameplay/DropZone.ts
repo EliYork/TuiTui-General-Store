@@ -6,7 +6,11 @@ const { ccclass, property } = _decorator;
 
 @ccclass('DropZone')
 export class DropZone extends Component {
-    @property(GameManager)
+    @property({
+        type: GameManager,
+        displayName: '游戏管理器',
+        tooltip: '绑定场景中的 GameManager。物体进入结算区后会通知它进行收集、资源回复和解锁处理。',
+    })
     public gameManager: GameManager | null = null;
 
     private _collider: BoxCollider | null = null;

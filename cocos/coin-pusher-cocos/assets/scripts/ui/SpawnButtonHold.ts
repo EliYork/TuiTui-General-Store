@@ -5,16 +5,30 @@ const { ccclass, property } = _decorator;
 
 @ccclass('SpawnButtonHold')
 export class SpawnButtonHold extends Component {
-    @property(GameManager)
+    @property({
+        type: GameManager,
+        displayName: '游戏管理器',
+        tooltip: '绑定场景中的 GameManager。按钮点击后会调用它切换自动投放状态。',
+    })
     public gameManager: GameManager | null = null;
 
-    @property(Label)
+    @property({
+        type: Label,
+        displayName: '按钮文字',
+        tooltip: '显示自动投放开关状态的 Label。为空时会自动在按钮子节点中查找第一个 Label。',
+    })
     public stateLabel: Label | null = null;
 
-    @property({ tooltip: 'Text shown when automatic spawning is enabled.' })
+    @property({
+        displayName: '开启文案',
+        tooltip: '自动投放开启时显示在按钮上的文字。建议保持中文，方便玩家理解当前状态。',
+    })
     public autoSpawnOnText = '自动投放：开';
 
-    @property({ tooltip: 'Text shown when automatic spawning is disabled.' })
+    @property({
+        displayName: '关闭文案',
+        tooltip: '自动投放关闭时显示在按钮上的文字。Restart 或资源不足自动停止后会回到这个文案。',
+    })
     public autoSpawnOffText = '自动投放：关';
 
     private _resolvedLabel: Label | null = null;

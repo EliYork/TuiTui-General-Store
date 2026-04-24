@@ -9,26 +9,46 @@ const EPSILON = 0.0001;
 
 @ccclass('PusherController')
 export class PusherController extends Component {
-    @property
+    @property({
+        displayName: '推板周期',
+        tooltip: '推板完成一次往返运动所需秒数。数值越小推板越快，数值越大推板越慢。',
+    })
     public cycleSeconds = 2.2;
 
-    @property({ tooltip: 'Full extension offset on local X. Use this when the pusher needs sideways drift.' })
+    @property({
+        displayName: '推板 X 位移',
+        tooltip: '推板完全伸出时在本地 X 方向的偏移。通常保持 0，只有需要左右漂移时调整。',
+    })
     public pushOffsetX = DEFAULT_PUSH_OFFSET_X;
 
-    @property({ tooltip: 'Full extension offset on local Y. This is the pusher float amount.' })
+    @property({
+        displayName: '推板 Y 位移',
+        tooltip: '推板完全伸出时在本地 Y 方向的偏移。数值越大推板越上浮，通常保持 0。',
+    })
     public pushFloatY = DEFAULT_PUSH_FLOAT_Y;
 
-    @property({ tooltip: 'Full extension offset on local Z. Negative values push forward into the board.' })
+    @property({
+        displayName: '推板 Z 位移',
+        tooltip: '推板完全伸出时在本地 Z 方向的偏移。负值会向台面前方推进，绝对值越大推得越远。',
+    })
     public pushOffsetZ = DEFAULT_PUSH_OFFSET_Z;
 
-    @property({ visible: false, type: Vec3, tooltip: 'Legacy serialized offset kept only for backward compatibility.' })
+    @property({
+        visible: false,
+        type: Vec3,
+        displayName: '旧版位移',
+        tooltip: '旧版本序列化保留字段，仅用于兼容迁移。不要在 Inspector 中手动调整。',
+    })
     public travelOffset = new Vec3(
         DEFAULT_LEGACY_TRAVEL_OFFSET.x,
         DEFAULT_LEGACY_TRAVEL_OFFSET.y,
         DEFAULT_LEGACY_TRAVEL_OFFSET.z,
     );
 
-    @property({ tooltip: '0 means start fully retracted, 1 means start fully extended.' })
+    @property({
+        displayName: '起始进度',
+        tooltip: '推板动画的起始归一化进度。0 表示完全收回，1 表示完全伸出，可用于调试开局位置。',
+    })
     public startNormalizedTime = 0;
 
     private readonly _resolvedTravelOffset = new Vec3();

@@ -8,43 +8,84 @@ const RAY_EPSILON = 0.000001;
 
 @ccclass('ManualSpawnArea')
 export class ManualSpawnArea extends Component {
-    @property(GameManager)
+    @property({
+        type: GameManager,
+        displayName: '游戏管理器',
+        tooltip: '绑定场景中的 GameManager。手动点击和长按投放都会通过它消耗资源并生成当前选中的水果。',
+    })
     public gameManager: GameManager | null = null;
 
-    @property({ type: Camera, tooltip: 'World camera used to raycast touch position onto the spawn reference plane.' })
+    @property({
+        type: Camera,
+        displayName: '世界相机',
+        tooltip: '用于把屏幕触摸位置投射到世界坐标的相机。绑定错误会导致点击位置和实际投放位置不一致。',
+    })
     public worldCamera: Camera | null = null;
 
-    @property({ tooltip: 'World-space X at the left edge of the manual spawn width.' })
+    @property({
+        displayName: '左侧世界 X',
+        tooltip: '手动投放区域最左侧对应的世界 X 坐标。数值越小，玩家能投放到更左的位置。',
+    })
     public worldLeftX = -1.5;
 
-    @property({ tooltip: 'World-space X at the right edge of the manual spawn width.' })
+    @property({
+        displayName: '右侧世界 X',
+        tooltip: '手动投放区域最右侧对应的世界 X 坐标。数值越大，玩家能投放到更右的位置。',
+    })
     public worldRightX = 1.5;
 
-    @property({ tooltip: 'Fixed world-space Z used by manual spawn. Keep this on the deepest drop line.' })
+    @property({
+        displayName: '固定世界 Z',
+        tooltip: '手动投放时固定使用的世界 Z 坐标，决定水果落在前后哪个位置。当前场景实测值为 0.2。',
+    })
     public fixedDepthZ = -2;
 
-    @property({ tooltip: 'World-space Y of the horizontal reference plane used by camera ray mapping.' })
+    @property({
+        displayName: '映射参考 Y',
+        tooltip: '触摸射线映射时使用的水平参考面世界 Y。通常保持在台面附近，改动会影响触摸到世界坐标的换算。',
+    })
     public referencePlaneY = 0;
 
-    @property({ tooltip: 'World-space X offset applied after touch-to-world mapping.' })
+    @property({
+        displayName: 'X 偏移',
+        tooltip: '触摸映射完成后额外增加的世界 X 偏移。正数整体右移，负数整体左移，用于微调手感。',
+    })
     public xBias = 0;
 
-    @property({ tooltip: 'World-space X scale around the configured spawn range center.' })
+    @property({
+        displayName: 'X 缩放',
+        tooltip: '围绕投放范围中心缩放触摸映射的 X 坐标。大于 1 会放大横向响应，小于 1 会让横向移动更保守。',
+    })
     public xScale = 1;
 
-    @property({ tooltip: 'Optional response curve around center. 1 keeps linear mapping.' })
+    @property({
+        displayName: '响应曲线',
+        tooltip: '围绕中心点调整横向响应曲线。1 表示线性；大于 1 中心更细腻、边缘变化更明显。',
+    })
     public optionalCurvePower = 1;
 
-    @property({ tooltip: 'Allow continuous spawning while the manual spawn area is held.' })
+    @property({
+        displayName: '允许长按投放',
+        tooltip: '开启后玩家按住手动投放区域会连续投放。关闭后只响应点击开始时的单次投放。',
+    })
     public holdEnabled = true;
 
-    @property({ tooltip: 'Spawn immediately when touch begins.' })
+    @property({
+        displayName: '触摸开始即投放',
+        tooltip: '开启后手指按下时立即投放一次。关闭后只会在长按间隔到达时投放。',
+    })
     public spawnOnTouchStart = true;
 
-    @property({ tooltip: 'Seconds between repeated spawns while holding.' })
+    @property({
+        displayName: '长按投放间隔',
+        tooltip: '长按连续投放的间隔，数值越小投放越快。当前 0.05 手感较好，不建议随意改大。',
+    })
     public holdInterval = 0.18;
 
-    @property({ tooltip: 'Print manual spawn touch mapping diagnostics.' })
+    @property({
+        displayName: '调试日志',
+        tooltip: '开启后打印手动投放的触摸映射信息，方便校准落点。正式体验应关闭，避免日志过多。',
+    })
     public debugLog = false;
 
     private _uiTransform: UITransform | null = null;

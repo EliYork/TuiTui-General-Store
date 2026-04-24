@@ -38,25 +38,47 @@ enum MapSelection {
 
 @ccclass('CatalogItemConfig')
 class CatalogItemConfig {
-    @property({ tooltip: 'Stable item id used for runtime progress and button switching.' })
+    @property({
+        displayName: '物品 ID',
+        tooltip: '逻辑层使用的稳定物品 ID，需要和物品 Prefab 上的 ItemPrefabConfig.itemId 保持一致。改错会导致按钮选择、收集进度和解锁状态对不上。',
+    })
     public itemId = '';
 
-    @property(Prefab)
+    @property({
+        type: Prefab,
+        displayName: '物品 Prefab',
+        tooltip: '该物品实际生成时使用的 Prefab。为空时该物品不能被主动投放，也不会进入随机掉落池。',
+    })
     public prefab: Prefab | null = null;
 
-    @property({ tooltip: 'How many copies must be collected before the item becomes selectable for active spawning.' })
+    @property({
+        displayName: '解锁所需收集数',
+        tooltip: '累计收集达到这个数量后，该物品会解锁为可主动投放。数值越大解锁越慢，0 表示开局即可满足数量条件。',
+    })
     public unlockRequiredCount = 0;
 
-    @property({ tooltip: 'Enable this for the very first base item that should be actively spawnable from the beginning.' })
+    @property({
+        displayName: '开局可投放',
+        tooltip: '开启后该物品开局就可以作为主动投放物。通常只给基础物品开启，避免玩家开局没有可投放目标。',
+    })
     public startSpawnUnlocked = false;
 
-    @property({ tooltip: 'Enable this if the item should already be shown as discovered at runtime start.' })
+    @property({
+        displayName: '开局已发现',
+        tooltip: '开启后该物品开局就显示为已发现。只影响图鉴/显示状态，不代表一定可主动投放。',
+    })
     public startDiscovered = false;
 
-    @property
+    @property({
+        displayName: '允许地图一掉落',
+        tooltip: '开启后该物品会进入地图一的世界随机掉落池。关闭后地图一不会免费随机生成它。',
+    })
     public allowDropInMap01 = true;
 
-    @property
+    @property({
+        displayName: '允许地图二掉落',
+        tooltip: '开启后该物品会进入地图二的世界随机掉落池。关闭后地图二不会免费随机生成它。',
+    })
     public allowDropInMap02 = true;
 }
 
@@ -148,86 +170,168 @@ const runtimeProgress: RuntimePersistentProgress = {
 
 @ccclass('GameManager')
 export class GameManager extends Component {
-    @property(CoinSpawner)
+    @property({
+        type: CoinSpawner,
+        displayName: '投放器',
+        tooltip: '场景里的 SpawnRoot/CoinSpawner 引用，所有主动投放和世界随机掉落都会通过它生成物体。为空时不会生成任何物体。',
+    })
     public coinSpawner: CoinSpawner | null = null;
 
-    @property({ type: Enum(MapSelection), tooltip: 'Inspector map selection used on first boot and by applyInspectorMapSelection().' })
+    @property({
+        type: Enum(MapSelection),
+        displayName: '初始地图',
+        tooltip: '首次启动运行数据时使用的地图选择。切换后会影响初始掉落数量和随机掉落池。',
+    })
     public mapSelection = MapSelection.Map01;
 
-    @property({ tooltip: 'Initial active-spawn resource written into the runtime progress on first boot.' })
+    @property({
+        displayName: '初始资源',
+        tooltip: '开局写入运行数据的主动投放资源。数值越大，玩家可连续主动投放的次数越多。',
+    })
     public startCoins = 300;
 
-    @property({ tooltip: 'Resource cap used only by automatic regeneration. Drop rewards may exceed this value.' })
+    @property({
+        displayName: '资源回复上限',
+        tooltip: '被动资源回复最多回复到这个上限。掉落奖励可以超过该上限，不会被这里截断。',
+    })
     public maxCoins = 300;
 
-    @property({ tooltip: 'Seconds between each automatic resource regeneration tick.' })
+    @property({
+        displayName: '资源回复间隔',
+        tooltip: '被动资源每隔多少秒回复一次。数值越小回复越快，数值越大玩家等待时间越长。',
+    })
     public resourceRegenInterval = 1;
 
-    @property({ tooltip: 'How much resource is restored on each regeneration tick.' })
+    @property({
+        displayName: '每次回复资源',
+        tooltip: '每次被动回复增加的资源数量。数值越大恢复越快，可能降低资源管理压力。',
+    })
     public resourceRegenAmount = 1;
 
-    @property({ tooltip: 'How much resource is consumed per manual spawn. This is tracked, but no longer blocks spawning.' })
+    @property({
+        displayName: '主动投放消耗',
+        tooltip: '每次玩家主动投放消耗的资源。包括手动点击/长按和自动投放；资源不足时不会生成物体。',
+    })
     public spawnCostPerCoin = 1;
 
-    @property({ tooltip: 'Use manualSpawnY for ManualSpawnArea spawns instead of the SpawnRoot Y.' })
+    @property({
+        displayName: '覆盖手动投放 Y',
+        tooltip: '开启后 ManualSpawnArea 会使用 manualSpawnY 作为投放高度；关闭后使用 SpawnRoot/SpawnPoint 的世界 Y。',
+    })
     public manualSpawnYOverrideEnabled = true;
 
-    @property({ tooltip: 'World-space Y used by ManualSpawnArea spawns when the override is enabled.' })
+    @property({
+        displayName: '手动投放 Y',
+        tooltip: '手动投放使用的世界 Y 高度。数值越大生成越高，可能更容易弹起；数值太小可能贴近台面或穿插。',
+    })
     public manualSpawnY = 1;
 
-    @property({ tooltip: 'Seconds between automatic active-item spawns while auto spawn is enabled.' })
+    @property({
+        displayName: '自动投放间隔',
+        tooltip: '自动投放开启后每隔多少秒投放一次当前选中物品。数值越小投放越快；当前 0.5 是较稳的节奏。',
+    })
     public autoSpawnInterval = 0.5;
 
-    @property({ tooltip: 'World-space X used by automatic active-item spawns.' })
+    @property({
+        displayName: '自动投放 X',
+        tooltip: '自动投放使用的世界 X 坐标。0 表示从中间投放，负数偏左，正数偏右。',
+    })
     public autoSpawnX = 0;
 
-    @property({ tooltip: 'World-space Z used by automatic active-item spawns.' })
+    @property({
+        displayName: '自动投放 Z',
+        tooltip: '自动投放使用的世界 Z 坐标，决定水果落在前后哪个位置。当前 -0.2 是默认自动投放落点，不要随意改成正值。',
+    })
     public autoSpawnZ = -0.2;
 
-    @property({ type: [CatalogItemConfig], tooltip: 'Logic-only item catalog. Each item prefab is a complete runtime object.' })
+    @property({
+        type: [CatalogItemConfig],
+        displayName: '物品配置表',
+        tooltip: '逻辑层物品表，配置每种水果的 Prefab、解锁数量和地图掉落开关。主动投放和随机掉落都会读取这里。',
+    })
     public itemCatalog: CatalogItemConfig[] = [];
 
-    @property({ tooltip: 'How many map-pool items should be seeded onto the board when Map01 starts.' })
+    @property({
+        displayName: '地图一初始掉落数',
+        tooltip: '地图一开始时免费预生成到台面的随机掉落物数量。数值越大开局越热闹，也会增加初始物理负载。',
+    })
     public map01InitialMapItemCount = 2;
 
-    @property({ tooltip: 'Map01 future leak-risk hint. Reserved for later board-difficulty tuning.' })
+    @property({
+        displayName: '地图一风险提示',
+        tooltip: '地图一的难度/漏出风险提示值，目前主要作为后续调参预留，不直接改变玩法逻辑。',
+    })
     public map01RiskLevelHint = 1;
 
-    @property({ tooltip: 'How many map-pool items should be seeded onto the board when Map02 starts.' })
+    @property({
+        displayName: '地图二初始掉落数',
+        tooltip: '地图二开始时免费预生成到台面的随机掉落物数量。数值越大开局物体越多，也会增加初始物理负载。',
+    })
     public map02InitialMapItemCount = 3;
 
-    @property({ tooltip: 'Map02 future leak-risk hint. Reserved for later board-difficulty tuning.' })
+    @property({
+        displayName: '地图二风险提示',
+        tooltip: '地图二的难度/漏出风险提示值，目前主要作为后续调参预留，不直接改变玩法逻辑。',
+    })
     public map02RiskLevelHint = 2;
 
-    @property({ tooltip: 'Enable or disable timed world drops without affecting manual spawn or resource recovery.' })
+    @property({
+        displayName: '启用世界随机掉落',
+        tooltip: '开启后系统会按间隔免费生成随机掉落物。该掉落不消耗玩家资源，也不受主动投放资源检查限制。',
+    })
     public worldDropEnabled = true;
 
-    @property({ tooltip: 'Seconds between each timed world drop batch.' })
+    @property({
+        displayName: '世界掉落间隔',
+        tooltip: '系统随机掉落每隔多少秒触发一批。数值越小掉落越频繁，可能增加台面物体数量和物理压力。',
+    })
     public worldDropInterval = 5;
 
-    @property({ tooltip: 'How many random map-pool items are spawned each time the world drop timer fires.' })
+    @property({
+        displayName: '每批世界掉落数量',
+        tooltip: '每次世界随机掉落触发时生成几个物体。数值越大随机掉落越密集，也更容易造成性能压力。',
+    })
     public worldDropAmount = 1;
 
-    @property(Label)
+    @property({
+        type: Label,
+        displayName: '资源标签',
+        tooltip: '显示当前资源和被动回复信息的 Label。为空时资源 HUD 不会更新。',
+    })
     public scoreLabel: Label | null = null;
 
-    @property(Label)
+    @property({
+        type: Label,
+        displayName: '掉落标签',
+        tooltip: '显示当前可投放物品和世界随机掉落状态的 Label。为空时对应 HUD 不会更新。',
+    })
     public dropCountLabel: Label | null = null;
 
-    @property(Label)
+    @property({
+        type: Label,
+        displayName: '收集标签',
+        tooltip: '显示最近掉落、收集数量和已解锁物品的 Label。为空时对应 HUD 不会更新。',
+    })
     public spawnCountLabel: Label | null = null;
 
-    @property(Label)
+    @property({
+        type: Label,
+        displayName: '状态标签',
+        tooltip: '显示当前地图、游戏状态和操作提示的 Label。为空时状态提示不会显示。',
+    })
     public statusLabel: Label | null = null;
 
-    @property
+    @property({
+        displayName: '显示碰撞调试',
+        tooltip: '开启后显示物理碰撞调试线框，方便排查 Collider。正式体验应关闭，避免影响画面和性能。',
+    })
     public showColliderDebug = false;
 
     public autoSpawnEnabled = false;
 
     private _state = RoundState.Ready;
     private _sessionSpawnedCoinCount = 0;
-    private _statusText = 'Preparing runtime progress';
+    private _statusText = '准备运行数据';
     private _autoSpawnTimer = 0;
     private readonly _manualSpawnPosition = new Vec3();
 
@@ -249,12 +353,12 @@ export class GameManager extends Component {
 
         const missingPrefabs = this.getResolvedCatalog().filter((item) => !item.prefab);
         if (missingPrefabs.length > 0) {
-            this.setStatus(`Assign prefabs in GameManager.itemCatalog: ${missingPrefabs.map((item) => item.itemName).join(' / ')}`);
+            this.setStatus(`请在 GameManager.itemCatalog 配置 Prefab：${missingPrefabs.map((item) => item.itemName).join(' / ')}`);
             return;
         }
 
         this.seedInitialMapItems();
-        this.setStatus(`Current map: ${this.getCurrentMapConfig().mapName}`);
+        this.setStatus(`当前地图：${this.getCurrentMapConfig().mapName}`);
     }
 
     protected update(deltaTime: number): void {
@@ -289,7 +393,7 @@ export class GameManager extends Component {
     public spawnCoinFromManualPosition(worldX: number, worldZ: number, debugLog = false): boolean {
         if (!this.coinSpawner) {
             warn('[GameManager] coinSpawner is not assigned.');
-            this.setStatus('Missing CoinSpawner reference');
+            this.setStatus('缺少 CoinSpawner 引用');
             return false;
         }
 
@@ -354,12 +458,12 @@ export class GameManager extends Component {
         const currentSpawnItem = this.getCurrentSpawnItem();
         if (!this.coinSpawner) {
             warn('[GameManager] coinSpawner is not assigned.');
-            this.setStatus('Missing CoinSpawner reference');
+            this.setStatus('缺少 CoinSpawner 引用');
             return false;
         }
 
         if (!currentSpawnItem) {
-            this.setStatus('No active spawn item is currently available');
+            this.setStatus('当前没有可投放物品');
             return false;
         }
 
@@ -370,14 +474,14 @@ export class GameManager extends Component {
 
         const spawnedItem = this.spawnCatalogItem(currentSpawnItem, request);
         if (!spawnedItem) {
-            this.setStatus('Spawn failed');
+            this.setStatus('投放失败');
             return false;
         }
 
         this._sessionSpawnedCoinCount += 1;
         runtimeProgress.currentCoins -= this.getConfiguredSpawnCost();
         this.syncStateFromResources();
-        this.setStatus(`Spawned ${currentSpawnItem.itemName}, resource ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins}`);
+        this.setStatus(`已投放 ${currentSpawnItem.itemName}，资源 ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins}`);
         return true;
     }
 
@@ -459,7 +563,7 @@ export class GameManager extends Component {
         const collectedItem = this.findResolvedCatalogItemById(item.itemId);
         if (!collectedItem) {
             warn(`[GameManager] Dropped item is missing catalog registration: ${item.itemId || item.node.name}`);
-            this.setStatus(`Dropped item is not registered: ${item.itemTypeLabel}`);
+            this.setStatus(`掉落物未注册：${item.itemTypeLabel}`);
             item.onScored();
             return;
         }
@@ -480,22 +584,22 @@ export class GameManager extends Component {
         this.syncStateFromResources();
         item.onScored();
 
-        const rewardText = `resource +${collectedItem.value}`;
+        const rewardText = `资源 +${collectedItem.value}`;
         if (unlockedItemName) {
             this.setStatus(
-                `Received ${collectedItem.itemName} x1, ${rewardText}, owned ${progress.ownedCount}, unlocked spawn: ${unlockedItemName}`,
+                `获得 ${collectedItem.itemName} x1，${rewardText}，已收集 ${progress.ownedCount}，解锁投放：${unlockedItemName}`,
             );
             return;
         }
 
-        this.setStatus(`Received ${collectedItem.itemName} x1, ${rewardText}, owned ${progress.ownedCount}`);
+        this.setStatus(`获得 ${collectedItem.itemName} x1，${rewardText}，已收集 ${progress.ownedCount}`);
     }
 
     public restartGame(): void {
         const sceneName = director.getScene()?.name || SHARED_SCENE_NAME;
         if (!sceneName) {
             warn('[GameManager] restartGame failed: current scene is missing.');
-            this.setStatus('Restart failed: current scene is missing');
+            this.setStatus('重新开始失败：当前场景缺失');
             return;
         }
 
@@ -531,23 +635,23 @@ export class GameManager extends Component {
     public selectSpawnItemById(itemId: string): boolean {
         const nextItem = this.findResolvedCatalogItemById(itemId);
         if (!nextItem) {
-            this.setStatus(`Unknown spawn item: ${itemId}`);
+            this.setStatus(`未知投放物品：${itemId}`);
             return false;
         }
 
         if (!nextItem.isSpawnUnlocked) {
-            this.setStatus(`${nextItem.itemName} is not unlocked for spawning yet`);
+            this.setStatus(`${nextItem.itemName} 尚未解锁投放`);
             return false;
         }
 
         if (!nextItem.prefab) {
-            this.setStatus(`${nextItem.itemName} is missing its prefab`);
+            this.setStatus(`${nextItem.itemName} 缺少 Prefab`);
             return false;
         }
 
         runtimeProgress.currentSpawnItemId = nextItem.itemId;
         this.refreshUi();
-        this.setStatus(`Active spawn item switched to ${nextItem.itemName}`);
+        this.setStatus(`当前投放物切换为 ${nextItem.itemName}`);
         return true;
     }
 
@@ -628,7 +732,7 @@ export class GameManager extends Component {
         const nextConfig = this.getMapConfig(mapId);
         if (!nextConfig) {
             warn(`[GameManager] Unknown map id: ${mapId}`);
-            this.setStatus('Map switch failed');
+            this.setStatus('地图切换失败');
             return;
         }
 
@@ -643,7 +747,7 @@ export class GameManager extends Component {
         }
 
         this.seedInitialMapItems();
-        this.setStatus(`Switched to ${nextConfig.mapName}`);
+        this.setStatus(`已切换到 ${nextConfig.mapName}`);
     }
 
     private seedInitialMapItems(): void {
@@ -768,23 +872,23 @@ export class GameManager extends Component {
         const unlockedItems = resolvedCatalog.filter((item) => item.isSpawnUnlocked).map((item) => item.itemName);
         const pocketSummary = resolvedCatalog.map((item) => `${item.itemName} ${item.ownedCount}`).join(' / ');
         const worldDropSummary = this.worldDropEnabled
-            ? `${this.getConfiguredWorldDropAmount()} items / ${this.getConfiguredWorldDropInterval()}s`
-            : 'disabled';
+            ? `每 ${this.getConfiguredWorldDropInterval()} 秒 ${this.getConfiguredWorldDropAmount()} 个`
+            : '关闭';
 
         if (this.scoreLabel) {
-            this.scoreLabel.string = `Resource: ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins} | Regen ${this.getConfiguredResourceRegenAmount()} / ${this.getConfiguredResourceRegenInterval()}s`;
+            this.scoreLabel.string = `资源：${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins} | 回复：${this.getConfiguredResourceRegenAmount()} / ${this.getConfiguredResourceRegenInterval()}秒`;
         }
 
         if (this.dropCountLabel) {
-            this.dropCountLabel.string = `Spawn item: ${currentSpawnItem?.itemName ?? 'None'} | World drop: ${worldDropSummary}`;
+            this.dropCountLabel.string = `当前投放：${currentSpawnItem?.itemName ?? '无'} | 随机掉落：${worldDropSummary}`;
         }
 
         if (this.spawnCountLabel) {
-            this.spawnCountLabel.string = `Latest drop: ${latestDroppedItem?.itemName ?? 'None'} | Collection: ${pocketSummary || 'None'} | Unlocked: ${unlockedItems.join(' / ') || 'None'}`;
+            this.spawnCountLabel.string = `最近掉落：${latestDroppedItem?.itemName ?? '无'} | 收集：${pocketSummary || '无'} | 已解锁：${unlockedItems.join(' / ') || '无'}`;
         }
 
         if (this.statusLabel) {
-            this.statusLabel.string = `Map: ${mapConfig.mapName} | ${this.getStateText()} | ${this._statusText}`;
+            this.statusLabel.string = `地图：${mapConfig.mapName} | ${this.getStateText()} | ${this._statusText}`;
         }
     }
 
@@ -812,7 +916,7 @@ export class GameManager extends Component {
         if (mapId === 'Map02') {
             return {
                 mapId: 'Map02',
-                mapName: 'Map02 Reserve',
+                mapName: '地图二',
                 sceneName: SHARED_SCENE_NAME,
                 initialMapItemCount: this.normalizeNonNegativeInteger(this.map02InitialMapItemCount, 3),
                 riskLevelHint: this.normalizeNonNegativeNumber(this.map02RiskLevelHint, 2),
@@ -821,7 +925,7 @@ export class GameManager extends Component {
 
         return {
             mapId: 'Map01',
-            mapName: 'Map01 Base',
+            mapName: '地图一',
             sceneName: SHARED_SCENE_NAME,
             initialMapItemCount: this.normalizeNonNegativeInteger(this.map01InitialMapItemCount, 2),
             riskLevelHint: this.normalizeNonNegativeNumber(this.map01RiskLevelHint, 1),
@@ -835,12 +939,12 @@ export class GameManager extends Component {
     private getStateText(): string {
         switch (this._state) {
         case RoundState.Playing:
-            return 'State: Playing';
+            return '状态：投放中';
         case RoundState.LowResources:
-            return 'State: Resource below zero, spawning still allowed';
+            return '状态：资源不足';
         case RoundState.Ready:
         default:
-            return 'State: Ready';
+            return '状态：准备';
         }
     }
 
@@ -971,7 +1075,7 @@ export class GameManager extends Component {
     private humanizeItemId(itemId: string): string {
         const trimmed = (itemId || '').trim();
         if (!trimmed) {
-            return 'Unnamed Item';
+            return '未命名物品';
         }
 
         const spaced = trimmed

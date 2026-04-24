@@ -14,46 +14,88 @@ const LOCAL_UP = new Vec3(0, 1, 0);
 
 @ccclass('CoinBehaviour')
 export class CoinBehaviour extends Component {
-    @property({ tooltip: 'How long the spawn stabilizer should suppress tumble right after the item is created.' })
+    @property({
+        displayName: '生成稳定时长',
+        tooltip: '物体刚生成后用于抑制过度翻滚的时间。数值越大越稳但手感更钝，数值太小可能刚生成就乱滚。',
+    })
     public spawnAssistDuration = 0.18;
 
-    @property({ tooltip: 'Clamp for horizontal speed during the spawn assist window.' })
+    @property({
+        displayName: '生成水平限速',
+        tooltip: '生成稳定期内限制水平速度的上限。数值越小越稳，数值越大物体更容易快速滑动。',
+    })
     public maxSpawnHorizontalSpeed = 0.16;
 
-    @property({ tooltip: 'Clamp for vertical speed during the spawn assist window.' })
+    @property({
+        displayName: '生成垂直限速',
+        tooltip: '生成稳定期内限制垂直速度的上限。数值越小越不容易弹高，数值越大弹跳更明显。',
+    })
     public maxSpawnVerticalSpeed = 0.22;
 
-    @property({ tooltip: 'Maximum spin speed along the item normal during the spawn assist window.' })
+    @property({
+        displayName: '生成自旋限速',
+        tooltip: '生成稳定期内限制沿物体法线自旋的速度。数值越小旋转越少，数值越大旋转更活跃。',
+    })
     public maxSpawnSpinSpeed = 1.2;
 
-    @property({ tooltip: 'Maximum tumble speed across the item plane during the spawn assist window.' })
+    @property({
+        displayName: '生成翻滚限速',
+        tooltip: '生成稳定期内限制横向翻滚速度。数值越小更不容易立起来，数值越大翻滚感更强。',
+    })
     public maxSpawnTumbleSpeed = 0.35;
 
-    @property({ tooltip: 'Delay before the spawned body starts trying to settle flatter on the board.' })
+    @property({
+        displayName: '贴平辅助延迟',
+        tooltip: '生成后等待多久开始尝试让物体更平稳地贴到台面。数值越小越快介入，数值越大更自然但可能更乱。',
+    })
     public settleAssistDelay = 0.12;
 
-    @property({ tooltip: 'Only apply the settle assist when horizontal motion is already slow.' })
+    @property({
+        displayName: '贴平水平速度阈值',
+        tooltip: '只有水平速度低于该值时才启用贴平辅助。数值越大越容易介入，数值越小只在很慢时介入。',
+    })
     public settleAssistSpeedThreshold = 0.08;
 
-    @property({ tooltip: 'Only apply the settle assist when vertical motion is already small.' })
+    @property({
+        displayName: '贴平垂直速度阈值',
+        tooltip: '只有垂直速度低于该值时才启用贴平辅助。数值越大更早稳定，数值越小更少干预弹跳。',
+    })
     public settleAssistVerticalSpeedThreshold = 0.06;
 
-    @property({ tooltip: 'Only apply the settle assist when angular speed is already under control.' })
+    @property({
+        displayName: '贴平角速度阈值',
+        tooltip: '只有角速度低于该值时才启用贴平辅助。数值越大更容易介入，数值越小只在旋转较慢时介入。',
+    })
     public settleAssistAngularSpeedThreshold = 1.1;
 
-    @property({ tooltip: 'Target angular speed used to help a resting body topple toward flat.' })
+    @property({
+        displayName: '贴平目标角速度',
+        tooltip: '贴平辅助使用的目标角速度。数值越大贴平动作更明显，太大可能显得不自然。',
+    })
     public settleAssistAngularSpeed = 1.4;
 
-    @property({ tooltip: 'Blend factor for the settle assist. Higher values flatten faster.' })
+    @property({
+        displayName: '贴平混合强度',
+        tooltip: '贴平辅助的混合强度。数值越大变平越快，数值越小更自然但稳定更慢。',
+    })
     public settleAssistBlend = 7;
 
-    @property({ tooltip: 'Keep this low so the body does not fall asleep while still balancing on its edge.' })
+    @property({
+        displayName: '睡眠阈值',
+        tooltip: '物理刚体进入睡眠的速度阈值。保持较低可避免物体还卡在边缘时过早静止。',
+    })
     public sleepThreshold = 0.02;
 
-    @property({ tooltip: 'Destroy this unscored item if its world Y falls below this value.' })
+    @property({
+        displayName: '低处销毁 Y',
+        tooltip: '越界清理阈值：物体低于这个世界 Y 坐标会被销毁，不会触发得分。',
+    })
     public despawnBelowY = -10;
 
-    @property({ tooltip: 'Destroy this unscored item if it moves farther than this distance from world origin. Set 0 to disable.' })
+    @property({
+        displayName: '远处销毁距离',
+        tooltip: '越界清理阈值：物体距离场景中心过远会被销毁，用于防止飞出地图后长期占用性能。设为 0 可关闭距离清理。',
+    })
     public despawnBeyondDistance = 30;
 
     private readonly _linearVelocity = new Vec3();
