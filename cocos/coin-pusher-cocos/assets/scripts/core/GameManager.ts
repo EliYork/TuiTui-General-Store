@@ -4,6 +4,7 @@ import {
     director,
     Enum,
     Event,
+    ImageAsset,
     Label,
     log,
     Prefab,
@@ -50,6 +51,13 @@ class CatalogItemConfig {
         tooltip: '该物品实际生成时使用的 Prefab。为空时该物品不能被主动投放，也不会进入随机掉落池。',
     })
     public prefab: Prefab | null = null;
+
+    @property({
+        type: ImageAsset,
+        displayName: '图鉴图片',
+        tooltip: '图鉴 UI 使用的物品 PNG 图片资源。为空时图鉴卡片会显示文字占位；换成清晰、正面的 PNG 可以提升图鉴识别度。',
+    })
+    public iconImage: ImageAsset | null = null;
 
     @property({
         displayName: '解锁所需收集数',
@@ -108,9 +116,22 @@ interface RuntimePersistentProgress {
     itemProgress: Record<string, RuntimeItemProgress>;
 }
 
+export interface EncyclopediaCatalogItemSnapshot {
+    itemId: string;
+    itemName: string;
+    iconImage: ImageAsset | null;
+    value: number;
+    weight: number;
+    ownedCount: number;
+    unlockRequiredCount: number;
+    isSpawnUnlocked: boolean;
+    isDiscovered: boolean;
+}
+
 interface NormalizedCatalogConfig {
     itemId: string;
     prefab: Prefab | null;
+    iconImage: ImageAsset | null;
     unlockRequiredCount: number;
     startSpawnUnlocked: boolean;
     startDiscovered: boolean;
@@ -130,6 +151,7 @@ const DEFAULT_TEST_ITEMS: NormalizedCatalogConfig[] = [
     {
         itemId: 'apple',
         prefab: null,
+        iconImage: null,
         unlockRequiredCount: 0,
         startSpawnUnlocked: true,
         startDiscovered: true,
@@ -139,6 +161,7 @@ const DEFAULT_TEST_ITEMS: NormalizedCatalogConfig[] = [
     {
         itemId: 'banana',
         prefab: null,
+        iconImage: null,
         unlockRequiredCount: 3,
         startSpawnUnlocked: false,
         startDiscovered: false,
@@ -148,6 +171,7 @@ const DEFAULT_TEST_ITEMS: NormalizedCatalogConfig[] = [
     {
         itemId: 'lemon',
         prefab: null,
+        iconImage: null,
         unlockRequiredCount: 5,
         startSpawnUnlocked: false,
         startDiscovered: false,
@@ -628,6 +652,22 @@ export class GameManager extends Component {
         return runtimeProgress.currentCoins >= this.getConfiguredSpawnCost();
     }
 
+    public getEncyclopediaItems(): EncyclopediaCatalogItemSnapshot[] {
+        this.ensureRuntimeProgress();
+
+        return this.getResolvedCatalog().map((item) => ({
+            itemId: item.itemId,
+            itemName: item.itemName,
+            iconImage: item.iconImage,
+            value: item.value,
+            weight: item.weight,
+            ownedCount: item.ownedCount,
+            unlockRequiredCount: item.unlockRequiredCount,
+            isSpawnUnlocked: item.isSpawnUnlocked,
+            isDiscovered: item.isDiscovered,
+        }));
+    }
+
     public onSpawnItemButtonClicked(_event: Event | null, itemId: string): void {
         this.selectSpawnItemById(itemId);
     }
@@ -989,6 +1029,7 @@ export class GameManager extends Component {
             normalizedItems.push({
                 itemId,
                 prefab: inspectorItem?.prefab ?? fallbackItem.prefab,
+                iconImage: inspectorItem?.iconImage ?? fallbackItem.iconImage,
                 unlockRequiredCount: this.normalizeNonNegativeInteger(
                     inspectorItem?.unlockRequiredCount ?? fallbackItem.unlockRequiredCount,
                 ),
