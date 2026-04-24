@@ -2,6 +2,7 @@
     "version": "1.0.1",
     "data": {
         "paths": [
+            "art_source",
             "materials",
             "models",
             "physics-materials",
@@ -9,12 +10,15 @@
             "scenes",
             "scripts",
             "textures",
+            "art_source\\food",
             "prefabs\\items",
             "scripts\\core",
             "scripts\\gameplay",
             "scripts\\ui",
+            "art_source\\food\\Textures",
             "prefabs\\items\\all",
             "prefabs\\items\\maps",
+            "prefabs\\items\\_template",
             "prefabs\\items\\maps\\map01",
             "prefabs\\items\\maps\\map02",
             "scripts\\core\\GameManager.ts",
@@ -23,13 +27,12 @@
             "scripts\\gameplay\\DropZone.ts",
             "scripts\\gameplay\\ItemPrefabConfig.ts",
             "scripts\\gameplay\\PusherController.ts",
+            "scripts\\ui\\ManualSpawnArea.ts",
             "scripts\\ui\\SpawnButtonHold.ts",
             "physics-materials\\BoardMat.pmtl",
             "physics-materials\\CoinMat.pmtl",
             "prefabs\\Coin.prefab",
-            "art_source",
-            "art_source\\food",
-            "art_source\\food\\Textures",
+            "scenes\\Prototype01.scene",
             "art_source\\food\\advocado-half.glb",
             "art_source\\food\\apple-half.glb",
             "art_source\\food\\apple.glb",
@@ -234,11 +237,9 @@
             "prefabs\\items\\all\\apple.prefab",
             "prefabs\\items\\all\\banana.prefab",
             "prefabs\\items\\all\\lemon.prefab",
-            "prefabs\\items\\_template",
-            "prefabs\\items\\_template\\ItemBase_Round.prefab",
-            "prefabs\\items\\_template\\ItemBase_Long.prefab",
             "prefabs\\items\\_template\\ItemBase_Box.prefab.prefab",
-            "scenes\\Prototype01.scene"
+            "prefabs\\items\\_template\\ItemBase_Long.prefab",
+            "prefabs\\items\\_template\\ItemBase_Round.prefab"
         ]
     }
 }

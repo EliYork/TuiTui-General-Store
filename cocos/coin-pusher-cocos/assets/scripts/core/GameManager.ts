@@ -6,6 +6,7 @@ import {
     Event,
     Label,
     Prefab,
+    Vec3,
     warn,
     PhysicsSystem,
     EPhysicsDrawFlags,
@@ -206,6 +207,7 @@ export class GameManager extends Component {
     private _state = RoundState.Ready;
     private _sessionSpawnedCoinCount = 0;
     private _statusText = 'Preparing runtime progress';
+    private readonly _manualSpawnPosition = new Vec3();
 
     protected start(): void {
         PhysicsSystem.instance.enable = true;
@@ -253,6 +255,35 @@ export class GameManager extends Component {
     }
 
     public spawnCoinFromButton(): boolean {
+        return this.spawnCurrentSpawnItem();
+    }
+
+    public spawnCoinFromManualPosition(worldX: number, worldZ: number): boolean {
+        if (!this.coinSpawner) {
+            warn('[GameManager] coinSpawner is not assigned.');
+            this.setStatus('Missing CoinSpawner reference');
+            return false;
+        }
+
+        const basePosition = this.coinSpawner.getBaseSpawnWorldPosition(this._manualSpawnPosition);
+        const baseX = basePosition.x;
+        const baseY = basePosition.y;
+        const baseZ = basePosition.z;
+
+        Vec3.set(
+            this._manualSpawnPosition,
+            this.normalizeFiniteNumber(worldX, baseX),
+            baseY,
+            this.normalizeFiniteNumber(worldZ, baseZ),
+        );
+
+        return this.spawnCurrentSpawnItem({
+            worldPosition: this._manualSpawnPosition,
+            randomizeAroundPosition: false,
+        });
+    }
+
+    private spawnCurrentSpawnItem(request: CoinSpawnRequest | null = null): boolean {
         const currentSpawnItem = this.getCurrentSpawnItem();
         if (!this.coinSpawner) {
             warn('[GameManager] coinSpawner is not assigned.');
@@ -265,7 +296,7 @@ export class GameManager extends Component {
             return false;
         }
 
-        const spawnedItem = this.spawnCatalogItem(currentSpawnItem);
+        const spawnedItem = this.spawnCatalogItem(currentSpawnItem, request);
         if (!spawnedItem) {
             this.setStatus('Spawn failed');
             return false;
@@ -805,5 +836,13 @@ export class GameManager extends Component {
         }
 
         return Math.round(value);
+    }
+
+    private normalizeFiniteNumber(value: number, fallback = 0): number {
+        if (!Number.isFinite(value)) {
+            return fallback;
+        }
+
+        return value;
     }
 }

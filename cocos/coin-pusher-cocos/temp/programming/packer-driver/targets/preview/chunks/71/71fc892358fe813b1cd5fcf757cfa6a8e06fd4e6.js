@@ -105,6 +105,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _
           this._spawnImpulse = new Vec3();
           this._spawnTorque = new Vec3();
           this._itemNormal = new Vec3();
+          this._resolvedBasePosition = new Vec3();
         }
 
         spawnCoin(itemPrefab, request) {
@@ -158,12 +159,25 @@ System.register(["__unresolved_0", "cc", "__unresolved_1"], function (_export, _
           return item;
         }
 
+        getBaseSpawnWorldPosition(out) {
+          var _out, _this$spawnPoint$worl, _this$spawnPoint2;
+
+          if (out === void 0) {
+            out = null;
+          }
+
+          var target = (_out = out) != null ? _out : new Vec3();
+          var source = (_this$spawnPoint$worl = (_this$spawnPoint2 = this.spawnPoint) == null ? void 0 : _this$spawnPoint2.worldPosition) != null ? _this$spawnPoint$worl : this.node.worldPosition;
+          Vec3.copy(target, source);
+          return target;
+        }
+
         resolveBasePosition(request) {
           if (request != null && request.worldPosition) {
             return request.worldPosition;
           }
 
-          return this.spawnPoint ? this.spawnPoint.worldPosition : this.node.worldPosition;
+          return this.getBaseSpawnWorldPosition(this._resolvedBasePosition);
         }
 
         shouldRandomizePosition(request) {

@@ -1,7 +1,7 @@
 System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], function (_export, _context) {
   "use strict";
 
-  var _reporterNs, _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Component, director, Enum, Label, Prefab, warn, PhysicsSystem, EPhysicsDrawFlags, CoinSpawner, ItemPrefabConfig, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _class4, _class5, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _crd, ccclass, property, SHARED_SCENE_NAME, RoundState, MapSelection, CatalogItemConfig, DEFAULT_TEST_ITEMS, runtimeProgress, GameManager;
+  var _reporterNs, _cclegacy, __checkObsolete__, __checkObsoleteInNamespace__, _decorator, Component, director, Enum, Label, Prefab, Vec3, warn, PhysicsSystem, EPhysicsDrawFlags, CoinSpawner, ItemPrefabConfig, _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _class4, _class5, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _crd, ccclass, property, SHARED_SCENE_NAME, RoundState, MapSelection, CatalogItemConfig, DEFAULT_TEST_ITEMS, runtimeProgress, GameManager;
 
   function _initializerDefineProperty(target, property, descriptor, context) { if (!descriptor) return; Object.defineProperty(target, property, { enumerable: descriptor.enumerable, configurable: descriptor.configurable, writable: descriptor.writable, value: descriptor.initializer ? descriptor.initializer.call(context) : void 0 }); }
 
@@ -42,6 +42,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
       Enum = _cc.Enum;
       Label = _cc.Label;
       Prefab = _cc.Prefab;
+      Vec3 = _cc.Vec3;
       warn = _cc.warn;
       PhysicsSystem = _cc.PhysicsSystem;
       EPhysicsDrawFlags = _cc.EPhysicsDrawFlags;
@@ -55,7 +56,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
 
       _cclegacy._RF.push({}, "6bf28UBX7VLWZLqKnI8PwJ+", "GameManager", undefined);
 
-      __checkObsolete__(['_decorator', 'Component', 'director', 'Enum', 'Event', 'Label', 'Prefab', 'warn', 'PhysicsSystem', 'EPhysicsDrawFlags']);
+      __checkObsolete__(['_decorator', 'Component', 'director', 'Enum', 'Event', 'Label', 'Prefab', 'Vec3', 'warn', 'PhysicsSystem', 'EPhysicsDrawFlags']);
 
       ({
         ccclass,
@@ -267,6 +268,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           this._state = RoundState.Ready;
           this._sessionSpawnedCoinCount = 0;
           this._statusText = 'Preparing runtime progress';
+          this._manualSpawnPosition = new Vec3();
         }
 
         start() {
@@ -314,6 +316,28 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
         }
 
         spawnCoinFromButton() {
+          return this.spawnCurrentSpawnItem();
+        }
+
+        spawnCoinFromManualPosition(worldX, worldZ) {
+          if (!this.coinSpawner) {
+            warn('[GameManager] coinSpawner is not assigned.');
+            this.setStatus('Missing CoinSpawner reference');
+            return false;
+          }
+
+          const basePosition = this.coinSpawner.getBaseSpawnWorldPosition(this._manualSpawnPosition);
+          const baseX = basePosition.x;
+          const baseY = basePosition.y;
+          const baseZ = basePosition.z;
+          Vec3.set(this._manualSpawnPosition, this.normalizeFiniteNumber(worldX, baseX), baseY, this.normalizeFiniteNumber(worldZ, baseZ));
+          return this.spawnCurrentSpawnItem({
+            worldPosition: this._manualSpawnPosition,
+            randomizeAroundPosition: false
+          });
+        }
+
+        spawnCurrentSpawnItem(request = null) {
           const currentSpawnItem = this.getCurrentSpawnItem();
 
           if (!this.coinSpawner) {
@@ -327,7 +351,7 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
             return false;
           }
 
-          const spawnedItem = this.spawnCatalogItem(currentSpawnItem);
+          const spawnedItem = this.spawnCatalogItem(currentSpawnItem, request);
 
           if (!spawnedItem) {
             this.setStatus('Spawn failed');
@@ -889,6 +913,14 @@ System.register(["__unresolved_0", "cc", "__unresolved_1", "__unresolved_2"], fu
           }
 
           return Math.round(value);
+        }
+
+        normalizeFiniteNumber(value, fallback = 0) {
+          if (!Number.isFinite(value)) {
+            return fallback;
+          }
+
+          return value;
         }
 
       }, (_descriptor8 = _applyDecoratedDescriptor(_class5.prototype, "coinSpawner", [_dec8], {

@@ -5,11 +5,7 @@
         "version": "Windows 11 Pro"
     },
     "sceneListMap": {
-        "7b029136-dd73-4a47-a0c2-48ff1d96a189": "C:\\coin-pusher\\cocos\\coin-pusher-cocos\\assets\\3D食品和厨具套件\\3D食品和厨房\\scene.scene",
-        "822de87a-eb1e-4aee-8255-46954f6c3ee1": "C:\\coin-pusher\\cocos\\coin-pusher-cocos\\assets\\scenes\\Prototype01.scene",
-        "43f91f85-b906-4439-8e34-4798a480475b": "C:\\coin-pusher\\cocos\\coin-pusher-cocos\\assets\\prefabs\\items\\all\\banana.prefab",
-        "003dde30-b60b-42cd-8d0c-047f26b6ec3e": "C:\\coin-pusher\\cocos\\coin-pusher-cocos\\assets\\scenes\\Prototype02.scene",
-        "3b9415ed-9ba2-4f07-bb11-4767e37357f8": "C:\\coin-pusher\\cocos\\coin-pusher-cocos\\assets\\scenes\\scene.scene"
+        "3b9415ed-9ba2-4f07-bb11-4767e37357f8": "C:\\coin-pusher\\cocos\\coin-pusher-cocos\\assets\\scenes\\Prototype01.scene"
     },
     "deviceMd5": "48f73942225e50d88fb039087e48e461"
 }

@@ -1,7 +1,7 @@
 {
   "modules": {
     "cce:/internal/x/cc": {
-      "mTimestamp": 5182.9887,
+      "mTimestamp": 4546.4241,
       "chunkId": "93ba276ea7b26ffcdc433fab14afc1ed6f05647b",
       "imports": [
         {
@@ -997,7 +997,7 @@
       ]
     },
     "cce:/internal/x/prerequisite-imports": {
-      "mTimestamp": 8093501.2362,
+      "mTimestamp": 4730854.1653,
       "chunkId": "6d8fd2b0177941b032ddc0733af48a561fb60657",
       "imports": [
         {
@@ -1169,7 +1169,7 @@
           }
         },
         {
-          "value": "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/ui/SpawnButtonHold.ts",
+          "value": "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/ui/ManualSpawnArea.ts",
           "resolved": "__unresolved_12",
           "loc": {
             "start": {
@@ -1179,6 +1179,20 @@
             "end": {
               "line": 5,
               "column": 1686
+            }
+          }
+        },
+        {
+          "value": "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/ui/SpawnButtonHold.ts",
+          "resolved": "__unresolved_13",
+          "loc": {
+            "start": {
+              "line": 5,
+              "column": 1702
+            },
+            "end": {
+              "line": 5,
+              "column": 1787
             }
           }
         }
@@ -1266,6 +1280,13 @@
           "resolved": {
             "type": "module",
             "url": "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/gameplay/PusherController.ts"
+          },
+          "messages": []
+        },
+        {
+          "resolved": {
+            "type": "module",
+            "url": "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/ui/ManualSpawnArea.ts"
           },
           "messages": []
         },
@@ -1841,7 +1862,7 @@
       ]
     },
     "cce:/internal/code-quality/cr.mjs": {
-      "mTimestamp": 1776771248300,
+      "mTimestamp": 1776996557638,
       "chunkId": "6a5019a719a9014c047e67aa1cf34453ab8392ce",
       "imports": [],
       "type": "esm",
@@ -1849,7 +1870,7 @@
     },
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/core/GameManager.ts": {
       "mTimestamp": {
-        "mtime": 1776778703947.075,
+        "mtime": 1776846175116.7126,
         "uuid": "6bf28501-5fb5-4b59-92ea-2a723c3f027e"
       },
       "chunkId": "7e0d17b40a9513aab3872a981088d039553c9992",
@@ -1868,11 +1889,11 @@
           "value": "cc",
           "loc": {
             "start": {
-              "line": 12,
+              "line": 13,
               "column": 7
             },
             "end": {
-              "line": 12,
+              "line": 13,
               "column": 11
             }
           }
@@ -1882,11 +1903,11 @@
           "resolved": "__unresolved_1",
           "loc": {
             "start": {
-              "line": 14,
+              "line": 15,
               "column": 46
             },
             "end": {
-              "line": 14,
+              "line": 15,
               "column": 71
             }
           }
@@ -1896,11 +1917,11 @@
           "resolved": "__unresolved_2",
           "loc": {
             "start": {
-              "line": 15,
+              "line": 16,
               "column": 58
             },
             "end": {
-              "line": 15,
+              "line": 16,
               "column": 88
             }
           }
@@ -2038,7 +2059,7 @@
     },
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/gameplay/CoinSpawner.ts": {
       "mTimestamp": {
-        "mtime": 1776777459042.679,
+        "mtime": 1776846143664.4268,
         "uuid": "08942fc9-9f2e-4fe0-b2a7-7b42dce00ae9"
       },
       "chunkId": "71fc892358fe813b1cd5fcf757cfa6a8e06fd4e6",
@@ -2279,7 +2300,7 @@
     },
     "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/ui/SpawnButtonHold.ts": {
       "mTimestamp": {
-        "mtime": 1776673412338.7341,
+        "mtime": 1777001123450.6904,
         "uuid": "f4c3f9c5-2d0e-4a72-a1df-40eb5e40a2e6"
       },
       "chunkId": "cb55218a78a578629ba0155a755b8894d5f09bbf",
@@ -2408,6 +2429,90 @@
           "resolved": {
             "type": "module",
             "url": "cce:/internal/x/cc"
+          },
+          "messages": []
+        }
+      ]
+    },
+    "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/ui/ManualSpawnArea.ts": {
+      "mTimestamp": {
+        "mtime": 1776846216569.0876,
+        "uuid": "8d1d3f4a-1e0d-4be4-b7d2-7fb0b0e4790a"
+      },
+      "chunkId": "01cfce59bbf7b52d7c52f794515da07eb645a621",
+      "imports": [
+        {
+          "value": "cce:/internal/code-quality/cr.mjs",
+          "resolved": "__unresolved_0"
+        },
+        {
+          "value": "cc"
+        },
+        {
+          "value": "cc"
+        },
+        {
+          "value": "cc",
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 81
+            },
+            "end": {
+              "line": 1,
+              "column": 85
+            }
+          }
+        },
+        {
+          "value": "../core/GameManager",
+          "resolved": "__unresolved_1",
+          "loc": {
+            "start": {
+              "line": 2,
+              "column": 28
+            },
+            "end": {
+              "line": 2,
+              "column": 49
+            }
+          }
+        }
+      ],
+      "type": "esm",
+      "resolutions": [
+        {
+          "resolved": {
+            "type": "module",
+            "url": "cce:/internal/code-quality/cr.mjs"
+          },
+          "messages": []
+        },
+        {
+          "resolved": {
+            "type": "module",
+            "url": "cce:/internal/x/cc"
+          },
+          "messages": []
+        },
+        {
+          "resolved": {
+            "type": "module",
+            "url": "cce:/internal/x/cc"
+          },
+          "messages": []
+        },
+        {
+          "resolved": {
+            "type": "module",
+            "url": "cce:/internal/x/cc"
+          },
+          "messages": []
+        },
+        {
+          "resolved": {
+            "type": "module",
+            "url": "file:///C:/coin-pusher/cocos/coin-pusher-cocos/assets/scripts/core/GameManager.ts"
           },
           "messages": []
         }

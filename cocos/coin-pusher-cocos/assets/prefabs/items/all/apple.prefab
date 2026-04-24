@@ -271,6 +271,8 @@
     },
     "itemId": "apple",
     "itemName": "Apple",
+    "value": 1,
+    "weight": 1,
     "_id": ""
   },
   {
@@ -315,6 +317,8 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "0eWD9xHBJUaZNI62+XOHGZ"
+    "fileId": "0eWD9xHBJUaZNI62+XOHGZ",
+    "instance": null,
+    "targetOverrides": null
   }
 ]

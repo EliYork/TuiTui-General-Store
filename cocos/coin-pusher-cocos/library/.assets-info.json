@@ -76,11 +76,11 @@
       "uuid": "92715b6c-f9e4-4eea-a663-302fc8cf4a8e"
     },
     "scripts\\ui": {
-      "time": 1776675734565.5159,
+      "time": 1776846216609.5732,
       "uuid": "f7ef0e46-6e88-494d-b00b-abffbd547bdb"
     },
     "scripts\\core\\GameManager.ts": {
-      "time": 1776778703947.075,
+      "time": 1776846175116.7126,
       "uuid": "6bf28501-5fb5-4b59-92ea-2a723c3f027e"
     },
     "scripts\\gameplay\\CoinBehaviour.ts": {
@@ -88,7 +88,7 @@
       "uuid": "162c9ae4-7339-4033-8fd7-f5fe93695055"
     },
     "scripts\\gameplay\\CoinSpawner.ts": {
-      "time": 1776777459042.679,
+      "time": 1776846143664.4268,
       "uuid": "08942fc9-9f2e-4fe0-b2a7-7b42dce00ae9"
     },
     "scripts\\gameplay\\DropZone.ts": {
@@ -131,7 +131,7 @@
       "time": 1776675734566.9697
     },
     "scripts\\ui\\SpawnButtonHold.ts": {
-      "time": 1776673412338.7341,
+      "time": 1777001123450.6904,
       "uuid": "f4c3f9c5-2d0e-4a72-a1df-40eb5e40a2e6"
     },
     "prefabs\\items.meta": {
@@ -1608,7 +1608,7 @@
       "time": 1776772906589.5134
     },
     "prefabs\\items\\all\\apple.prefab": {
-      "time": 1776772906588.4006,
+      "time": 1776793213462.3008,
       "uuid": "04f7cf0d-7408-46ff-bbff-6c2971a3e8fe"
     },
     "prefabs\\items\\all\\banana.prefab.meta": {
@@ -1657,8 +1657,15 @@
       "time": 1776776103277.003
     },
     "scenes\\Prototype01.scene": {
-      "time": 1776777077407.667,
+      "time": 1777002864953.6714,
       "uuid": "3b9415ed-9ba2-4f07-bb11-4767e37357f8"
+    },
+    "scripts\\ui\\ManualSpawnArea.ts.meta": {
+      "time": 1776846216609.5732
+    },
+    "scripts\\ui\\ManualSpawnArea.ts": {
+      "time": 1776846216569.0876,
+      "uuid": "8d1d3f4a-1e0d-4be4-b7d2-7fb0b0e4790a"
     }
   },
   "missing": {}

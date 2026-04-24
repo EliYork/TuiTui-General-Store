@@ -72,6 +72,7 @@ export class CoinSpawner extends Component {
     private readonly _spawnImpulse = new Vec3();
     private readonly _spawnTorque = new Vec3();
     private readonly _itemNormal = new Vec3();
+    private readonly _resolvedBasePosition = new Vec3();
 
     public spawnCoin(itemPrefab: Prefab | null, request: CoinSpawnRequest | null = null): CoinBehaviour | null {
         if (!itemPrefab) {
@@ -138,12 +139,19 @@ export class CoinSpawner extends Component {
         return item;
     }
 
+    public getBaseSpawnWorldPosition(out: Vec3 | null = null): Vec3 {
+        const target = out ?? new Vec3();
+        const source = this.spawnPoint?.worldPosition ?? this.node.worldPosition;
+        Vec3.copy(target, source);
+        return target;
+    }
+
     private resolveBasePosition(request: CoinSpawnRequest | null): Vec3 {
         if (request?.worldPosition) {
             return request.worldPosition;
         }
 
-        return this.spawnPoint ? this.spawnPoint.worldPosition : this.node.worldPosition;
+        return this.getBaseSpawnWorldPosition(this._resolvedBasePosition);
     }
 
     private shouldRandomizePosition(request: CoinSpawnRequest | null): boolean {
