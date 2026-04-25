@@ -23,11 +23,23 @@ declare namespace WechatMinigame {
     cancelAnimationFrame?(id: number): void;
   }
 
+  interface InnerAudioContext {
+    src: string;
+    autoplay: boolean;
+    loop: boolean;
+    volume: number;
+    play(): void;
+    destroy(): void;
+    onEnded(listener: () => void): void;
+    onError(listener: (error: unknown) => void): void;
+  }
+
   interface WX {
     createCanvas(): Canvas;
     getSystemInfoSync(): SystemInfo;
     onTouchStart(listener: (event: TouchEvent) => void): void;
     setPreferredFramesPerSecond?(fps: number): void;
+    createInnerAudioContext?(): InnerAudioContext;
   }
 }
 
