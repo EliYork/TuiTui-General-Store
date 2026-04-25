@@ -3,6 +3,7 @@ type SoundId =
   | "coin-score"
   | "reward-drop"
   | "reward-rare"
+  | "reward-spawn"
   | "combo";
 
 type ToneSpec = {
@@ -61,6 +62,16 @@ const TONE_SPECS: Record<SoundId, ToneSpec> = {
       { frequency: 659.25, weight: 1, phase: 0 },
       { frequency: 987.77, weight: 0.8, phase: 0.1 },
       { frequency: 1318.5, weight: 0.5, phase: 0.4 }
+    ]
+  },
+  "reward-spawn": {
+    durationSec: 0.18,
+    volume: 0.43,
+    attackSec: 0.008,
+    releaseSec: 0.09,
+    partials: [
+      { frequency: 587.33, weight: 1, phase: 0 },
+      { frequency: 783.99, weight: 0.6, phase: 0.15 }
     ]
   },
   combo: {

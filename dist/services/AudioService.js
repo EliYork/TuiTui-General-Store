@@ -46,6 +46,16 @@ const TONE_SPECS = {
             { frequency: 1318.5, weight: 0.5, phase: 0.4 }
         ]
     },
+    "reward-spawn": {
+        durationSec: 0.18,
+        volume: 0.43,
+        attackSec: 0.008,
+        releaseSec: 0.09,
+        partials: [
+            { frequency: 587.33, weight: 1, phase: 0 },
+            { frequency: 783.99, weight: 0.6, phase: 0.15 }
+        ]
+    },
     combo: {
         durationSec: 0.22,
         volume: 0.44,
