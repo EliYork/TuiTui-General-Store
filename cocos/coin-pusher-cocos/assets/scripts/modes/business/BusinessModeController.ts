@@ -1,4 +1,5 @@
 import { _decorator, Component, Label, Node, warn } from 'cc';
+import { SHOP_RUNTIME_STATE, addShopOrderWeight, getShopOrderWeight } from '../../shop/ShopTypes';
 
 const { ccclass, property } = _decorator;
 
@@ -252,6 +253,7 @@ export class BusinessModeController extends Component {
     private _latestSettlementClaimed = false;
 
     protected onLoad(): void {
+        this.money = SHOP_RUNTIME_STATE.currentMoney;
         this.prepareNextItem();
     }
 
@@ -383,6 +385,7 @@ export class BusinessModeController extends Component {
 
         const claimedMoney = normalizeNonNegativeInteger(settlement.earnedMoney);
         this.money += claimedMoney;
+        SHOP_RUNTIME_STATE.currentMoney = this.money;
         this.todayEarnedMoney = 0;
         this._latestSettlementClaimed = true;
         this.refreshUi();
@@ -443,6 +446,43 @@ export class BusinessModeController extends Component {
 
     public getNoAvailableOrderStatus(): string {
         return '没有可用订购单';
+    }
+
+    public getCurrentMoney(): number {
+        return normalizeNonNegativeInteger(this.money);
+    }
+
+    public setCurrentMoney(value: number): void {
+        this.money = normalizeNonNegativeInteger(value);
+        SHOP_RUNTIME_STATE.currentMoney = this.money;
+        this.refreshUi();
+    }
+
+    public getTodayObtainedCount(itemId: string): number {
+        return this.getObtainedCount(itemId);
+    }
+
+    public addOrderDeckWeight(itemId: string, displayName: string, count: number): number {
+        const normalizedItemId = (itemId || '').trim();
+        if (!normalizedItemId) {
+            warn('[BusinessModeController] 商店订购单缺少物品 ID，无法加入牌组。');
+            return 0;
+        }
+
+        addShopOrderWeight(normalizedItemId, displayName, count);
+        this.prepareNextItem();
+        this.refreshUi();
+        return this.getOrderDeckWeight(normalizedItemId);
+    }
+
+    public getOrderDeckWeight(itemId: string): number {
+        const normalizedItemId = (itemId || '').trim();
+        if (!normalizedItemId) {
+            return 0;
+        }
+
+        const order = this.getEffectiveOrders().find((candidate) => candidate.itemId === normalizedItemId);
+        return order?.count ?? 0;
     }
 
     private applyPreparedOrder(order: EffectivePurchaseOrder, totalWeight: number): BusinessPickedItem {
@@ -766,15 +806,44 @@ export class BusinessModeController extends Component {
             .map((order) => this.normalizeOrder(order.itemId, order.displayName, order.count))
             .filter((order) => order.itemId.length > 0);
 
-        if (configuredOrders.length > 0) {
-            return configuredOrders;
-        }
+        const baseOrders = configuredOrders.length > 0
+            ? configuredOrders
+            : [
+                this.normalizeOrder('apple', '苹果', this.defaultAppleOrderCount),
+                this.normalizeOrder('banana', '香蕉', this.defaultBananaOrderCount),
+                this.normalizeOrder('lemon', '柠檬', this.defaultLemonOrderCount),
+            ];
+        const mergedOrders: EffectivePurchaseOrder[] = [];
+        const orderIndexes = new Map<string, number>();
+        const appendOrder = (order: EffectivePurchaseOrder): void => {
+            if (!order.itemId) {
+                return;
+            }
 
-        return [
-            this.normalizeOrder('apple', '苹果', this.defaultAppleOrderCount),
-            this.normalizeOrder('banana', '香蕉', this.defaultBananaOrderCount),
-            this.normalizeOrder('lemon', '柠檬', this.defaultLemonOrderCount),
-        ];
+            const existingIndex = orderIndexes.get(order.itemId);
+            if (existingIndex !== undefined) {
+                const existingOrder = mergedOrders[existingIndex];
+                existingOrder.count += order.count;
+                if (!existingOrder.displayName && order.displayName) {
+                    existingOrder.displayName = order.displayName;
+                }
+                return;
+            }
+
+            orderIndexes.set(order.itemId, mergedOrders.length);
+            mergedOrders.push({ ...order });
+        };
+
+        baseOrders.forEach(appendOrder);
+        Object.keys(SHOP_RUNTIME_STATE.orderWeights).forEach((itemId) => {
+            appendOrder(this.normalizeOrder(
+                itemId,
+                SHOP_RUNTIME_STATE.orderDisplayNames[itemId] || itemId,
+                getShopOrderWeight(itemId),
+            ));
+        });
+
+        return mergedOrders;
     }
 
     private normalizeOrder(itemId: string, displayName: string, count: number): EffectivePurchaseOrder {

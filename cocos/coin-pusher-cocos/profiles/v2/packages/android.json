@@ -18,6 +18,10 @@
         {
           "url": "db://assets/scenes/MainMenu.scene",
           "uuid": "9615adc2-df9b-4189-85cf-95ac940f9b0b"
+        },
+        {
+          "url": "db://assets/scenes/ShopScene.scene",
+          "uuid": "5fafb5f3-899d-42d6-bb81-48b780622a75"
         }
       ],
       "name": "推推杂货店",

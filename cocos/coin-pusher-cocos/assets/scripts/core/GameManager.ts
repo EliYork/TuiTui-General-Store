@@ -33,6 +33,7 @@ import {
 } from '../modes/business/BusinessModeController';
 import { AudioService, GameSoundId, playGameSound } from './AudioService';
 import { DayResultPanel } from '../ui/DayResultPanel';
+import { SHOP_RUNTIME_STATE, SHOP_SCENE_NAME } from '../shop/ShopTypes';
 
 const { ccclass, property } = _decorator;
 const SHARED_SCENE_NAME = 'Prototype01';
@@ -122,6 +123,15 @@ interface RuntimeItemProgress {
     isDiscovered: boolean;
 }
 
+interface RuntimeBoardItemSnapshot {
+    itemId: string;
+    coinId: number;
+    worldPosition: Vec3;
+    worldRotation: Quat;
+    linearVelocity: Vec3;
+    angularVelocity: Vec3;
+}
+
 interface RuntimePersistentProgress {
     initialized: boolean;
     currentMapId: MapId;
@@ -136,6 +146,7 @@ interface RuntimePersistentProgress {
     currentSpawnItemId: string;
     lastDroppedItemId: string;
     itemProgress: Record<string, RuntimeItemProgress>;
+    boardItemSnapshots: RuntimeBoardItemSnapshot[];
 }
 
 export interface EncyclopediaCatalogItemSnapshot {
@@ -221,6 +232,7 @@ const runtimeProgress: RuntimePersistentProgress = {
     currentSpawnItemId: '',
     lastDroppedItemId: '',
     itemProgress: {},
+    boardItemSnapshots: [],
 };
 
 @ccclass('GameManager')
@@ -475,6 +487,14 @@ export class GameManager extends Component {
         this.ensureRuntimeProgress();
         this.syncBusinessItemValues();
         this.startBusinessDayState();
+
+        if (SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay) {
+            SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay = false;
+            this.enterNextBusinessDay();
+            this.restoreBoardItemsAfterSceneTransition();
+            return;
+        }
+
         this._sessionSpawnedCoinCount = 0;
         this.syncStateFromResources();
 
@@ -932,7 +952,93 @@ export class GameManager extends Component {
             return;
         }
 
-        this.enterNextBusinessDay();
+        const claimedMoney = this.businessModeController?.claimSettledMoney() ?? 0;
+        this._businessDayReadyForTomorrow = false;
+        this.refreshBusinessEndDayButtonLabel();
+        this.setDayResultPhysicsFrozen(false);
+        this.captureBoardItemsForSceneTransition();
+        SHOP_RUNTIME_STATE.currentMoney = this.businessModeController?.getCurrentMoney() ?? SHOP_RUNTIME_STATE.currentMoney;
+        SHOP_RUNTIME_STATE.returnSceneName = SHARED_SCENE_NAME;
+        SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay = true;
+        director.loadScene(SHOP_SCENE_NAME);
+        this.setStatus(claimedMoney > 0
+            ? `获得资金 ￥${claimedMoney}，进入商店采购订购单`
+            : '进入商店采购订购单');
+    }
+
+    private captureBoardItemsForSceneTransition(): void {
+        runtimeProgress.boardItemSnapshots = [];
+
+        if (!this.coinSpawner) {
+            return;
+        }
+
+        const parent = this.coinSpawner.coinRoot ?? this.coinSpawner.node;
+        const spawnPoint = this.coinSpawner.spawnPoint;
+        runtimeProgress.boardItemSnapshots = parent.children
+            .filter((child) => child !== spawnPoint)
+            .map((child) => {
+                const item = child.getComponent(CoinBehaviour);
+                if (!item || item.hasScored || !item.itemId) {
+                    return null;
+                }
+
+                const body = child.getComponent(RigidBody);
+                const worldPosition = new Vec3();
+                const worldRotation = new Quat();
+                const linearVelocity = new Vec3();
+                const angularVelocity = new Vec3();
+                child.getWorldPosition(worldPosition);
+                child.getWorldRotation(worldRotation);
+                body?.getLinearVelocity(linearVelocity);
+                body?.getAngularVelocity(angularVelocity);
+
+                return {
+                    itemId: item.itemId,
+                    coinId: item.coinId,
+                    worldPosition,
+                    worldRotation,
+                    linearVelocity,
+                    angularVelocity,
+                };
+            })
+            .filter((snapshot): snapshot is RuntimeBoardItemSnapshot => !!snapshot);
+    }
+
+    private restoreBoardItemsAfterSceneTransition(): void {
+        const snapshots = runtimeProgress.boardItemSnapshots;
+        if (snapshots.length <= 0) {
+            return;
+        }
+
+        if (!this.coinSpawner) {
+            warn('[GameManager] 找不到 CoinSpawner，无法恢复进入商店前的推币机物体。');
+            return;
+        }
+
+        runtimeProgress.boardItemSnapshots = [];
+        snapshots.forEach((snapshot) => {
+            const catalogItem = this.findResolvedCatalogItemById(snapshot.itemId);
+            if (!catalogItem?.prefab) {
+                warn(`[GameManager] 找不到 ${snapshot.itemId} 的 Prefab，无法恢复进入商店前的物体。`);
+                return;
+            }
+
+            const restoredItem = this.coinSpawner?.restoreSpawnedItem(
+                catalogItem.prefab,
+                snapshot.worldPosition,
+                snapshot.worldRotation,
+                snapshot.coinId,
+            ) ?? null;
+            const body = restoredItem?.getComponent(RigidBody) ?? null;
+            if (!body) {
+                return;
+            }
+
+            body.setLinearVelocity(snapshot.linearVelocity);
+            body.setAngularVelocity(snapshot.angularVelocity);
+            body.wakeUp();
+        });
     }
 
     private stopAutoSpawn(statusText = ''): void {
@@ -1301,6 +1407,7 @@ export class GameManager extends Component {
             runtimeProgress.currentSpawnItemId = '';
             runtimeProgress.lastDroppedItemId = '';
             runtimeProgress.itemProgress = {};
+            runtimeProgress.boardItemSnapshots = [];
         } else {
             runtimeProgress.maxCoins = this.getConfiguredMaxCoins();
             runtimeProgress.currentBusinessDay = Math.max(1, this.normalizeNonNegativeInteger(runtimeProgress.currentBusinessDay, 1));
@@ -1347,6 +1454,7 @@ export class GameManager extends Component {
         runtimeProgress.currentSpawnItemId = '';
         runtimeProgress.lastDroppedItemId = '';
         runtimeProgress.itemProgress = {};
+        runtimeProgress.boardItemSnapshots = [];
 
         this._sessionSpawnedCoinCount = 0;
         this.syncStateFromResources();

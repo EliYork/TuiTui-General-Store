@@ -185,6 +185,36 @@ export class CoinSpawner extends Component {
         return item;
     }
 
+    public restoreSpawnedItem(
+        itemPrefab: Prefab | null,
+        worldPosition: Vec3,
+        worldRotation: Quat,
+        coinId = 0,
+    ): CoinBehaviour | null {
+        if (!itemPrefab) {
+            warn('[CoinSpawner] item prefab is not assigned.');
+            return null;
+        }
+
+        const itemNode = instantiate(itemPrefab);
+        const parent = this.coinRoot ?? this.node;
+        parent.addChild(itemNode);
+        itemNode.setWorldPosition(worldPosition);
+        itemNode.setWorldRotation(worldRotation);
+
+        const item = itemNode.getComponent(CoinBehaviour);
+        if (!item) {
+            warn('[CoinSpawner] Restored item prefab is missing CoinBehaviour.');
+            itemNode.destroy();
+            return null;
+        }
+
+        const restoredCoinId = coinId > 0 ? coinId : this._nextCoinId;
+        item.initialize(restoredCoinId);
+        this._nextCoinId = Math.max(this._nextCoinId, restoredCoinId + 1);
+        return item;
+    }
+
     public createRandomSpawnWorldRotation(out: Quat | null = null): Quat {
         const target = out ?? new Quat();
         this.resolveSpawnBaseRotation(this._spawnBaseRotation);

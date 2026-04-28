@@ -1,111 +1,94 @@
-# 微信小游戏 2.5D 推币机原型
+# 推推杂货店
 
-这是一个面向微信小游戏环境的推币机原型项目，使用 TypeScript 编写核心逻辑，用微信小游戏要求的最小入口文件启动运行。
+一个以推币机为核心、逐步扩展经营模式的游戏项目。仓库里目前保留了两套实现：
 
-项目当前已经不是只有“骨架”的空壳，而是一个可以直接导入微信开发者工具体验的可运行版本：包含投币、推板推进、奖励块生成、掉落结算、连击反馈和 HUD 展示等基础玩法闭环。整体实现保持轻量，不依赖重型游戏引擎，便于继续迭代和拆分模块。
+- `cocos/coin-pusher-cocos/`：当前主要开发工程，使用 Cocos Creator 3.8.8。
+- `src/`：早期微信小游戏 TypeScript 原型，保留作为逻辑和实现参考。
 
-## 项目概览
+后续新增功能默认优先落在 Cocos Creator 工程里。除非明确说明要维护旧原型，不建议把新玩法同时写进 `src/`。
 
-- 运行平台：微信小游戏
-- 渲染方式：Canvas 2D + 伪 3D / 2.5D 表现
-- 源码语言：TypeScript
-- 入口结构：`game.js` 加载 `dist/index.js`
-- 当前定位：可运行的原型工程，适合继续补玩法、调手感和接平台能力
+## 当前玩法
 
-## 当前已实现
+当前 Cocos 工程已经包含这些核心模块：
 
-- 微信小游戏最小入口与 60 FPS 主循环
-- 机台场景绘制、推板往复运动和基础伪 3D 视觉表现
-- 点击投币按钮生成硬币
-- 场内物体的基础更新、边界限制、物体分离和推板推动
-- 奖励块生成、自动补位和多种奖励类型
-- 前沿掉落判定、奖励累计、连击加成与掉落浮字反馈
-- HUD 信息展示：
-  - 金币数量
-  - 场上硬币数
-  - 场上奖励物数量
-  - 已投数量
-  - 已掉落数量
-  - Combo 状态
-  - 最近一次掉落提示
-- 存档、云同步、音效、奖励扩展等后续能力的接口预留
-- 音效当前默认静音，已预留素材目录和调用点，素材规范见 `docs/audio-assets.md`
+- 推币机基础循环：投放、推动、掉落、收集。
+- 经营模式：每日目标、日结算、资金、订购单牌组。
+- 水果物品：苹果、香蕉、柠檬等物品配置与掉落。
+- 左侧 HUD、结算面板、图鉴入口、音效服务。
+- 商店 MVP：每日结算后进入独立商店场景，购买订购单权重。
 
-## 当前仍是占位或未完成
+商店第一版出售的是订购单权重，不是收集任务：
 
-- `src/services/AudioService.ts` 当前只保留静音占位和音效槽位，正式素材命名、格式、大小和时长要求见 `docs/audio-assets.md`
-- `src/services/SaveService.ts` 和 `src/services/CloudService.ts` 仅保留接口位置，未做正式存档 / 云同步
-- 奖励扩展点已经预留，但特殊奖励动画、埋点和更完整的奖励系统还没有落地
-- 正式美术资源、音效资源、商业化模块和成长系统尚未开始
-
-## 快速开始
-
-### 1. 安装依赖
-
-```bash
-npm install
-```
-
-### 2. 编译 TypeScript
-
-```bash
-npm run build
-```
-
-编译完成后会更新 `dist/` 目录，根目录 `game.js` 会继续作为小游戏入口加载 `dist/index.js`。
-
-### 3. 在微信开发者工具中运行
-
-1. 打开微信开发者工具
-2. 以“小游戏”项目形式导入仓库根目录
-3. 让工具完成编译并启动预览
-
-仓库当前已经包含 `dist/`，如果只是快速体验，通常可以直接导入；如果修改了 `src/` 下的 TypeScript 源码，仍然建议先执行一次 `npm run build`。
-
-## 开发流程
-
-推荐的本地开发流程如下：
-
-1. 在 `src/` 中修改 TypeScript 源码
-2. 执行 `npm run build` 生成最新 `dist/`
-3. 在微信开发者工具中重新编译 / 预览
-
-如果希望持续监听编译，也可以使用：
-
-```bash
-npm run watch
-```
+| 商品 | 价格 | 效果 |
+| --- | ---: | --- |
+| 苹果订单 | ￥3 | 苹果订购单权重 +1 |
+| 香蕉订单 | ￥5 | 香蕉订购单权重 +1 |
+| 柠檬订单 | ￥10 | 柠檬订购单权重 +1 |
 
 ## 目录结构
 
 ```text
 .
-├─ game.js                      微信小游戏入口，加载 dist/index.js
-├─ game.json                    小游戏基础配置
-├─ project.config.json          微信开发者工具项目配置
-├─ src/                         TypeScript 源码
-│  ├─ core/                     游戏装配、主循环、状态管理、渲染编排
-│  ├─ gameplay/                 硬币、推板、奖励块、生成与奖励逻辑
-│  ├─ physics/                  物理更新、碰撞分离、支撑与掉落判定
-│  ├─ ui/                       HUD、按钮、掉落反馈
-│  ├─ data/                     数值、颜色、布局配置
-│  ├─ platform/                 微信小游戏平台适配
-│  ├─ services/                 存档、音效、云同步接口
-│  ├─ utils/                    通用工具与数学方法
-│  └─ types/                    微信环境类型声明
-├─ dist/                        编译后的 JavaScript 产物
-└─ docs/                        设计文档、技术方案与任务看板
+├─ cocos/coin-pusher-cocos/       Cocos Creator 3.8.8 主工程
+│  ├─ assets/scenes/              Cocos 场景，例如 MainMenu、Prototype01、ShopScene
+│  ├─ assets/scripts/core/        GameManager、音频等核心胶水逻辑
+│  ├─ assets/scripts/gameplay/    推币机、投放、掉落、物品组件
+│  ├─ assets/scripts/modes/       经营模式控制器
+│  ├─ assets/scripts/shop/        商店配置、管理器、界面
+│  ├─ assets/scripts/ui/          HUD、按钮、结算面板等 UI 脚本
+│  └─ assets/audio/               Cocos 使用的音效资源
+├─ src/                           早期微信小游戏 TypeScript 原型
+├─ docs/                          设计文档、技术计划、参数说明
+├─ assets/audio/                  音效源文件暂存目录
+├─ game.js / game.json            微信小游戏入口文件
+└─ package.json                   旧原型 TypeScript 构建脚本
 ```
 
-## 相关文档
+## Cocos Creator 开发
 
-- [游戏设计说明](docs/game-design.md)
-- [技术结构说明](docs/tech-plan.md)
+推荐用 Cocos Creator 3.8.8 打开：
+
+```text
+cocos/coin-pusher-cocos/
+```
+
+常用场景：
+
+- `assets/scenes/MainMenu.scene`：主菜单。
+- `assets/scenes/Prototype01.scene`：当前推币机和经营模式主场景。
+- `assets/scenes/ShopScene.scene`：每日结算后进入的全屏商店场景。
+
+验收经营模式时，通常从 `Prototype01.scene` 开始运行。达成本日目标后进入日结算，再进入商店，关闭商店后返回下一天。
+
+## 旧 TypeScript 原型
+
+旧原型仍可用 npm 构建：
+
+```bash
+npm install
+npm run build
+```
+
+构建输出在 `dist/`。开发旧原型时可使用：
+
+```bash
+npm run watch
+```
+
+这套原型主要用于参考早期 2D/2.5D 推币逻辑；当前 Cocos 工程不会自动从 `src/` 同步代码。
+
+## 文档
+
+- [游戏设计](docs/game-design.md)
+- [技术计划](docs/tech-plan.md)
 - [任务看板](docs/task-board.md)
+- [Cocos 参数说明](docs/cocos-parameters.md)
+- [音频资源说明](docs/audio-assets.md)
 
-## 后续建议方向
+## 维护约定
 
-- 继续强化推板与物体的真实碰撞手感
-- 完善奖励结算、特殊奖励表现和数值调优
-- 正式接入微信存档、音频和云能力
-- 补充美术资源，并逐步扩展成长与商业化能力
+- 新玩法优先新增独立脚本，避免把所有逻辑塞进 `GameManager`。
+- 场景和 Prefab 修改遵循最小改动原则，不重建 `Canvas`，不无故改已有 UUID。
+- 玩家可见 UI 默认使用中文；TypeScript 类名、变量名和方法名保持英文。
+- 调整数值时优先集中到配置结构或 Inspector 参数，不把价格、权重、文案散落在多个脚本里。
+- 修改 Cocos 场景后，至少确认 JSON 合法、`__id__` 引用有效、自定义脚本组件类型与 `.meta` 匹配。

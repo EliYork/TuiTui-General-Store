@@ -61,7 +61,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 317
+      "__id__": 321
     },
     "_id": "3b9415ed-9ba2-4f07-bb11-4767e37357f8"
   },
@@ -287,10 +287,10 @@
         "__id__": 47
       },
       {
-        "__id__": 312
+        "__id__": 316
       },
       {
-        "__id__": 316
+        "__id__": 320
       },
       {
         "__id__": 13
@@ -393,7 +393,7 @@
       "__id__": 52
     },
     "audioService": {
-      "__id__": 311
+      "__id__": 315
     },
     "mapSelection": 0,
     "startCoins": 300,
@@ -408,13 +408,13 @@
     "autoSpawnZ": -0.2,
     "itemCatalog": [
       {
-        "__id__": 313
+        "__id__": 317
       },
       {
-        "__id__": 314
+        "__id__": 318
       },
       {
-        "__id__": 315
+        "__id__": 319
       }
     ],
     "map01InitialMapItemCount": 1,
@@ -1858,8 +1858,8 @@
     "requireStartButton": false,
     "initialResource": 100,
     "dailyStockLimit": 50,
-    "baseDailyTargetScore": 20,
-    "dailyTargetScoreIncrease": 40,
+    "baseDailyTargetScore": 10,
+    "dailyTargetScoreIncrease": 30,
     "resourceRecoverLimit": 0,
     "resourceRecoverInterval": 0,
     "resourceRecoverAmount": 0,
@@ -1973,10 +1973,10 @@
     "defaultLemonOrderCount": 1,
     "rewardRules": [
       {
-        "__id__": 309
+        "__id__": 313
       },
       {
-        "__id__": 310
+        "__id__": 314
       }
     ],
     "orderDeckLabel": {
@@ -2034,12 +2034,15 @@
       },
       {
         "__id__": 282
+      },
+      {
+        "__id__": 308
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 308
+        "__id__": 312
       },
       {
         "__id__": 52
@@ -10520,7 +10523,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "预留按钮",
+    "_name": "商店按钮",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -10531,7 +10534,7 @@
         "__id__": 265
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 268
@@ -10575,7 +10578,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Label",
+    "_name": "商店按钮文字",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -10663,7 +10666,7 @@
       "b": 66,
       "a": 255
     },
-    "_string": "",
+    "_string": "商店",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 16,
@@ -12262,6 +12265,114 @@
     "_id": "business_day_result_panel_component"
   },
   {
+    "__type__": "cc.Node",
+    "_name": "ShopPanel",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "_parent": {
+      "__id__": 53
+    },
+    "_children": [],
+    "_active": false,
+    "_components": [
+      {
+        "__id__": 309
+      },
+      {
+        "__id__": 310
+      },
+      {
+        "__id__": 311
+      }
+    ],
+    "_prefab": null,
+    "_lpos": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_lrot": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_lscale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_mobility": 0,
+    "_layer": 33554432,
+    "_euler": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_id": "shop_panel_node"
+  },
+  {
+    "__type__": "cc.UITransform",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 308
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 1280,
+      "height": 720
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_id": "shop_panel_transform"
+  },
+  {
+    "__type__": "6e37fX4Kk5ADYkUkYneLTDi",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 308
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "businessModeController": {
+      "__id__": 52
+    },
+    "currentMoney": 0,
+    "shopOrders": [],
+    "_id": "shop_manager_component"
+  },
+  {
+    "__type__": "9f930nvhW1PLL1PbadXuXHh",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 308
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "shopManager": {
+      "__id__": 310
+    },
+    "openButton": null,
+    "openButtonLabel": null,
+    "openOnLoad": true,
+    "_id": "shop_panel_component"
+  },
+  {
     "__type__": "cc.UITransform",
     "_name": "",
     "_objFlags": 0,
@@ -12296,10 +12407,10 @@
     "__type__": "BusinessDayRewardRule",
     "ruleType": "ItemCountAtLeast",
     "displayName": "苹果个数大于10",
-    "rewardMoney": 1,
+    "rewardMoney": 2,
     "itemId": "apple",
     "threshold": 10,
-    "requirePassed": false
+    "requirePassed": true
   },
   {
     "__type__": "ba7e1P6sTdN97nR6FydU95B",
@@ -12307,7 +12418,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 312
+      "__id__": 316
     },
     "_enabled": true,
     "__prefab": null,
@@ -12333,7 +12444,7 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 311
+        "__id__": 315
       }
     ],
     "_prefab": null,
@@ -12461,28 +12572,28 @@
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 318
-    },
-    "shadows": {
-      "__id__": 319
-    },
-    "_skybox": {
-      "__id__": 320
-    },
-    "fog": {
-      "__id__": 321
-    },
-    "octree": {
       "__id__": 322
     },
-    "skin": {
+    "shadows": {
       "__id__": 323
     },
-    "lightProbeInfo": {
+    "_skybox": {
       "__id__": 324
     },
-    "postSettings": {
+    "fog": {
       "__id__": 325
+    },
+    "octree": {
+      "__id__": 326
+    },
+    "skin": {
+      "__id__": 327
+    },
+    "lightProbeInfo": {
+      "__id__": 328
+    },
+    "postSettings": {
+      "__id__": 329
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false
