@@ -16,7 +16,8 @@
       },
       "android": {
         "configID": "de2868",
-        "services": []
+        "services": [],
+        "__version__": "3.0.9"
       }
     },
     "taskOptionsMap": {
@@ -29,6 +30,11 @@
         "services": []
       },
       "1777014686804": {
+        "configID": "de2868",
+        "services": [],
+        "__version__": "3.0.9"
+      },
+      "1777362187350": {
         "configID": "de2868",
         "services": [],
         "__version__": "3.0.9"

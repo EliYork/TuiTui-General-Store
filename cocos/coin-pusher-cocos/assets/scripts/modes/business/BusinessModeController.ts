@@ -8,11 +8,83 @@ interface EffectivePurchaseOrder {
     count: number;
 }
 
+interface BusinessObtainedItemSnapshot {
+    itemId: string;
+    displayName: string;
+    count: number;
+    value: number;
+}
+
+interface BusinessDayRewardSnapshot {
+    displayName: string;
+    rewardMoney: number;
+    achieved: boolean;
+}
+
+export interface BusinessItemValueSnapshot {
+    itemId: string;
+    displayName: string;
+    value: number;
+}
+
 export interface BusinessPickedItem {
     itemId: string;
     displayName: string;
     count: number;
     probability: number;
+}
+
+export interface BusinessDayResult {
+    day: number;
+    score: number;
+    targetScore: number;
+    reachedTarget: boolean;
+    obtainedItems: BusinessObtainedItemSnapshot[];
+    rewardLines: BusinessDayRewardSnapshot[];
+    earnedMoney: number;
+    detailText: string;
+}
+
+const REWARD_RULE_TARGET_REACHED = 'TargetReached';
+const REWARD_RULE_ITEM_COUNT_AT_LEAST = 'ItemCountAtLeast';
+
+@ccclass('BusinessDayRewardRule')
+class BusinessDayRewardRule {
+    @property({
+        displayName: '奖励类型',
+        tooltip: '奖励条件类型。TargetReached 表示达成当日目标；ItemCountAtLeast 表示指定物品当天获得数量达到阈值。',
+    })
+    public ruleType = REWARD_RULE_TARGET_REACHED;
+
+    @property({
+        displayName: '奖励显示名',
+        tooltip: '结算账单中显示的奖励条件名称，例如“目标达成”或“苹果个数大于10”。留空时会使用默认名称。',
+    })
+    public displayName = '';
+
+    @property({
+        displayName: '奖励资金',
+        tooltip: '该奖励条件满足时获得的资金数量。只填写数字，结算面板会显示为 ￥数字。',
+    })
+    public rewardMoney = 0;
+
+    @property({
+        displayName: '物品 ID',
+        tooltip: '奖励类型为 ItemCountAtLeast 时生效。填写要统计的物品 ID，例如 apple。',
+    })
+    public itemId = '';
+
+    @property({
+        displayName: '数量阈值',
+        tooltip: '奖励类型为 ItemCountAtLeast 时生效。当天该物品获得数量达到或超过这个值时发放奖励。',
+    })
+    public threshold = 0;
+
+    @property({
+        displayName: '需要达标',
+        tooltip: '开启后，只有当日分数达标时才会发放这条奖励。关闭后，即使未达标也会在结算账单中按条件计算。',
+    })
+    public requirePassed = false;
 }
 
 @ccclass('BusinessPurchaseOrderConfig')
@@ -70,9 +142,16 @@ export class BusinessModeController extends Component {
     public defaultLemonOrderCount = 0;
 
     @property({
+        type: [BusinessDayRewardRule],
+        displayName: '本日资金奖励规则',
+        tooltip: '本日结算时逐条检查的资金奖励条件。留空时使用默认规则：目标达成 +￥5，苹果数量达到 10 +￥1。',
+    })
+    public rewardRules: BusinessDayRewardRule[] = [];
+
+    @property({
         type: Label,
         displayName: '订购单信息 Label',
-        tooltip: '显示当前订购单牌组组成和概率，例如“苹果订购单 x3（60%）”。为空时不会刷新这段 UI。',
+        tooltip: '显示当前订购单牌组组成和概率，例如“苹果 x3（60%）”。为空时不会刷新这段 UI。',
     })
     public orderDeckLabel: Label | null = null;
 
@@ -86,9 +165,30 @@ export class BusinessModeController extends Component {
     @property({
         type: Label,
         displayName: '当前获得汇总 Label',
-        tooltip: '用一段弹性文本显示本日已经掉落结算的水果数量，例如“苹果 x0　香蕉 x0”。优先使用这个 Label，便于以后扩展更多水果。',
+        tooltip: '用一段多行文本显示本日当前获得分数和各订购单商品的小计，例如“苹果：1 x 2 = 2”。优先使用这个 Label，便于以后扩展更多商品。',
     })
     public obtainedSummaryLabel: Label | null = null;
+
+    @property({
+        type: Label,
+        displayName: '当前获得分数标题 Label',
+        tooltip: '显示当前获得区域标题和局中分数，例如“当前获得分数：0 / 20”。如果未绑定，会把这行并入当前获得汇总 Label。',
+    })
+    public obtainedScoreTitleLabel: Label | null = null;
+
+    @property({
+        type: Label,
+        displayName: '现有资金 Label',
+        tooltip: '显示经营模式当前累计资金，例如“现有资金：￥0”。本日达标后点击进入商店时会领取本日资金奖励并刷新这里。'
+    })
+    public dailyScoreLabel: Label | null = null;
+
+    @property({
+        type: Label,
+        displayName: '本日结果 Label',
+        tooltip: '点击“结束本日”后显示当天是否达标，例如“本日达标！”或“本日未达标”。新一天开始后仍保留上一天结果，方便测试。'
+    })
+    public dayResultLabel: Label | null = null;
 
     @property({
         type: Label,
@@ -134,10 +234,22 @@ export class BusinessModeController extends Component {
 
     public nextItemId = '';
     public nextItemDisplayName = '';
+    public currentDay = 1;
+    public dailyTargetScore = 20;
+    public dailyScore = 0;
+    public money = 0;
+    public todayEarnedMoney = 0;
 
     private readonly _obtainedCounts: Record<string, number> = Object.create(null);
+    private readonly _obtainedItemNames: Record<string, string> = Object.create(null);
+    private readonly _obtainedItemValues: Record<string, number> = Object.create(null);
+    private readonly _itemDisplayNames: Record<string, string> = Object.create(null);
+    private readonly _itemValues: Record<string, number> = Object.create(null);
     private _preparedNextItem: BusinessPickedItem | null = null;
     private _spawnMessageOverride = '';
+    private _dayResultText = '';
+    private _latestSettlement: BusinessDayResult | null = null;
+    private _latestSettlementClaimed = false;
 
     protected onLoad(): void {
         this.prepareNextItem();
@@ -179,6 +291,104 @@ export class BusinessModeController extends Component {
         return this.consumePreparedNextItemAndPrepareAnother();
     }
 
+    public startCurrentDay(day: number, baseTargetScore: number, targetScoreIncrease: number): void {
+        this.currentDay = normalizePositiveInteger(day, 1);
+        this.dailyTargetScore = this.calculateDailyTargetScore(this.currentDay, baseTargetScore, targetScoreIncrease);
+        this.dailyScore = 0;
+        this.todayEarnedMoney = 0;
+        this._dayResultText = '';
+        this._latestSettlement = null;
+        this._latestSettlementClaimed = false;
+        this.clearObtainedCounts();
+        this.prepareNextItem();
+        this.refreshUi();
+    }
+
+    public syncDailyTarget(day: number, baseTargetScore: number, targetScoreIncrease: number): void {
+        this.currentDay = normalizePositiveInteger(day, 1);
+        this.dailyTargetScore = this.calculateDailyTargetScore(this.currentDay, baseTargetScore, targetScoreIncrease);
+        this.refreshUi();
+    }
+
+    public syncItemValues(items: BusinessItemValueSnapshot[]): void {
+        Object.keys(this._itemDisplayNames).forEach((itemId) => {
+            delete this._itemDisplayNames[itemId];
+        });
+        Object.keys(this._itemValues).forEach((itemId) => {
+            delete this._itemValues[itemId];
+        });
+
+        for (const item of items) {
+            const itemId = (item.itemId || '').trim();
+            if (!itemId) {
+                continue;
+            }
+
+            this._itemDisplayNames[itemId] = (item.displayName || '').trim() || itemId;
+            this._itemValues[itemId] = normalizeNonNegativeNumber(item.value);
+        }
+
+        this.refreshUi();
+    }
+
+    public settleCurrentDay(): BusinessDayResult {
+        const obtainedItems = this.getObtainedItemSnapshots();
+        const rewardLines = this.calculateRewardLines(obtainedItems);
+        const earnedMoney = rewardLines.reduce((sum, line) => sum + (line.achieved ? line.rewardMoney : 0), 0);
+        const result: BusinessDayResult = {
+            day: this.currentDay,
+            score: this.dailyScore,
+            targetScore: this.dailyTargetScore,
+            reachedTarget: this.dailyScore >= this.dailyTargetScore,
+            obtainedItems,
+            rewardLines,
+            earnedMoney,
+            detailText: '',
+        };
+        result.detailText = this.buildSettlementDetailText(result);
+        this.todayEarnedMoney = earnedMoney;
+        this._latestSettlement = result;
+        this._latestSettlementClaimed = false;
+
+        this._dayResultText = result.reachedTarget
+            ? `本日达标！${formatScore(result.score)} / ${formatScore(result.targetScore)}`
+            : `本日未达标 ${formatScore(result.score)} / ${formatScore(result.targetScore)}`;
+        this.refreshUi();
+        return result;
+    }
+
+    public endCurrentDayAndStartNextDay(
+        nextDay: number,
+        baseTargetScore: number,
+        targetScoreIncrease: number,
+    ): BusinessDayResult {
+        const result = this.settleCurrentDay();
+        this.currentDay = normalizePositiveInteger(nextDay, this.currentDay + 1);
+        this.dailyTargetScore = this.calculateDailyTargetScore(this.currentDay, baseTargetScore, targetScoreIncrease);
+        this.dailyScore = 0;
+        this.todayEarnedMoney = 0;
+        this._latestSettlement = null;
+        this._latestSettlementClaimed = false;
+        this.clearObtainedCounts();
+        this.prepareNextItem();
+        this.refreshUi();
+        return result;
+    }
+
+    public claimSettledMoney(): number {
+        const settlement = this._latestSettlement;
+        if (!settlement || !settlement.reachedTarget || this._latestSettlementClaimed) {
+            return 0;
+        }
+
+        const claimedMoney = normalizeNonNegativeInteger(settlement.earnedMoney);
+        this.money += claimedMoney;
+        this.todayEarnedMoney = 0;
+        this._latestSettlementClaimed = true;
+        this.refreshUi();
+        return claimedMoney;
+    }
+
     public prepareNextItem(): BusinessPickedItem | null {
         this._spawnMessageOverride = '';
         const activeOrders = this.getActiveOrders();
@@ -205,12 +415,24 @@ export class BusinessModeController extends Component {
     }
 
     public recordCollectedItem(itemId: string): void {
+        this.recordDrop(itemId, 1);
+    }
+
+    public recordDrop(itemId: string, scoreValue: number, displayName = ''): void {
         const normalizedItemId = (itemId || '').trim();
         if (!normalizedItemId) {
             return;
         }
 
         this._obtainedCounts[normalizedItemId] = this.getObtainedCount(normalizedItemId) + 1;
+        this._obtainedItemValues[normalizedItemId] = normalizeNonNegativeNumber(scoreValue);
+        this._obtainedItemNames[normalizedItemId] = this.resolveDisplayName(normalizedItemId, displayName);
+        this._itemValues[normalizedItemId] = normalizeNonNegativeNumber(scoreValue);
+        this._itemDisplayNames[normalizedItemId] = this.resolveDisplayName(normalizedItemId, displayName);
+        this.dailyScore += normalizeNonNegativeNumber(scoreValue);
+        this._latestSettlement = null;
+        this._latestSettlementClaimed = false;
+        this.todayEarnedMoney = 0;
         this.refreshUi();
     }
 
@@ -242,6 +464,8 @@ export class BusinessModeController extends Component {
         this.refreshOrderDeckLabel();
         this.refreshCurrentSpawnLabel();
         this.refreshGainedLabels();
+        this.refreshDailyScoreLabel();
+        this.refreshDayResultLabel();
         this.refreshGainedItemVisibility();
     }
 
@@ -259,7 +483,7 @@ export class BusinessModeController extends Component {
 
         const orderLines = activeOrders.map((order) => {
             const percentage = Math.round((order.count / totalWeight) * 100);
-            return `${order.displayName}订购单 x${order.count}（${percentage}%）`;
+            return `${order.displayName} x${order.count}（${percentage}%）`;
         });
         this.orderDeckLabel.string = `当前订购单：\n${orderLines.join('\n')}`;
     }
@@ -280,11 +504,16 @@ export class BusinessModeController extends Component {
     }
 
     private refreshGainedLabels(): void {
+        const scoreTitleText = this.buildCurrentScoreTitleText();
+        if (this.obtainedScoreTitleLabel) {
+            this.obtainedScoreTitleLabel.string = scoreTitleText;
+        }
+
         if (this.obtainedSummaryLabel) {
-            const activeOrders = this.getActiveOrders();
-            this.obtainedSummaryLabel.string = activeOrders.length > 0
-                ? activeOrders.map((order) => `${order.displayName} x${this.getObtainedCount(order.itemId)}`).join('　')
-                : '暂无';
+            const detailText = this.buildCurrentScoreItemDetailText();
+            this.obtainedSummaryLabel.string = this.obtainedScoreTitleLabel
+                ? detailText
+                : `${scoreTitleText}\n\n${detailText}`;
         }
 
         if (this.appleGainedLabel) {
@@ -327,12 +556,201 @@ export class BusinessModeController extends Component {
         }
     }
 
+    private refreshDailyScoreLabel(): void {
+        if (this.dailyScoreLabel) {
+            this.dailyScoreLabel.string = `现有资金：￥${formatScore(this.money)}`;
+        }
+    }
+
+    private refreshDayResultLabel(): void {
+        if (this.dayResultLabel) {
+            this.dayResultLabel.string = this._dayResultText;
+        }
+    }
+
     private hasOrderForItem(itemId: string): boolean {
         return this.getEffectiveOrders().some((order) => order.itemId === itemId && order.count > 0);
     }
 
+    private getObtainedItemSnapshots(): BusinessObtainedItemSnapshot[] {
+        const orderRanks = new Map<string, number>();
+        this.getEffectiveOrders().forEach((order, index) => {
+            orderRanks.set(order.itemId, index);
+        });
+
+        return Object.keys(this._obtainedCounts)
+            .map((itemId) => ({
+                itemId,
+                displayName: this.resolveDisplayName(itemId, this._obtainedItemNames[itemId]),
+                count: this.getObtainedCount(itemId),
+                value: this.getItemValue(itemId),
+            }))
+            .filter((item) => item.count > 0)
+            .sort((a, b) => {
+                const rankA = orderRanks.get(a.itemId) ?? Number.MAX_SAFE_INTEGER;
+                const rankB = orderRanks.get(b.itemId) ?? Number.MAX_SAFE_INTEGER;
+                if (rankA !== rankB) {
+                    return rankA - rankB;
+                }
+
+                return a.displayName.localeCompare(b.displayName, 'zh-Hans-CN');
+            });
+    }
+
+    private buildCurrentScoreTitleText(): string {
+        return `当前获得分数：${formatScore(this.dailyScore)} / ${formatScore(this.dailyTargetScore)}`;
+    }
+
+    private buildCurrentScoreItemDetailText(): string {
+        const activeOrders = this.getActiveOrders();
+        if (activeOrders.length <= 0) {
+            return '暂无订购单商品';
+        }
+
+        return activeOrders.map((order) => {
+            const count = this.getObtainedCount(order.itemId);
+            const value = this.getItemValue(order.itemId);
+            const subtotal = count * value;
+            return `${order.displayName}：${count} x ${formatScore(value)} = ${formatScore(subtotal)}`;
+        }).join('\n');
+    }
+
+    private calculateRewardLines(obtainedItems: BusinessObtainedItemSnapshot[]): BusinessDayRewardSnapshot[] {
+        const reachedTarget = this.dailyScore >= this.dailyTargetScore;
+        return this.getEffectiveRewardRules().map((rule) => {
+            const normalizedRuleType = (rule.ruleType || '').trim();
+            const displayName = (rule.displayName || '').trim() || this.getDefaultRewardDisplayName(rule);
+            const rewardMoney = normalizeNonNegativeInteger(rule.rewardMoney);
+            const achieved = this.isRewardRuleAchieved(normalizedRuleType, rule, reachedTarget, obtainedItems);
+
+            return {
+                displayName,
+                rewardMoney,
+                achieved,
+            };
+        });
+    }
+
+    private isRewardRuleAchieved(
+        ruleType: string,
+        rule: BusinessDayRewardRule,
+        reachedTarget: boolean,
+        obtainedItems: BusinessObtainedItemSnapshot[],
+    ): boolean {
+        if (rule.requirePassed && !reachedTarget) {
+            return false;
+        }
+
+        if (ruleType === REWARD_RULE_TARGET_REACHED) {
+            return reachedTarget;
+        }
+
+        if (ruleType === REWARD_RULE_ITEM_COUNT_AT_LEAST) {
+            const itemId = (rule.itemId || '').trim();
+            const threshold = normalizeNonNegativeInteger(rule.threshold);
+            const item = obtainedItems.find((obtainedItem) => obtainedItem.itemId === itemId);
+            return !!item && item.count >= threshold;
+        }
+
+        warn(`[BusinessModeController] 未识别的本日资金奖励类型：${ruleType || '空'}`);
+        return false;
+    }
+
+    private getEffectiveRewardRules(): BusinessDayRewardRule[] {
+        const configuredRules = this.rewardRules.filter((rule) => !!rule);
+        if (configuredRules.length > 0) {
+            return configuredRules;
+        }
+
+        const targetReachedRule = new BusinessDayRewardRule();
+        targetReachedRule.ruleType = REWARD_RULE_TARGET_REACHED;
+        targetReachedRule.displayName = '目标达成';
+        targetReachedRule.rewardMoney = 5;
+        targetReachedRule.requirePassed = true;
+
+        const appleCountRule = new BusinessDayRewardRule();
+        appleCountRule.ruleType = REWARD_RULE_ITEM_COUNT_AT_LEAST;
+        appleCountRule.displayName = '苹果个数大于10';
+        appleCountRule.itemId = 'apple';
+        appleCountRule.threshold = 10;
+        appleCountRule.rewardMoney = 1;
+        appleCountRule.requirePassed = false;
+
+        return [targetReachedRule, appleCountRule];
+    }
+
+    private getDefaultRewardDisplayName(rule: BusinessDayRewardRule): string {
+        const ruleType = (rule.ruleType || '').trim();
+        if (ruleType === REWARD_RULE_TARGET_REACHED) {
+            return '目标达成';
+        }
+
+        if (ruleType === REWARD_RULE_ITEM_COUNT_AT_LEAST) {
+            const itemName = this.resolveDisplayName(rule.itemId, '');
+            return `${itemName}数量达到${normalizeNonNegativeInteger(rule.threshold)}`;
+        }
+
+        return '未命名奖励';
+    }
+
+    private buildSettlementDetailText(result: BusinessDayResult): string {
+        const obtainedLines = result.obtainedItems.length > 0
+            ? result.obtainedItems.map((item) => `${item.displayName}：${item.count} x ${formatScore(item.value)}分`)
+            : ['今日没有获得商品'];
+        const statusLine = result.reachedTarget ? '本日达标！' : '本日未达标';
+        const achievedRewardLines = result.rewardLines
+            .filter((line) => line.achieved && line.rewardMoney > 0)
+            .map((line) => formatRewardLine(line.displayName, line.rewardMoney));
+        const rewardLines = achievedRewardLines.length > 0 ? achievedRewardLines : ['暂无资金奖励'];
+
+        return [
+            ...obtainedLines,
+            '',
+            `今日分数：${formatScore(result.score)} / ${formatScore(result.targetScore)}`,
+            statusLine,
+            '',
+            '────────────',
+            ...rewardLines,
+            '────────────',
+            formatTotalMoneyLine(result.earnedMoney),
+        ].join('\n');
+    }
+
+    private resolveDisplayName(itemId: string, fallbackDisplayName: string): string {
+        const normalizedFallback = (fallbackDisplayName || '').trim();
+        if (normalizedFallback) {
+            return normalizedFallback;
+        }
+
+        const matchingOrder = this.getEffectiveOrders().find((order) => order.itemId === itemId);
+        return matchingOrder?.displayName || this._itemDisplayNames[itemId] || itemId || '未命名商品';
+    }
+
+    private getItemValue(itemId: string): number {
+        return this._obtainedItemValues[itemId] ?? this._itemValues[itemId] ?? 1;
+    }
+
     private getObtainedCount(itemId: string): number {
         return this._obtainedCounts[itemId] ?? 0;
+    }
+
+    private clearObtainedCounts(): void {
+        Object.keys(this._obtainedCounts).forEach((itemId) => {
+            delete this._obtainedCounts[itemId];
+        });
+        Object.keys(this._obtainedItemNames).forEach((itemId) => {
+            delete this._obtainedItemNames[itemId];
+        });
+        Object.keys(this._obtainedItemValues).forEach((itemId) => {
+            delete this._obtainedItemValues[itemId];
+        });
+    }
+
+    private calculateDailyTargetScore(day: number, baseTargetScore: number, targetScoreIncrease: number): number {
+        const normalizedDay = normalizePositiveInteger(day, 1);
+        const normalizedBaseScore = normalizeNonNegativeNumber(baseTargetScore);
+        const normalizedIncrease = normalizeNonNegativeNumber(targetScoreIncrease);
+        return normalizedBaseScore + (normalizedDay - 1) * normalizedIncrease;
     }
 
     private getTotalOrderWeight(): number {
@@ -382,4 +800,44 @@ function normalizeNonNegativeInteger(value: number): number {
     }
 
     return Math.max(0, Math.round(value));
+}
+
+function normalizeNonNegativeNumber(value: number): number {
+    if (!Number.isFinite(value)) {
+        return 0;
+    }
+
+    return Math.max(0, value);
+}
+
+function normalizePositiveInteger(value: number, fallback: number): number {
+    if (!Number.isFinite(value)) {
+        return Math.max(1, Math.round(fallback));
+    }
+
+    return Math.max(1, Math.round(value));
+}
+
+function formatScore(value: number): string {
+    if (!Number.isFinite(value)) {
+        return '0';
+    }
+
+    return Number.isInteger(value) ? `${value}` : value.toFixed(1);
+}
+
+function formatRewardLine(label: string, amount: number): string {
+    const safeLabel = (label || '').trim() || '奖励';
+    const moneyText = `￥${normalizeNonNegativeInteger(amount)}`;
+    const totalLength = 24;
+    const dotCount = Math.max(4, totalLength - safeLabel.length - moneyText.length);
+    return `${safeLabel} ${'·'.repeat(dotCount)} ${moneyText}`;
+}
+
+function formatTotalMoneyLine(amount: number): string {
+    const label = '获得资金：';
+    const moneyText = `￥${normalizeNonNegativeInteger(amount)}`;
+    const totalLength = 24;
+    const spaceCount = Math.max(4, totalLength - label.length - moneyText.length);
+    return `${label}${' '.repeat(spaceCount)}${moneyText}`;
 }

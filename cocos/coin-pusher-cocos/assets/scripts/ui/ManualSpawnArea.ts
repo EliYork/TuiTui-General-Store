@@ -169,6 +169,12 @@ export class ManualSpawnArea extends Component {
     }
 
     protected update(deltaTime: number): void {
+        if (this.gameManager?.isDayResultPanelOpen()) {
+            this.destroyPrecisionPreview();
+            this.stopHolding();
+            return;
+        }
+
         if (!this._isHolding || !this.holdEnabled) {
             return;
         }
@@ -184,6 +190,12 @@ export class ManualSpawnArea extends Component {
     }
 
     private onTouchStart(event: EventTouch): void {
+        if (this.gameManager?.isDayResultPanelOpen()) {
+            this.destroyPrecisionPreview();
+            this.stopHolding();
+            return;
+        }
+
         this.recordTouchPosition(event);
 
         if (this.isPrecisionSpawnMode()) {
@@ -202,6 +214,12 @@ export class ManualSpawnArea extends Component {
     }
 
     private onTouchMove(event: EventTouch): void {
+        if (this.gameManager?.isDayResultPanelOpen()) {
+            this.destroyPrecisionPreview();
+            this.stopHolding();
+            return;
+        }
+
         this.recordTouchPosition(event);
 
         if (this.isPrecisionSpawnMode()) {
@@ -210,6 +228,12 @@ export class ManualSpawnArea extends Component {
     }
 
     private onTouchEnd(event: EventTouch): void {
+        if (this.gameManager?.isDayResultPanelOpen()) {
+            this.destroyPrecisionPreview();
+            this.stopHolding();
+            return;
+        }
+
         this.recordTouchPosition(event);
 
         if (this.isPrecisionSpawnMode()) {

@@ -26,8 +26,13 @@ import { CoinSpawner, CoinSpawnRequest } from '../gameplay/CoinSpawner';
 import { ItemPrefabConfig, ItemPrefabRuntimeConfig } from '../gameplay/ItemPrefabConfig';
 import { ModeConfig } from '../config/ModeConfig';
 import { ModeConfigTable } from '../config/ModeConfigTable';
-import { BusinessModeController } from '../modes/business/BusinessModeController';
+import {
+    BusinessDayResult,
+    BusinessItemValueSnapshot,
+    BusinessModeController,
+} from '../modes/business/BusinessModeController';
 import { AudioService, GameSoundId, playGameSound } from './AudioService';
+import { DayResultPanel } from '../ui/DayResultPanel';
 
 const { ccclass, property } = _decorator;
 const SHARED_SCENE_NAME = 'Prototype01';
@@ -407,6 +412,20 @@ export class GameManager extends Component {
     public statusLabel: Label | null = null;
 
     @property({
+        type: Label,
+        displayName: '结束本日按钮文字',
+        tooltip: '经营模式左侧底部“结束本日/进入明日”按钮上的文字 Label。达标后会切换为“进入明日”，进入新一天后切回“结束本日”。'
+    })
+    public businessEndDayButtonLabel: Label | null = null;
+
+    @property({
+        type: DayResultPanel,
+        displayName: '本日结算面板',
+        tooltip: '经营模式结束本日后弹出的独立结算面板。显示是否达标、今日分数、目标分数，并处理继续本日或进入商店按钮。'
+    })
+    public dayResultPanel: DayResultPanel | null = null;
+
+    @property({
         type: Node,
         displayName: '重新开始按钮',
         tooltip: '重新开始按钮节点。为空时会自动查找 Canvas/UIRoot/RestartButton，用于兜底恢复按钮点击后重开本局。绑定错误会导致按钮无响应。',
@@ -430,6 +449,8 @@ export class GameManager extends Component {
     private _boundRestartButton: Node | null = null;
     private _restartLocked = false;
     private _modeStartAccepted = false;
+    private _businessDayReadyForTomorrow = false;
+    private _dayResultPhysicsFrozen = false;
 
     protected start(): void {
         PhysicsSystem.instance.enable = true;
@@ -439,6 +460,10 @@ export class GameManager extends Component {
         this.bindRestartButton();
         this.bindModeResourceLabel();
         this.bindModeDayLabel();
+        this.bindDayResultPanel();
+        this.dayResultPanel?.setMainButtonHandler((passed) => this.onDayResultPanelMainButtonClicked(passed));
+        this.dayResultPanel?.hide();
+        this.refreshBusinessEndDayButtonLabel();
 
         if (this.showColliderDebug) {
             PhysicsSystem.instance.debugDrawFlags =
@@ -448,6 +473,8 @@ export class GameManager extends Component {
         }
 
         this.ensureRuntimeProgress();
+        this.syncBusinessItemValues();
+        this.startBusinessDayState();
         this._sessionSpawnedCoinCount = 0;
         this.syncStateFromResources();
 
@@ -464,6 +491,8 @@ export class GameManager extends Component {
     }
 
     protected onDisable(): void {
+        this.setDayResultPhysicsFrozen(false);
+        this.dayResultPanel?.setMainButtonHandler(null);
         this.unbindRestartButton();
     }
 
@@ -566,6 +595,11 @@ export class GameManager extends Component {
             return null;
         }
 
+        if (this.isDayResultPanelShowing()) {
+            this.setStatus('请先处理本日结算');
+            return null;
+        }
+
         if (!this.shouldUseBusinessOrderDeck()) {
             this.setStatus('当前模式没有可用订购单投放来源');
             return null;
@@ -640,6 +674,11 @@ export class GameManager extends Component {
         if (!this.coinSpawner) {
             warn('[GameManager] coinSpawner is not assigned.');
             this.setStatus('缺少 CoinSpawner 引用');
+            return false;
+        }
+
+        if (this.isDayResultPanelShowing()) {
+            this.setStatus('请先处理本日结算');
             return false;
         }
 
@@ -823,18 +862,77 @@ export class GameManager extends Component {
             return;
         }
 
-        runtimeProgress.currentBusinessDay += 1;
-        const configuredDailyStockLimit = this.getConfiguredDailyStockLimit();
-        runtimeProgress.remainingStock = configuredDailyStockLimit;
-        runtimeProgress.remainingStockLimit = configuredDailyStockLimit;
+        if (this._businessDayReadyForTomorrow) {
+            this.enterNextBusinessDay();
+            return;
+        }
+
+        this.playSound('button-click');
+        const dayResult = this.businessModeController?.settleCurrentDay() ?? this.buildFallbackBusinessDayResult();
+        const resultText = dayResult.reachedTarget ? '本日达标！' : '本日未达标';
+
+        if (this.dayResultPanel) {
+            this._businessDayReadyForTomorrow = false;
+            this.refreshBusinessEndDayButtonLabel();
+            this.setDayResultPhysicsFrozen(true);
+            this.dayResultPanel.showResult(dayResult);
+            this.setStatus('请查看本日结算');
+            return;
+        }
+
+        if (!dayResult.reachedTarget) {
+            this._businessDayReadyForTomorrow = false;
+            this.refreshBusinessEndDayButtonLabel();
+            this.setStatus(`${resultText} ${formatScore(dayResult.score)} / ${formatScore(dayResult.targetScore)}`);
+            return;
+        }
+
+        this._businessDayReadyForTomorrow = true;
+        this.refreshBusinessEndDayButtonLabel();
+        this.setStatus(`${resultText} 今日分数 ${formatScore(dayResult.score)} / ${formatScore(dayResult.targetScore)}，可进入明日`);
+    }
+
+    private enterNextBusinessDay(): void {
+        const claimedMoney = this.businessModeController?.claimSettledMoney() ?? 0;
+        const nextBusinessDay = runtimeProgress.currentBusinessDay + 1;
+        runtimeProgress.currentBusinessDay = nextBusinessDay;
+
+        const configuredStockLimit = this.getConfiguredStockLimitForDay(nextBusinessDay);
+        runtimeProgress.remainingStock = configuredStockLimit;
+        runtimeProgress.remainingStockLimit = configuredStockLimit;
         runtimeProgress.remainingStockModeId = this.getActiveModeId();
         runtimeProgress.resourceRegenProgressSeconds = 0;
         runtimeProgress.worldDropProgressSeconds = 0;
+
+        this._businessDayReadyForTomorrow = false;
         this.stopAutoSpawn();
-        this.businessModeController?.prepareNextItem();
+        this.syncBusinessItemValues();
+        this.businessModeController?.startCurrentDay(
+            runtimeProgress.currentBusinessDay,
+            this.getConfiguredBaseDailyTargetScore(),
+            this.getConfiguredDailyTargetScoreIncrease(),
+        );
         this.syncStateFromResources();
+        this.refreshBusinessEndDayButtonLabel();
+        this.setDayResultPhysicsFrozen(false);
         this.playSound('button-click');
-        this.setStatus(`已结束本日，进入第${runtimeProgress.currentBusinessDay}天`);
+        this.setStatus(claimedMoney > 0
+            ? `获得资金 ￥${claimedMoney}，已进入第${runtimeProgress.currentBusinessDay}天`
+            : `已进入第${runtimeProgress.currentBusinessDay}天`);
+    }
+
+    private onDayResultPanelMainButtonClicked(passed: boolean): void {
+        this.dayResultPanel?.hide();
+
+        if (!passed) {
+            this._businessDayReadyForTomorrow = false;
+            this.refreshBusinessEndDayButtonLabel();
+            this.setDayResultPhysicsFrozen(false);
+            this.setStatus('继续本日');
+            return;
+        }
+
+        this.enterNextBusinessDay();
     }
 
     private stopAutoSpawn(statusText = ''): void {
@@ -864,7 +962,7 @@ export class GameManager extends Component {
         progress.isDiscovered = true;
         runtimeProgress.lastDroppedItemId = collectedItem.itemId;
         runtimeProgress.currentCoins += collectedItem.value;
-        this.businessModeController?.recordCollectedItem(collectedItem.itemId);
+        this.businessModeController?.recordDrop(collectedItem.itemId, collectedItem.value, collectedItem.itemName);
 
         let unlockedItemName = '';
         if (!progress.isSpawnUnlocked && progress.ownedCount >= collectedItem.unlockRequiredCount) {
@@ -900,9 +998,15 @@ export class GameManager extends Component {
 
         this.stopAutoSpawn();
         this.coinSpawner?.clearSpawnedItems();
+        this.dayResultPanel?.hide();
+        this.setDayResultPhysicsFrozen(false);
         this.resetRuntimeProgress();
         this.refreshModeStartGate();
+        this._businessDayReadyForTomorrow = false;
+        this.refreshBusinessEndDayButtonLabel();
         this.ensureRuntimeProgress();
+        this.syncBusinessItemValues();
+        this.startBusinessDayState();
         this._sessionSpawnedCoinCount = 0;
         this.syncStateFromResources();
         if (this.shouldEnableRandomDrop()) {
@@ -947,6 +1051,36 @@ export class GameManager extends Component {
         this.modeDayLabel = modeDayNode?.getComponent(Label) ?? null;
     }
 
+    private bindDayResultPanel(): void {
+        if (this.dayResultPanel) {
+            return;
+        }
+
+        const dayResultPanelNode = find('Canvas/UIRoot/经营模式界面/本日结算面板');
+        this.dayResultPanel = dayResultPanelNode?.getComponent(DayResultPanel) ?? null;
+    }
+
+    private refreshBusinessEndDayButtonLabel(): void {
+        if (!this.businessEndDayButtonLabel) {
+            return;
+        }
+
+        this.businessEndDayButtonLabel.string = this._businessDayReadyForTomorrow ? '进入明日' : '结束本日';
+    }
+
+    private isDayResultPanelShowing(): boolean {
+        return this.dayResultPanel?.isShowing() ?? false;
+    }
+
+    private setDayResultPhysicsFrozen(frozen: boolean): void {
+        if (this._dayResultPhysicsFrozen === frozen) {
+            return;
+        }
+
+        this._dayResultPhysicsFrozen = frozen;
+        PhysicsSystem.instance.enable = !frozen;
+    }
+
     private onRestartButtonTouched(): void {
         this.restartGame();
     }
@@ -974,6 +1108,7 @@ export class GameManager extends Component {
     public canSpawnCoin(): boolean {
         const shouldCheckResource = this.shouldConsumeResourceOnManualSpawn();
         return !!this.coinSpawner
+            && !this.isDayResultPanelShowing()
             && this.shouldAllowManualSpawn()
             && this.isModeStartGateOpen()
             && this.hasConfiguredSpawnSource()
@@ -987,6 +1122,10 @@ export class GameManager extends Component {
 
     public hasRemainingStock(): boolean {
         return runtimeProgress.remainingStock > 0;
+    }
+
+    public isDayResultPanelOpen(): boolean {
+        return this.isDayResultPanelShowing();
     }
 
     public getConfiguredManualSpawnHoldInterval(fallbackInterval: number): number {
@@ -1037,6 +1176,47 @@ export class GameManager extends Component {
 
     private shouldRequireStartButton(): boolean {
         return this.getActiveModeConfig()?.requireStartButton ?? false;
+    }
+
+    private startBusinessDayState(): void {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            return;
+        }
+
+        this.businessModeController?.startCurrentDay(
+            runtimeProgress.currentBusinessDay,
+            this.getConfiguredBaseDailyTargetScore(),
+            this.getConfiguredDailyTargetScoreIncrease(),
+        );
+    }
+
+    private syncBusinessItemValues(): void {
+        if (!this.businessModeController) {
+            return;
+        }
+
+        const itemValues: BusinessItemValueSnapshot[] = this.getResolvedCatalog().map((item) => ({
+            itemId: item.itemId,
+            displayName: item.itemName,
+            value: item.value,
+        }));
+        this.businessModeController.syncItemValues(itemValues);
+    }
+
+    private buildFallbackBusinessDayResult(): BusinessDayResult {
+        const targetScore = this.getConfiguredBaseDailyTargetScore()
+            + Math.max(0, runtimeProgress.currentBusinessDay - 1) * this.getConfiguredDailyTargetScoreIncrease();
+
+        return {
+            day: runtimeProgress.currentBusinessDay,
+            score: 0,
+            targetScore,
+            reachedTarget: false,
+            obtainedItems: [],
+            rewardLines: [],
+            earnedMoney: 0,
+            detailText: '今日没有获得商品\n\n今日分数：0 / ' + formatScore(targetScore) + '\n本日未达标\n\n────────────\n暂无资金奖励\n────────────\n获得资金 ··············· ￥0',
+        };
     }
 
     private refreshModeStartGate(): void {
@@ -1104,17 +1284,17 @@ export class GameManager extends Component {
 
     private ensureRuntimeProgress(): void {
         const catalogConfigs = this.getNormalizedCatalogConfigs();
-        const configuredDailyStockLimit = this.getConfiguredDailyStockLimit();
         const activeModeId = this.getActiveModeId();
 
         if (!runtimeProgress.initialized) {
             runtimeProgress.initialized = true;
             runtimeProgress.currentMapId = this.getMapIdFromSelection(this.mapSelection);
             runtimeProgress.currentBusinessDay = 1;
+            const configuredStockLimit = this.getConfiguredStockLimitForDay(runtimeProgress.currentBusinessDay);
             runtimeProgress.maxCoins = this.getConfiguredMaxCoins();
             runtimeProgress.currentCoins = this.getConfiguredInitialCoins();
-            runtimeProgress.remainingStock = configuredDailyStockLimit;
-            runtimeProgress.remainingStockLimit = configuredDailyStockLimit;
+            runtimeProgress.remainingStock = configuredStockLimit;
+            runtimeProgress.remainingStockLimit = configuredStockLimit;
             runtimeProgress.remainingStockModeId = activeModeId;
             runtimeProgress.resourceRegenProgressSeconds = 0;
             runtimeProgress.worldDropProgressSeconds = 0;
@@ -1125,12 +1305,13 @@ export class GameManager extends Component {
             runtimeProgress.maxCoins = this.getConfiguredMaxCoins();
             runtimeProgress.currentBusinessDay = Math.max(1, this.normalizeNonNegativeInteger(runtimeProgress.currentBusinessDay, 1));
             runtimeProgress.currentCoins = this.normalizeFiniteInteger(runtimeProgress.currentCoins, 0);
+            const configuredStockLimit = this.getConfiguredStockLimitForDay(runtimeProgress.currentBusinessDay);
             if (
                 runtimeProgress.remainingStockModeId !== activeModeId
-                || runtimeProgress.remainingStockLimit !== configuredDailyStockLimit
+                || runtimeProgress.remainingStockLimit !== configuredStockLimit
             ) {
-                runtimeProgress.remainingStock = configuredDailyStockLimit;
-                runtimeProgress.remainingStockLimit = configuredDailyStockLimit;
+                runtimeProgress.remainingStock = configuredStockLimit;
+                runtimeProgress.remainingStockLimit = configuredStockLimit;
                 runtimeProgress.remainingStockModeId = activeModeId;
             } else {
                 runtimeProgress.remainingStock = this.normalizeNonNegativeInteger(runtimeProgress.remainingStock);
@@ -1627,7 +1808,37 @@ export class GameManager extends Component {
 
     private getConfiguredDailyStockLimit(): number {
         const modeConfig = this.getActiveModeConfig();
-        return this.normalizeNonNegativeInteger(modeConfig?.dailyStockLimit ?? modeConfig?.initialResource ?? this.startCoins);
+        if (modeConfig && typeof modeConfig.dailyStockLimit === 'number') {
+            return this.normalizeNonNegativeInteger(modeConfig.dailyStockLimit);
+        }
+
+        return this.normalizeNonNegativeInteger(modeConfig?.initialResource ?? this.startCoins);
+    }
+
+    private getConfiguredStockLimitForDay(day: number): number {
+        const normalizedDay = Math.max(1, this.normalizeNonNegativeInteger(day, 1));
+        if (normalizedDay === 1 && this.shouldUseBusinessOrderDeck()) {
+            return this.getConfiguredFirstDayStockLimit();
+        }
+
+        return this.getConfiguredDailyStockLimit();
+    }
+
+    private getConfiguredFirstDayStockLimit(): number {
+        const modeConfig = this.getActiveModeConfig();
+        if (modeConfig && typeof modeConfig.initialResource === 'number') {
+            return this.normalizeNonNegativeInteger(modeConfig.initialResource);
+        }
+
+        return this.getConfiguredDailyStockLimit();
+    }
+
+    private getConfiguredBaseDailyTargetScore(): number {
+        return this.normalizeNonNegativeNumber(this.getActiveModeConfig()?.baseDailyTargetScore ?? 20, 20);
+    }
+
+    private getConfiguredDailyTargetScoreIncrease(): number {
+        return this.normalizeNonNegativeNumber(this.getActiveModeConfig()?.dailyTargetScoreIncrease ?? 10, 10);
     }
 
     private getConfiguredMaxCoins(): number {
@@ -1738,4 +1949,12 @@ export class GameManager extends Component {
 
 function formatNumber(value: number): string {
     return Number.isFinite(value) ? value.toFixed(3) : String(value);
+}
+
+function formatScore(value: number): string {
+    if (!Number.isFinite(value)) {
+        return '0';
+    }
+
+    return Number.isInteger(value) ? `${value}` : value.toFixed(1);
 }

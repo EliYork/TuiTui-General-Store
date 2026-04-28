@@ -19,11 +19,14 @@
           "url": "db://assets/scenes/MainMenu.scene",
           "uuid": "9615adc2-df9b-4189-85cf-95ac940f9b0b"
         }
-      ]
+      ],
+      "name": "推推杂货店",
+      "buildMode": "normal",
+      "startScene": "9615adc2-df9b-4189-85cf-95ac940f9b0b"
     },
     "options": {
       "android": {
-        "packageName": "com.eliyork.coinpusher",
+        "packageName": "com.eliyork.tuituigrocery",
         "resizeableActivity": true,
         "maxAspectRatio": "2.4",
         "orientation": {
@@ -62,6 +65,42 @@
     "taskOptionsMap": {
       "1777014686804": {
         "packageName": "com.eliyork.coinpusher",
+        "resizeableActivity": true,
+        "maxAspectRatio": "2.4",
+        "orientation": {
+          "portrait": false,
+          "upsideDown": false,
+          "landscapeRight": true,
+          "landscapeLeft": true
+        },
+        "apiLevel": 35,
+        "appABIs": [
+          "arm64-v8a"
+        ],
+        "useDebugKeystore": true,
+        "keystorePath": "",
+        "keystorePassword": "",
+        "keystoreAlias": "",
+        "keystoreAliasPassword": "",
+        "appBundle": false,
+        "androidInstant": false,
+        "inputSDK": false,
+        "isSoFileCompressed": true,
+        "remoteUrl": "",
+        "sdkPath": "",
+        "ndkPath": "",
+        "javaHome": "",
+        "javaPath": "",
+        "renderBackEnd": {
+          "vulkan": false,
+          "gles3": true,
+          "gles2": true
+        },
+        "swappy": false,
+        "__version__": "1.0.1"
+      },
+      "1777362187350": {
+        "packageName": "com.eliyork.tuituigrocery",
         "resizeableActivity": true,
         "maxAspectRatio": "2.4",
         "orientation": {

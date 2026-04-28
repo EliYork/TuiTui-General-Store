@@ -60,15 +60,27 @@ export class ModeConfig extends Component {
 
     @property({
         displayName: '初始资源',
-        tooltip: '进入该模式时的初始资源数量。经营模式第一版可用于测试，后续可改为从存档读取。'
+        tooltip: '进入该模式时的初始资源数量。经营模式中也作为第 1 天的进货次数；第 2 天起改用“当天进货次数”。'
     })
     public initialResource = 300;
 
     @property({
         displayName: '当天进货次数',
-        tooltip: '经营模式当天可主动进货/投放的初始次数。每次玩家成功主动投放后减少 1，降到 0 后不能继续进货/投放。',
+        tooltip: '经营模式第 2 天及之后每天可主动进货/投放的重置次数。第 1 天优先使用“初始资源”。每次成功主动投放后减少 1。',
     })
     public dailyStockLimit = 300;
+
+    @property({
+        displayName: '第 1 天目标分数',
+        tooltip: '经营模式第 1 天需要达到的目标分数。数值越高，玩家当天需要让更多或更高价值的物品掉落结算。'
+    })
+    public baseDailyTargetScore = 20;
+
+    @property({
+        displayName: '每日目标分数增长',
+        tooltip: '经营模式每天目标分数的递增值。第 N 天目标 = 第 1 天目标分数 + (N - 1) * 每日目标分数增长。'
+    })
+    public dailyTargetScoreIncrease = 10;
 
     @property({
         displayName: '资源回复上限',
