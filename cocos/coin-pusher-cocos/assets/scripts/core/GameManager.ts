@@ -4,8 +4,10 @@ import {
     director,
     Enum,
     Event,
+    find,
     ImageAsset,
     Label,
+    Node,
     log,
     Prefab,
     Vec3,
@@ -16,6 +18,7 @@ import {
 import { CoinBehaviour } from '../gameplay/CoinBehaviour';
 import { CoinSpawner, CoinSpawnRequest } from '../gameplay/CoinSpawner';
 import { ItemPrefabConfig, ItemPrefabRuntimeConfig } from '../gameplay/ItemPrefabConfig';
+import { AudioService, GameSoundId, playGameSound } from './AudioService';
 
 const { ccclass, property } = _decorator;
 const SHARED_SCENE_NAME = 'Prototype01';
@@ -202,6 +205,13 @@ export class GameManager extends Component {
     public coinSpawner: CoinSpawner | null = null;
 
     @property({
+        type: AudioService,
+        displayName: '音频服务',
+        tooltip: '拖入 GameRoot/AudioManager 上的 AudioService。为空时会尝试使用当前场景中已加载的 AudioService 单例；仍为空则静默跳过，不会报错。',
+    })
+    public audioService: AudioService | null = null;
+
+    @property({
         type: Enum(MapSelection),
         displayName: '初始地图',
         tooltip: '首次启动运行数据时使用的地图选择。切换后会影响初始掉落数量和随机掉落池。',
@@ -346,6 +356,13 @@ export class GameManager extends Component {
     public statusLabel: Label | null = null;
 
     @property({
+        type: Node,
+        displayName: '重新开始按钮',
+        tooltip: '重新开始按钮节点。为空时会自动查找 Canvas/UIRoot/RestartButton，用于兜底恢复按钮点击后重开本局。绑定错误会导致按钮无响应。',
+    })
+    public restartButton: Node | null = null;
+
+    @property({
         displayName: '显示碰撞调试',
         tooltip: '开启后显示物理碰撞调试线框，方便排查 Collider。正式体验应关闭，避免影响画面和性能。',
     })
@@ -358,11 +375,14 @@ export class GameManager extends Component {
     private _statusText = '准备运行数据';
     private _autoSpawnTimer = 0;
     private readonly _manualSpawnPosition = new Vec3();
+    private _boundRestartButton: Node | null = null;
+    private _restartLocked = false;
 
     protected start(): void {
         PhysicsSystem.instance.enable = true;
         this.autoSpawnEnabled = false;
         this._autoSpawnTimer = 0;
+        this.bindRestartButton();
 
         if (this.showColliderDebug) {
             PhysicsSystem.instance.debugDrawFlags =
@@ -383,6 +403,10 @@ export class GameManager extends Component {
 
         this.seedInitialMapItems();
         this.setStatus(`当前地图：${this.getCurrentMapConfig().mapName}`);
+    }
+
+    protected onDisable(): void {
+        this.unbindRestartButton();
     }
 
     protected update(deltaTime: number): void {
@@ -505,6 +529,7 @@ export class GameManager extends Component {
         this._sessionSpawnedCoinCount += 1;
         runtimeProgress.currentCoins -= this.getConfiguredSpawnCost();
         this.syncStateFromResources();
+        this.playSound('coin-drop');
         this.setStatus(`已投放 ${currentSpawnItem.itemName}，资源 ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins}`);
         return true;
     }
@@ -607,6 +632,7 @@ export class GameManager extends Component {
         this.ensureRuntimeProgress();
         this.syncStateFromResources();
         item.onScored();
+        this.playSound(unlockedItemName ? 'unlock' : 'item-drop');
 
         const rewardText = `资源 +${collectedItem.value}`;
         if (unlockedItemName) {
@@ -620,16 +646,49 @@ export class GameManager extends Component {
     }
 
     public restartGame(): void {
-        const sceneName = director.getScene()?.name || SHARED_SCENE_NAME;
-        if (!sceneName) {
-            warn('[GameManager] restartGame failed: current scene is missing.');
-            this.setStatus('重新开始失败：当前场景缺失');
+        if (this._restartLocked) {
             return;
         }
 
+        this._restartLocked = true;
+        this.scheduleOnce(() => {
+            this._restartLocked = false;
+        }, 0);
+
         this.stopAutoSpawn();
+        this.coinSpawner?.clearSpawnedItems();
         this.resetRuntimeProgress();
-        director.loadScene(sceneName);
+        this.ensureRuntimeProgress();
+        this._sessionSpawnedCoinCount = 0;
+        this.syncStateFromResources();
+        this.seedInitialMapItems();
+        this.playSound('button-click');
+        this.setStatus(`已重新开始，当前地图：${this.getCurrentMapConfig().mapName}`);
+    }
+
+    private bindRestartButton(): void {
+        const buttonNode = this.restartButton ?? find('Canvas/UIRoot/RestartButton');
+        if (!buttonNode) {
+            warn('[GameManager] RestartButton is not assigned and could not be found.');
+            return;
+        }
+
+        this._boundRestartButton = buttonNode;
+        buttonNode.off(Node.EventType.TOUCH_END, this.onRestartButtonTouched, this);
+        buttonNode.on(Node.EventType.TOUCH_END, this.onRestartButtonTouched, this);
+    }
+
+    private unbindRestartButton(): void {
+        this._boundRestartButton?.off(Node.EventType.TOUCH_END, this.onRestartButtonTouched, this);
+        this._boundRestartButton = null;
+    }
+
+    private onRestartButtonTouched(): void {
+        this.restartGame();
+    }
+
+    private playSound(soundId: GameSoundId): void {
+        playGameSound(this.audioService, soundId);
     }
 
     public switchToMap01(): void {
@@ -675,22 +734,26 @@ export class GameManager extends Component {
     public selectSpawnItemById(itemId: string): boolean {
         const nextItem = this.findResolvedCatalogItemById(itemId);
         if (!nextItem) {
+            this.playSound('error');
             this.setStatus(`未知投放物品：${itemId}`);
             return false;
         }
 
         if (!nextItem.isSpawnUnlocked) {
+            this.playSound('error');
             this.setStatus(`${nextItem.itemName} 尚未解锁投放`);
             return false;
         }
 
         if (!nextItem.prefab) {
+            this.playSound('error');
             this.setStatus(`${nextItem.itemName} 缺少 Prefab`);
             return false;
         }
 
         runtimeProgress.currentSpawnItemId = nextItem.itemId;
         this.refreshUi();
+        this.playSound('button-click');
         this.setStatus(`当前投放物切换为 ${nextItem.itemName}`);
         return true;
     }
@@ -837,10 +900,16 @@ export class GameManager extends Component {
 
         while (runtimeProgress.worldDropProgressSeconds >= interval) {
             runtimeProgress.worldDropProgressSeconds -= interval;
+            let spawnedThisBatch = false;
             for (let index = 0; index < amount; index += 1) {
                 if (this.spawnRandomWorldDrop()) {
                     spawned = true;
+                    spawnedThisBatch = true;
                 }
+            }
+
+            if (spawnedThisBatch) {
+                this.playSound('item-drop');
             }
         }
 

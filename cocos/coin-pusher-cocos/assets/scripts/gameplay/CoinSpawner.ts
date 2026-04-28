@@ -193,6 +193,16 @@ export class CoinSpawner extends Component {
         return target;
     }
 
+    public clearSpawnedItems(): void {
+        const parent = this.coinRoot ?? this.node;
+        parent.children.slice().forEach((child) => {
+            if (child !== this.spawnPoint) {
+                child.destroy();
+            }
+        });
+        this._nextCoinId = 1;
+    }
+
     private resolveBasePosition(request: CoinSpawnRequest | null): Vec3 {
         if (request?.worldPosition) {
             return request.worldPosition;
