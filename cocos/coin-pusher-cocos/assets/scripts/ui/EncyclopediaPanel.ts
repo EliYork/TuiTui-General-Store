@@ -2,6 +2,7 @@ import {
     _decorator,
     Component,
     instantiate,
+    isValid,
     Node,
     Prefab,
     ScrollView,
@@ -70,6 +71,10 @@ export class EncyclopediaPanel extends Component {
         this.resolveSceneNodes();
         this.bindButtons();
         this.closePanel();
+    }
+
+    protected onDisable(): void {
+        this.unbindButtons();
     }
 
     protected onDestroy(): void {
@@ -141,8 +146,20 @@ export class EncyclopediaPanel extends Component {
     }
 
     private unbindButtons(): void {
-        this.openButton?.off(Node.EventType.TOUCH_END, this.togglePanel, this);
-        this.closeButton?.off(Node.EventType.TOUCH_END, this.closePanel, this);
+        this.safeOff(this.openButton, this.togglePanel);
+        this.safeOff(this.closeButton, this.closePanel);
+    }
+
+    private safeOff(buttonNode: Node | null, handler: () => void): void {
+        if (!buttonNode || !isValid(buttonNode, true)) {
+            return;
+        }
+
+        try {
+            buttonNode.off(Node.EventType.TOUCH_END, handler, this);
+        } catch {
+            // Scene transitions can destroy child event data before this component finishes teardown.
+        }
     }
 
     private refreshCards(): void {
