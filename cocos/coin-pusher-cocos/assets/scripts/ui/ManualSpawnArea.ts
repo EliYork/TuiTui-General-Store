@@ -1,4 +1,4 @@
-import { _decorator, Camera, Component, EventTouch, log, Node, UITransform, Vec2, Vec3, warn } from 'cc';
+import { _decorator, Camera, Component, EventTouch, find, Label, log, Node, Quat, UITransform, Vec2, Vec3, warn } from 'cc';
 import { GameManager } from '../core/GameManager';
 
 const { ccclass, property } = _decorator;
@@ -71,6 +71,26 @@ export class ManualSpawnArea extends Component {
     public holdEnabled = true;
 
     @property({
+        type: Label,
+        displayName: '投放模式按钮文字',
+        tooltip: '绑定左侧底部投放模式切换按钮的文字 Label。为空时会自动查找经营模式底部操作区里的对应按钮。',
+    })
+    public spawnModeLabel: Label | null = null;
+
+    @property({
+        type: Node,
+        displayName: '精准投放虚影父节点',
+        tooltip: '精准投放按住时生成虚影的父节点。为空时由 GameManager 自动挂到投放物根节点下。',
+    })
+    public previewRoot: Node | null = null;
+
+    @property({
+        displayName: '精准投放虚影透明度',
+        tooltip: '精准投放虚影的目标透明度，0 表示完全透明，1 表示完全不透明。部分 3D 材质可能不支持透明，本参数会尽量应用。',
+    })
+    public previewAlpha = 0.45;
+
+    @property({
         displayName: '触摸开始即投放',
         tooltip: '开启后手指按下时立即投放一次。关闭后只会在长按间隔到达时投放。',
     })
@@ -78,7 +98,7 @@ export class ManualSpawnArea extends Component {
 
     @property({
         displayName: '长按投放间隔',
-        tooltip: '长按连续投放的间隔，数值越小投放越快。当前 0.05 手感较好，不建议随意改大。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.manualSpawnHoldInterval。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public holdInterval = 0.18;
 
@@ -96,6 +116,9 @@ export class ManualSpawnArea extends Component {
     private _isHolding = false;
     private _holdElapsedSeconds = 0;
     private _holdIntervalSpawnCount = 0;
+    private _precisionPreviewNode: Node | null = null;
+    private readonly _precisionPreviewWorldPosition = new Vec3();
+    private readonly _precisionPreviewWorldRotation = new Quat();
 
     protected onLoad(): void {
         this._uiTransform = this.getComponent(UITransform);
@@ -107,6 +130,9 @@ export class ManualSpawnArea extends Component {
         if (!this.gameManager) {
             warn('[ManualSpawnArea] gameManager is not assigned.');
         }
+
+        this.bindSpawnModeLabel();
+        this.refreshSpawnModeLabel();
     }
 
     protected onEnable(): void {
@@ -114,6 +140,7 @@ export class ManualSpawnArea extends Component {
         this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
         this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
+        this.refreshSpawnModeLabel();
     }
 
     protected onDisable(): void {
@@ -121,7 +148,24 @@ export class ManualSpawnArea extends Component {
         this.node.off(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
         this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
+        this.destroyPrecisionPreview();
         this.stopHolding();
+    }
+
+    public toggleManualSpawnMode(): void {
+        this.holdEnabled = !this.holdEnabled;
+        this.spawnOnTouchStart = true;
+        this.destroyPrecisionPreview();
+
+        if (!this.holdEnabled) {
+            this.stopHolding();
+        }
+
+        this.refreshSpawnModeLabel();
+    }
+
+    public isLongPressSpawnMode(): boolean {
+        return this.holdEnabled;
     }
 
     protected update(deltaTime: number): void {
@@ -130,7 +174,8 @@ export class ManualSpawnArea extends Component {
         }
 
         this._holdElapsedSeconds += deltaTime;
-        const interval = Math.max(MIN_HOLD_INTERVAL, this.holdInterval);
+        const interval = this.gameManager?.getConfiguredManualSpawnHoldInterval(this.holdInterval)
+            ?? Math.max(MIN_HOLD_INTERVAL, this.holdInterval);
         while (this._holdElapsedSeconds >= interval) {
             this._holdElapsedSeconds -= interval;
             this._holdIntervalSpawnCount += 1;
@@ -140,6 +185,13 @@ export class ManualSpawnArea extends Component {
 
     private onTouchStart(event: EventTouch): void {
         this.recordTouchPosition(event);
+
+        if (this.isPrecisionSpawnMode()) {
+            this.stopHolding();
+            this.beginPrecisionPreview();
+            return;
+        }
+
         this._isHolding = true;
         this._holdElapsedSeconds = 0;
         this._holdIntervalSpawnCount = 0;
@@ -151,14 +203,29 @@ export class ManualSpawnArea extends Component {
 
     private onTouchMove(event: EventTouch): void {
         this.recordTouchPosition(event);
+
+        if (this.isPrecisionSpawnMode()) {
+            this.updatePrecisionPreviewPosition();
+        }
     }
 
     private onTouchEnd(event: EventTouch): void {
         this.recordTouchPosition(event);
+
+        if (this.isPrecisionSpawnMode()) {
+            this.commitPrecisionPreviewSpawn();
+            this.stopHolding();
+            return;
+        }
+
         this.stopHolding();
     }
 
     private onTouchCancel(): void {
+        if (this.isPrecisionSpawnMode()) {
+            this.destroyPrecisionPreview();
+        }
+
         this.stopHolding();
     }
 
@@ -192,6 +259,72 @@ export class ManualSpawnArea extends Component {
         }
 
         this.gameManager.spawnCoinFromManualPosition(sample.clampedWorldX, this.fixedDepthZ, this.debugLog);
+    }
+
+    private beginPrecisionPreview(): void {
+        this.destroyPrecisionPreview();
+        if (!this.gameManager) {
+            return;
+        }
+
+        this.updatePrecisionPreviewPosition();
+        const previewNode = this.gameManager.createBusinessNextItemPreview(
+            this.previewRoot,
+            this.previewAlpha,
+            this._precisionPreviewWorldRotation,
+        );
+        if (!previewNode) {
+            return;
+        }
+
+        this._precisionPreviewNode = previewNode;
+        this.updatePrecisionPreviewPosition();
+    }
+
+    private updatePrecisionPreviewPosition(): void {
+        if (!this.gameManager) {
+            return;
+        }
+
+        const sample = this.resolveWorldX(
+            this._latestScreenPosition.x,
+            this._latestScreenPosition.y,
+            this._latestUiPosition.x,
+            this._latestUiPosition.y,
+        );
+
+        this.gameManager.resolveManualSpawnWorldPosition(
+            sample.clampedWorldX,
+            this.fixedDepthZ,
+            this._precisionPreviewWorldPosition,
+        );
+
+        if (this._precisionPreviewNode?.isValid) {
+            this._precisionPreviewNode.setWorldPosition(this._precisionPreviewWorldPosition);
+        }
+    }
+
+    private commitPrecisionPreviewSpawn(): void {
+        const previewNode = this._precisionPreviewNode;
+        if (!previewNode?.isValid || !this.gameManager) {
+            this.destroyPrecisionPreview();
+            return;
+        }
+
+        this.updatePrecisionPreviewPosition();
+        this.gameManager.spawnBusinessNextItemAtPosition(
+            this._precisionPreviewWorldPosition,
+            this._precisionPreviewWorldRotation,
+        );
+        this.destroyPrecisionPreview();
+    }
+
+    private destroyPrecisionPreview(): void {
+        if (this._precisionPreviewNode?.isValid) {
+            this._precisionPreviewNode.destroy();
+        }
+
+        this._precisionPreviewNode = null;
     }
 
     private resolveWorldX(screenX: number, screenY: number, uiX: number, uiY: number): SpawnWorldXSample {
@@ -268,6 +401,30 @@ export class ManualSpawnArea extends Component {
     private stopHolding(): void {
         this._isHolding = false;
         this._holdElapsedSeconds = 0;
+    }
+
+    private isPrecisionSpawnMode(): boolean {
+        return !this.holdEnabled;
+    }
+
+    private bindSpawnModeLabel(): void {
+        if (this.spawnModeLabel) {
+            return;
+        }
+
+        const labelNode = find('Canvas/UIRoot/经营模式界面/左侧信息栏/底部操作区/投放模式切换按钮/Label');
+        this.spawnModeLabel = labelNode?.getComponent(Label) ?? null;
+    }
+
+    private refreshSpawnModeLabel(): void {
+        const label = this.spawnModeLabel;
+        if (!label) {
+            return;
+        }
+
+        label.string = this.holdEnabled
+            ? '当前：长按投放'
+            : '当前：精准投放';
     }
 
     private getMinWorldX(): number {

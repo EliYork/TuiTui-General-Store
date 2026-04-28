@@ -8,6 +8,7 @@ const LOCAL_FORWARD = new Vec3(0, 0, 1);
 
 export interface CoinSpawnRequest {
     worldPosition?: Vec3 | null;
+    worldRotation?: Quat | null;
     randomizeAroundPosition?: boolean;
 }
 
@@ -133,8 +134,7 @@ export class CoinSpawner extends Component {
 
         const basePosition = this.resolveBasePosition(request);
         const shouldRandomize = this.shouldRandomizePosition(request);
-        const rotationSource = this.spawnPoint ?? this.node;
-        rotationSource.getWorldRotation(this._spawnBaseRotation);
+        this.resolveSpawnBaseRotation(this._spawnBaseRotation);
 
         itemNode.setWorldPosition(new Vec3(
             basePosition.x + (shouldRandomize ? randomRange(-this.spawnSpreadX, this.spawnSpreadX) : 0),
@@ -142,12 +142,11 @@ export class CoinSpawner extends Component {
             basePosition.z + (shouldRandomize ? randomRange(-this.spawnSpreadZ, this.spawnSpreadZ) : 0),
         ));
 
-        const tiltX = this.baseTiltXDegrees + randomRange(-this.randomTiltXDegrees, this.randomTiltXDegrees);
-        const tiltZ = this.baseTiltZDegrees + randomRange(-this.randomTiltZDegrees, this.randomTiltZDegrees);
-        const yaw = this.spawnYawDegrees + randomRange(-this.randomYawDegrees, this.randomYawDegrees);
-
-        Quat.fromEuler(this._spawnRotationOffset, tiltX, yaw, tiltZ);
-        Quat.multiply(this._spawnRotation, this._spawnBaseRotation, this._spawnRotationOffset);
+        if (request?.worldRotation) {
+            Quat.copy(this._spawnRotation, request.worldRotation);
+        } else {
+            this.buildRandomSpawnWorldRotation(this._spawnRotation, this._spawnBaseRotation);
+        }
         itemNode.setWorldRotation(this._spawnRotation);
 
         const item = itemNode.getComponent(CoinBehaviour);
@@ -186,6 +185,12 @@ export class CoinSpawner extends Component {
         return item;
     }
 
+    public createRandomSpawnWorldRotation(out: Quat | null = null): Quat {
+        const target = out ?? new Quat();
+        this.resolveSpawnBaseRotation(this._spawnBaseRotation);
+        return this.buildRandomSpawnWorldRotation(target, this._spawnBaseRotation);
+    }
+
     public getBaseSpawnWorldPosition(out: Vec3 | null = null): Vec3 {
         const target = out ?? new Vec3();
         const source = this.spawnPoint?.worldPosition ?? this.node.worldPosition;
@@ -217,5 +222,21 @@ export class CoinSpawner extends Component {
         }
 
         return !request?.worldPosition;
+    }
+
+    private resolveSpawnBaseRotation(out: Quat): Quat {
+        const rotationSource = this.spawnPoint ?? this.node;
+        rotationSource.getWorldRotation(out);
+        return out;
+    }
+
+    private buildRandomSpawnWorldRotation(out: Quat, baseRotation: Quat): Quat {
+        const tiltX = this.baseTiltXDegrees + randomRange(-this.randomTiltXDegrees, this.randomTiltXDegrees);
+        const tiltZ = this.baseTiltZDegrees + randomRange(-this.randomTiltZDegrees, this.randomTiltZDegrees);
+        const yaw = this.spawnYawDegrees + randomRange(-this.randomYawDegrees, this.randomYawDegrees);
+
+        Quat.fromEuler(this._spawnRotationOffset, tiltX, yaw, tiltZ);
+        Quat.multiply(out, baseRotation, this._spawnRotationOffset);
+        return out;
     }
 }

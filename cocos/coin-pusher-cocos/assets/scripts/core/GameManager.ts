@@ -10,14 +10,23 @@ import {
     Node,
     log,
     Prefab,
+    Quat,
     Vec3,
     warn,
     PhysicsSystem,
     EPhysicsDrawFlags,
+    Color,
+    Collider,
+    instantiate,
+    MeshRenderer,
+    RigidBody,
 } from 'cc';
 import { CoinBehaviour } from '../gameplay/CoinBehaviour';
 import { CoinSpawner, CoinSpawnRequest } from '../gameplay/CoinSpawner';
 import { ItemPrefabConfig, ItemPrefabRuntimeConfig } from '../gameplay/ItemPrefabConfig';
+import { ModeConfig } from '../config/ModeConfig';
+import { ModeConfigTable } from '../config/ModeConfigTable';
+import { BusinessModeController } from '../modes/business/BusinessModeController';
 import { AudioService, GameSoundId, playGameSound } from './AudioService';
 
 const { ccclass, property } = _decorator;
@@ -25,6 +34,7 @@ const SHARED_SCENE_NAME = 'Prototype01';
 const MIN_AUTO_SPAWN_INTERVAL = 0.05;
 const INSUFFICIENT_RESOURCE_STATUS = '资源不足，无法投放';
 const AUTO_SPAWN_INSUFFICIENT_RESOURCE_STATUS = '资源不足，自动投放已停止';
+const INSUFFICIENT_STOCK_STATUS = '今日进货次数不足';
 
 type MapId = 'Map01' | 'Map02';
 type ResolvedPrefabMetadata = Omit<ItemPrefabRuntimeConfig, 'itemId'>;
@@ -110,7 +120,11 @@ interface RuntimeItemProgress {
 interface RuntimePersistentProgress {
     initialized: boolean;
     currentMapId: MapId;
+    currentBusinessDay: number;
     currentCoins: number;
+    remainingStock: number;
+    remainingStockLimit: number;
+    remainingStockModeId: string;
     maxCoins: number;
     resourceRegenProgressSeconds: number;
     worldDropProgressSeconds: number;
@@ -150,6 +164,11 @@ interface ResolvedCatalogItem extends NormalizedCatalogConfig, ResolvedPrefabMet
     canBeCurrentSpawnItem: boolean;
 }
 
+interface SpawnItemResolveResult {
+    item: ResolvedCatalogItem | null;
+    statusText: string;
+}
+
 const DEFAULT_TEST_ITEMS: NormalizedCatalogConfig[] = [
     {
         itemId: 'apple',
@@ -186,7 +205,11 @@ const DEFAULT_TEST_ITEMS: NormalizedCatalogConfig[] = [
 const runtimeProgress: RuntimePersistentProgress = {
     initialized: false,
     currentMapId: 'Map01',
+    currentBusinessDay: 1,
     currentCoins: 0,
+    remainingStock: 0,
+    remainingStockLimit: 0,
+    remainingStockModeId: '',
     maxCoins: 0,
     resourceRegenProgressSeconds: 0,
     worldDropProgressSeconds: 0,
@@ -205,6 +228,20 @@ export class GameManager extends Component {
     public coinSpawner: CoinSpawner | null = null;
 
     @property({
+        type: ModeConfigTable,
+        displayName: '模式配置表',
+        tooltip: '绑定场景中的“模式配置表”节点。GameManager 会读取当前 ModeConfig 来决定手动投放、订购单投放、资源消耗、随机掉落和自动投放是否启用。'
+    })
+    public modeConfigTable: ModeConfigTable | null = null;
+
+    @property({
+        type: BusinessModeController,
+        displayName: '经营模式控制器',
+        tooltip: '绑定场景中的 BusinessModeController。存在且启用时，主动点击/长按投放会优先按经营模式订购单牌组权重抽取物品；为空时保持旧的当前投放物逻辑。'
+    })
+    public businessModeController: BusinessModeController | null = null;
+
+    @property({
         type: AudioService,
         displayName: '音频服务',
         tooltip: '拖入 GameRoot/AudioManager 上的 AudioService。为空时会尝试使用当前场景中已加载的 AudioService 单例；仍为空则静默跳过，不会报错。',
@@ -220,61 +257,61 @@ export class GameManager extends Component {
 
     @property({
         displayName: '初始资源',
-        tooltip: '开局写入运行数据的主动投放资源。数值越大，玩家可连续主动投放的次数越多。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.initialResource。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public startCoins = 300;
 
     @property({
         displayName: '资源回复上限',
-        tooltip: '被动资源回复最多回复到这个上限。掉落奖励可以超过该上限，不会被这里截断。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.resourceRecoverLimit。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public maxCoins = 300;
 
     @property({
         displayName: '资源回复间隔',
-        tooltip: '被动资源每隔多少秒回复一次。数值越小回复越快，数值越大玩家等待时间越长。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.resourceRecoverInterval。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public resourceRegenInterval = 1;
 
     @property({
         displayName: '每次回复资源',
-        tooltip: '每次被动回复增加的资源数量。数值越大恢复越快，可能降低资源管理压力。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.resourceRecoverAmount。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public resourceRegenAmount = 1;
 
     @property({
         displayName: '主动投放消耗',
-        tooltip: '每次玩家主动投放消耗的资源。包括手动点击/长按和自动投放；资源不足时不会生成物体。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.manualSpawnCost。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public spawnCostPerCoin = 1;
 
     @property({
         displayName: '覆盖手动投放 Y',
-        tooltip: '开启后 ManualSpawnArea 会使用 manualSpawnY 作为投放高度；关闭后使用 SpawnRoot/SpawnPoint 的世界 Y。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.overrideManualSpawnY。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public manualSpawnYOverrideEnabled = true;
 
     @property({
         displayName: '手动投放 Y',
-        tooltip: '手动投放使用的世界 Y 高度。数值越大生成越高，可能更容易弹起；数值太小可能贴近台面或穿插。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.manualSpawnY。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public manualSpawnY = 1;
 
     @property({
         displayName: '自动投放间隔',
-        tooltip: '自动投放开启后每隔多少秒投放一次当前选中物品。数值越小投放越快；当前 0.5 是较稳的节奏。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.autoSpawnInterval。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public autoSpawnInterval = 0.5;
 
     @property({
         displayName: '自动投放 X',
-        tooltip: '自动投放使用的世界 X 坐标。0 表示从中间投放，负数偏左，正数偏右。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.autoSpawnX。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public autoSpawnX = 0;
 
     @property({
         displayName: '自动投放 Z',
-        tooltip: '自动投放使用的世界 Z 坐标，决定水果落在前后哪个位置。当前 -0.2 是默认自动投放落点，不要随意改成正值。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.autoSpawnZ。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public autoSpawnZ = -0.2;
 
@@ -311,19 +348,19 @@ export class GameManager extends Component {
 
     @property({
         displayName: '启用世界随机掉落',
-        tooltip: '开启后系统会按间隔免费生成随机掉落物。该掉落不消耗玩家资源，也不受主动投放资源检查限制。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.enableRandomDrop。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public worldDropEnabled = true;
 
     @property({
         displayName: '世界掉落间隔',
-        tooltip: '系统随机掉落每隔多少秒触发一批。数值越小掉落越频繁，可能增加台面物体数量和物理压力。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.randomDropInterval。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public worldDropInterval = 5;
 
     @property({
         displayName: '每批世界掉落数量',
-        tooltip: '每次世界随机掉落触发时生成几个物体。数值越大随机掉落越密集，也更容易造成性能压力。',
+        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.randomDropAmount。正常请在“模式配置表/具体模式参数”里修改。',
     })
     public worldDropAmount = 1;
 
@@ -333,6 +370,20 @@ export class GameManager extends Component {
         tooltip: '显示当前资源和被动回复信息的 Label。为空时资源 HUD 不会更新。',
     })
     public scoreLabel: Label | null = null;
+
+    @property({
+        type: Label,
+        displayName: '模式资源标签',
+        tooltip: '当前模式主界面使用的资源 Label。经营模式左侧信息栏可绑定到这里；旧图鉴 HUD 仍可继续使用资源标签。为空时不更新额外模式资源显示。',
+    })
+    public modeResourceLabel: Label | null = null;
+
+    @property({
+        type: Label,
+        displayName: '模式天数标签',
+        tooltip: '经营模式左侧顶部显示当前第几天的 Label。为空时会自动查找“回合信息”节点。',
+    })
+    public modeDayLabel: Label | null = null;
 
     @property({
         type: Label,
@@ -375,14 +426,19 @@ export class GameManager extends Component {
     private _statusText = '准备运行数据';
     private _autoSpawnTimer = 0;
     private readonly _manualSpawnPosition = new Vec3();
+    private readonly _resolvedManualSpawnPosition = new Vec3();
     private _boundRestartButton: Node | null = null;
     private _restartLocked = false;
+    private _modeStartAccepted = false;
 
     protected start(): void {
         PhysicsSystem.instance.enable = true;
         this.autoSpawnEnabled = false;
         this._autoSpawnTimer = 0;
+        this.refreshModeStartGate();
         this.bindRestartButton();
+        this.bindModeResourceLabel();
+        this.bindModeDayLabel();
 
         if (this.showColliderDebug) {
             PhysicsSystem.instance.debugDrawFlags =
@@ -401,7 +457,9 @@ export class GameManager extends Component {
             return;
         }
 
-        this.seedInitialMapItems();
+        if (this.shouldEnableRandomDrop()) {
+            this.seedInitialMapItems();
+        }
         this.setStatus(`当前地图：${this.getCurrentMapConfig().mapName}`);
     }
 
@@ -438,6 +496,29 @@ export class GameManager extends Component {
         return this.spawnCurrentSpawnItem();
     }
 
+    public resolveManualSpawnWorldPosition(worldX: number, worldZ: number, out: Vec3 | null = null): Vec3 {
+        const target = out ?? new Vec3();
+        const basePosition = this.coinSpawner?.getBaseSpawnWorldPosition(this._resolvedManualSpawnPosition)
+            ?? this._resolvedManualSpawnPosition;
+        const baseX = basePosition.x;
+        const baseY = basePosition.y;
+        const baseZ = basePosition.z;
+        const modeConfig = this.getActiveModeConfig();
+        const shouldOverrideManualSpawnY = modeConfig?.overrideManualSpawnY ?? this.manualSpawnYOverrideEnabled;
+        const configuredManualSpawnY = modeConfig?.manualSpawnY ?? this.manualSpawnY;
+
+        Vec3.set(
+            target,
+            this.normalizeFiniteNumber(worldX, baseX),
+            shouldOverrideManualSpawnY
+                ? this.normalizeFiniteNumber(configuredManualSpawnY, baseY)
+                : baseY,
+            this.normalizeFiniteNumber(worldZ, baseZ),
+        );
+
+        return target;
+    }
+
     public spawnCoinFromManualPosition(worldX: number, worldZ: number, debugLog = false): boolean {
         if (!this.coinSpawner) {
             warn('[GameManager] coinSpawner is not assigned.');
@@ -445,28 +526,13 @@ export class GameManager extends Component {
             return false;
         }
 
-        const basePosition = this.coinSpawner.getBaseSpawnWorldPosition(this._manualSpawnPosition);
-        const baseX = basePosition.x;
-        const baseY = basePosition.y;
-        const baseZ = basePosition.z;
-        const spawnX = this.normalizeFiniteNumber(worldX, baseX);
-        const spawnY = this.manualSpawnYOverrideEnabled
-            ? this.normalizeFiniteNumber(this.manualSpawnY, baseY)
-            : baseY;
-        const spawnZ = this.normalizeFiniteNumber(worldZ, baseZ);
-
-        Vec3.set(
-            this._manualSpawnPosition,
-            spawnX,
-            spawnY,
-            spawnZ,
-        );
+        this.resolveManualSpawnWorldPosition(worldX, worldZ, this._manualSpawnPosition);
 
         if (debugLog) {
             log(
-                `[GameManager.manualSpawnAt] worldX=${formatNumber(spawnX)} `
-                + `fixedDepthZ=${formatNumber(spawnZ)} `
-                + `spawnY=${formatNumber(spawnY)}`,
+                `[GameManager.manualSpawnAt] worldX=${formatNumber(this._manualSpawnPosition.x)} `
+                + `fixedDepthZ=${formatNumber(this._manualSpawnPosition.z)} `
+                + `spawnY=${formatNumber(this._manualSpawnPosition.y)}`,
             );
         }
 
@@ -476,6 +542,69 @@ export class GameManager extends Component {
         });
     }
 
+    public spawnBusinessNextItemAtPosition(worldPosition: Vec3, worldRotation: Quat | null = null): boolean {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            this.setStatus('当前模式没有可用订购单投放来源');
+            return false;
+        }
+
+        return this.spawnCurrentSpawnItem({
+            worldPosition,
+            worldRotation,
+            randomizeAroundPosition: false,
+        });
+    }
+
+    public createBusinessNextItemPreview(
+        previewParent: Node | null = null,
+        previewAlpha = 0.45,
+        outWorldRotation: Quat | null = null,
+    ): Node | null {
+        if (!this.coinSpawner) {
+            warn('[GameManager] coinSpawner is not assigned.');
+            this.setStatus('缺少 CoinSpawner 引用');
+            return null;
+        }
+
+        if (!this.shouldUseBusinessOrderDeck()) {
+            this.setStatus('当前模式没有可用订购单投放来源');
+            return null;
+        }
+
+        const businessController = this.businessModeController;
+        if (!businessController?.hasAvailableOrders()) {
+            const statusText = businessController?.getNoAvailableOrderStatus() ?? '没有可用订购单';
+            businessController?.showSpawnMessage('下次投放：无');
+            this.setStatus(statusText);
+            return null;
+        }
+
+        if (!this.hasRemainingStock()) {
+            this.setStatus(INSUFFICIENT_STOCK_STATUS);
+            return null;
+        }
+
+        const spawnItemResult = this.resolveBusinessOrderDeckSpawnItem();
+        const previewItem = spawnItemResult.item;
+        if (!previewItem?.prefab) {
+            this.setStatus(spawnItemResult.statusText || '没有可用订购单');
+            return null;
+        }
+
+        const previewNode = instantiate(previewItem.prefab);
+        previewNode.active = false;
+        previewNode.name = `${previewItem.itemName}_虚影`;
+        this.disablePreviewRuntimeComponents(previewNode);
+
+        const parent = previewParent ?? this.coinSpawner.coinRoot ?? this.coinSpawner.node;
+        parent.addChild(previewNode);
+        const previewRotation = this.coinSpawner.createRandomSpawnWorldRotation(outWorldRotation);
+        previewNode.setWorldRotation(previewRotation);
+        this.applyPreviewVisualStyle(previewNode, previewAlpha);
+        previewNode.active = true;
+        return previewNode;
+    }
+
     public toggleAutoSpawn(): boolean {
         return this.setAutoSpawnEnabled(!this.autoSpawnEnabled);
     }
@@ -483,6 +612,11 @@ export class GameManager extends Component {
     public setAutoSpawnEnabled(enabled: boolean): boolean {
         if (!enabled) {
             this.stopAutoSpawn('自动投放已关闭');
+            return false;
+        }
+
+        if (!this.shouldEnableAutoSpawn()) {
+            this.stopAutoSpawn('当前模式已禁用自动投放');
             return false;
         }
 
@@ -503,19 +637,59 @@ export class GameManager extends Component {
     }
 
     private spawnCurrentSpawnItem(request: CoinSpawnRequest | null = null): boolean {
-        const currentSpawnItem = this.getCurrentSpawnItem();
         if (!this.coinSpawner) {
             warn('[GameManager] coinSpawner is not assigned.');
             this.setStatus('缺少 CoinSpawner 引用');
             return false;
         }
 
-        if (!currentSpawnItem) {
-            this.setStatus('当前没有可投放物品');
+        if (!this.shouldAllowManualSpawn()) {
+            this.setStatus('当前模式不允许手动投放');
             return false;
         }
 
-        if (!this.canAffordSpawn()) {
+        if (!this.isModeStartGateOpen()) {
+            this.setStatus('请先开始当前模式');
+            return false;
+        }
+
+        const shouldUseBusinessDeck = this.shouldUseBusinessOrderDeck();
+        const shouldConsumeResource = this.shouldConsumeResourceOnManualSpawn();
+
+        if (shouldUseBusinessDeck) {
+            const businessController = this.businessModeController;
+            if (!businessController?.hasAvailableOrders()) {
+                const statusText = businessController?.getNoAvailableOrderStatus() ?? '没有可用订购单';
+                businessController?.showSpawnMessage('下次投放：无');
+                this.setStatus(statusText);
+                return false;
+            }
+
+            if (!this.hasRemainingStock()) {
+                this.setStatus(INSUFFICIENT_STOCK_STATUS);
+                return false;
+            }
+
+            if (!businessController.getPreparedNextItem()) {
+                businessController.showSpawnMessage('下次投放：无');
+                this.setStatus(businessController.getNoAvailableOrderStatus());
+                return false;
+            }
+
+            if (shouldConsumeResource && !this.canAffordSpawn()) {
+                this.setStatus(INSUFFICIENT_RESOURCE_STATUS);
+                return false;
+            }
+        }
+
+        const spawnItemResult = this.resolveActiveSpawnItem();
+        const currentSpawnItem = spawnItemResult.item;
+        if (!currentSpawnItem) {
+            this.setStatus(spawnItemResult.statusText || '当前没有可投放物品');
+            return false;
+        }
+
+        if (shouldConsumeResource && !this.canAffordSpawn()) {
             this.setStatus(INSUFFICIENT_RESOURCE_STATUS);
             return false;
         }
@@ -527,14 +701,33 @@ export class GameManager extends Component {
         }
 
         this._sessionSpawnedCoinCount += 1;
-        runtimeProgress.currentCoins -= this.getConfiguredSpawnCost();
+        if (shouldUseBusinessDeck) {
+            runtimeProgress.remainingStock = Math.max(0, runtimeProgress.remainingStock - 1);
+            this.businessModeController?.consumePreparedNextItemAndPrepareAnother();
+        }
+        if (shouldConsumeResource) {
+            runtimeProgress.currentCoins -= this.getConfiguredSpawnCost();
+        }
         this.syncStateFromResources();
         this.playSound('coin-drop');
-        this.setStatus(`已投放 ${currentSpawnItem.itemName}，资源 ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins}`);
+        const resourceText = shouldConsumeResource
+            ? `，资源 ${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins}`
+            : '';
+        const stockText = shouldUseBusinessDeck
+            ? `，当天剩余进货 ${runtimeProgress.remainingStock}`
+            : '';
+        this.setStatus(`已投放 ${currentSpawnItem.itemName}${stockText}${resourceText}`);
         return true;
     }
 
     private updateAutoSpawn(deltaTime: number): boolean {
+        if (!this.shouldEnableAutoSpawn()) {
+            if (this.autoSpawnEnabled) {
+                this.stopAutoSpawn('当前模式已禁用自动投放');
+            }
+            return false;
+        }
+
         if (!this.autoSpawnEnabled) {
             return false;
         }
@@ -562,7 +755,7 @@ export class GameManager extends Component {
             return false;
         }
 
-        if (!this.spawnCoinFromManualPosition(this.autoSpawnX, this.autoSpawnZ)) {
+        if (!this.spawnCoinFromManualPosition(this.getConfiguredAutoSpawnX(), this.getConfiguredAutoSpawnZ())) {
             this.stopAutoSpawn('自动投放失败，已停止');
             return false;
         }
@@ -584,15 +777,64 @@ export class GameManager extends Component {
             return '缺少投放器，自动投放已停止';
         }
 
-        if (!this.getCurrentSpawnItem()) {
-            return '当前没有可投放物品，自动投放已停止';
+        if (!this.shouldEnableAutoSpawn()) {
+            return '当前模式已禁用自动投放';
         }
 
-        if (!this.canAffordSpawn()) {
+        if (this.shouldUseBusinessOrderDeck()) {
+            const businessController = this.businessModeController;
+            if (!businessController?.hasAvailableOrders()) {
+                return `${businessController?.getNoAvailableOrderStatus() ?? '没有可用订购单'}，自动投放已停止`;
+            }
+
+            if (!this.hasRemainingStock()) {
+                return `${INSUFFICIENT_STOCK_STATUS}，自动投放已停止`;
+            }
+
+            if (!businessController.getPreparedNextItem()) {
+                return '没有可用下次投放物，自动投放已停止';
+            }
+        } else if (this.shouldUseLegacyCurrentItem()) {
+            if (!this.getCurrentSpawnItem()) {
+                return '当前没有可投放物品，自动投放已停止';
+            }
+        } else {
+            return '当前模式没有可用投放来源，自动投放已停止';
+        }
+
+        if (this.shouldConsumeResourceOnManualSpawn() && !this.canAffordSpawn()) {
             return AUTO_SPAWN_INSUFFICIENT_RESOURCE_STATUS;
         }
 
         return '';
+    }
+
+    public startCurrentMode(): void {
+        this._modeStartAccepted = true;
+        this.playSound('button-click');
+        this.setStatus(`${this.getActiveModeDisplayName()}已开始`);
+    }
+
+    public endCurrentBusinessDay(): void {
+        this.ensureRuntimeProgress();
+
+        if (!this.shouldUseBusinessOrderDeck()) {
+            this.setStatus('当前模式不使用经营本日流程');
+            return;
+        }
+
+        runtimeProgress.currentBusinessDay += 1;
+        const configuredDailyStockLimit = this.getConfiguredDailyStockLimit();
+        runtimeProgress.remainingStock = configuredDailyStockLimit;
+        runtimeProgress.remainingStockLimit = configuredDailyStockLimit;
+        runtimeProgress.remainingStockModeId = this.getActiveModeId();
+        runtimeProgress.resourceRegenProgressSeconds = 0;
+        runtimeProgress.worldDropProgressSeconds = 0;
+        this.stopAutoSpawn();
+        this.businessModeController?.prepareNextItem();
+        this.syncStateFromResources();
+        this.playSound('button-click');
+        this.setStatus(`已结束本日，进入第${runtimeProgress.currentBusinessDay}天`);
     }
 
     private stopAutoSpawn(statusText = ''): void {
@@ -622,6 +864,7 @@ export class GameManager extends Component {
         progress.isDiscovered = true;
         runtimeProgress.lastDroppedItemId = collectedItem.itemId;
         runtimeProgress.currentCoins += collectedItem.value;
+        this.businessModeController?.recordCollectedItem(collectedItem.itemId);
 
         let unlockedItemName = '';
         if (!progress.isSpawnUnlocked && progress.ownedCount >= collectedItem.unlockRequiredCount) {
@@ -658,10 +901,13 @@ export class GameManager extends Component {
         this.stopAutoSpawn();
         this.coinSpawner?.clearSpawnedItems();
         this.resetRuntimeProgress();
+        this.refreshModeStartGate();
         this.ensureRuntimeProgress();
         this._sessionSpawnedCoinCount = 0;
         this.syncStateFromResources();
-        this.seedInitialMapItems();
+        if (this.shouldEnableRandomDrop()) {
+            this.seedInitialMapItems();
+        }
         this.playSound('button-click');
         this.setStatus(`已重新开始，当前地图：${this.getCurrentMapConfig().mapName}`);
     }
@@ -683,11 +929,33 @@ export class GameManager extends Component {
         this._boundRestartButton = null;
     }
 
+    private bindModeResourceLabel(): void {
+        if (this.modeResourceLabel) {
+            return;
+        }
+
+        const modeResourceNode = find('Canvas/UIRoot/经营模式界面/左侧信息栏/顶部信息区/资源信息');
+        this.modeResourceLabel = modeResourceNode?.getComponent(Label) ?? null;
+    }
+
+    private bindModeDayLabel(): void {
+        if (this.modeDayLabel) {
+            return;
+        }
+
+        const modeDayNode = find('Canvas/UIRoot/经营模式界面/左侧信息栏/顶部信息区/回合信息');
+        this.modeDayLabel = modeDayNode?.getComponent(Label) ?? null;
+    }
+
     private onRestartButtonTouched(): void {
         this.restartGame();
     }
 
     private playSound(soundId: GameSoundId): void {
+        if (!this.audioService) {
+            this.audioService = AudioService.getInstance();
+        }
+
         playGameSound(this.audioService, soundId);
     }
 
@@ -704,11 +972,87 @@ export class GameManager extends Component {
     }
 
     public canSpawnCoin(): boolean {
-        return !!this.coinSpawner && !!this.getCurrentSpawnItem() && this.canAffordSpawn();
+        const shouldCheckResource = this.shouldConsumeResourceOnManualSpawn();
+        return !!this.coinSpawner
+            && this.shouldAllowManualSpawn()
+            && this.isModeStartGateOpen()
+            && this.hasConfiguredSpawnSource()
+            && (!this.shouldUseBusinessOrderDeck() || (this.hasRemainingStock() && !!this.businessModeController?.getPreparedNextItem()))
+            && (!shouldCheckResource || this.canAffordSpawn());
     }
 
     public canAffordSpawn(): boolean {
         return runtimeProgress.currentCoins >= this.getConfiguredSpawnCost();
+    }
+
+    public hasRemainingStock(): boolean {
+        return runtimeProgress.remainingStock > 0;
+    }
+
+    public getConfiguredManualSpawnHoldInterval(fallbackInterval: number): number {
+        const holdInterval = this.getActiveModeConfig()?.manualSpawnHoldInterval ?? fallbackInterval;
+        return Math.max(0.02, this.normalizeNonNegativeNumber(holdInterval, fallbackInterval));
+    }
+
+    private getActiveModeConfig(): ModeConfig | null {
+        return this.modeConfigTable?.getActiveConfig() ?? null;
+    }
+
+    private getActiveModeDisplayName(): string {
+        const modeConfig = this.getActiveModeConfig();
+        return modeConfig?.modeDisplayName || modeConfig?.modeId || '当前模式';
+    }
+
+    private getActiveModeId(): string {
+        const modeConfig = this.getActiveModeConfig();
+        return modeConfig?.modeId || modeConfig?.modeDisplayName || 'legacy';
+    }
+
+    private shouldAllowManualSpawn(): boolean {
+        return this.getActiveModeConfig()?.allowManualSpawn ?? true;
+    }
+
+    private shouldUseBusinessOrderDeck(): boolean {
+        const modeConfig = this.getActiveModeConfig();
+        const requestedByMode = modeConfig?.useBusinessOrderDeck ?? !!this.businessModeController?.isOrderDeckSpawnEnabled();
+        return requestedByMode && !!this.businessModeController?.isOrderDeckSpawnEnabled();
+    }
+
+    private shouldUseLegacyCurrentItem(): boolean {
+        const modeConfig = this.getActiveModeConfig();
+        return modeConfig?.useLegacyCurrentItem ?? !this.shouldUseBusinessOrderDeck();
+    }
+
+    private shouldConsumeResourceOnManualSpawn(): boolean {
+        return this.getActiveModeConfig()?.consumeResourceOnManualSpawn ?? true;
+    }
+
+    private shouldEnableRandomDrop(): boolean {
+        return this.getActiveModeConfig()?.enableRandomDrop ?? this.worldDropEnabled;
+    }
+
+    private shouldEnableAutoSpawn(): boolean {
+        return this.getActiveModeConfig()?.enableAutoSpawn ?? true;
+    }
+
+    private shouldRequireStartButton(): boolean {
+        return this.getActiveModeConfig()?.requireStartButton ?? false;
+    }
+
+    private refreshModeStartGate(): void {
+        this._modeStartAccepted = !this.shouldRequireStartButton();
+    }
+
+    private isModeStartGateOpen(): boolean {
+        return !this.shouldRequireStartButton() || this._modeStartAccepted;
+    }
+
+    private hasConfiguredSpawnSource(): boolean {
+        if (this.shouldUseBusinessOrderDeck() && this.businessModeController?.hasAvailableOrders()) {
+            return true;
+        }
+
+        return this.shouldUseLegacyCurrentItem() && !!this.getCurrentSpawnItem();
     }
 
     public getEncyclopediaItems(): EncyclopediaCatalogItemSnapshot[] {
@@ -760,12 +1104,18 @@ export class GameManager extends Component {
 
     private ensureRuntimeProgress(): void {
         const catalogConfigs = this.getNormalizedCatalogConfigs();
+        const configuredDailyStockLimit = this.getConfiguredDailyStockLimit();
+        const activeModeId = this.getActiveModeId();
 
         if (!runtimeProgress.initialized) {
             runtimeProgress.initialized = true;
             runtimeProgress.currentMapId = this.getMapIdFromSelection(this.mapSelection);
+            runtimeProgress.currentBusinessDay = 1;
             runtimeProgress.maxCoins = this.getConfiguredMaxCoins();
             runtimeProgress.currentCoins = this.getConfiguredInitialCoins();
+            runtimeProgress.remainingStock = configuredDailyStockLimit;
+            runtimeProgress.remainingStockLimit = configuredDailyStockLimit;
+            runtimeProgress.remainingStockModeId = activeModeId;
             runtimeProgress.resourceRegenProgressSeconds = 0;
             runtimeProgress.worldDropProgressSeconds = 0;
             runtimeProgress.currentSpawnItemId = '';
@@ -773,7 +1123,18 @@ export class GameManager extends Component {
             runtimeProgress.itemProgress = {};
         } else {
             runtimeProgress.maxCoins = this.getConfiguredMaxCoins();
+            runtimeProgress.currentBusinessDay = Math.max(1, this.normalizeNonNegativeInteger(runtimeProgress.currentBusinessDay, 1));
             runtimeProgress.currentCoins = this.normalizeFiniteInteger(runtimeProgress.currentCoins, 0);
+            if (
+                runtimeProgress.remainingStockModeId !== activeModeId
+                || runtimeProgress.remainingStockLimit !== configuredDailyStockLimit
+            ) {
+                runtimeProgress.remainingStock = configuredDailyStockLimit;
+                runtimeProgress.remainingStockLimit = configuredDailyStockLimit;
+                runtimeProgress.remainingStockModeId = activeModeId;
+            } else {
+                runtimeProgress.remainingStock = this.normalizeNonNegativeInteger(runtimeProgress.remainingStock);
+            }
         }
 
         for (const config of catalogConfigs) {
@@ -794,8 +1155,12 @@ export class GameManager extends Component {
     private resetRuntimeProgress(): void {
         runtimeProgress.initialized = false;
         runtimeProgress.currentMapId = this.getMapIdFromSelection(this.mapSelection);
+        runtimeProgress.currentBusinessDay = 1;
         runtimeProgress.maxCoins = 0;
         runtimeProgress.currentCoins = 0;
+        runtimeProgress.remainingStock = 0;
+        runtimeProgress.remainingStockLimit = 0;
+        runtimeProgress.remainingStockModeId = '';
         runtimeProgress.resourceRegenProgressSeconds = 0;
         runtimeProgress.worldDropProgressSeconds = 0;
         runtimeProgress.currentSpawnItemId = '';
@@ -854,6 +1219,10 @@ export class GameManager extends Component {
     }
 
     private seedInitialMapItems(): void {
+        if (!this.shouldEnableRandomDrop()) {
+            return;
+        }
+
         const mapConfig = this.getCurrentMapConfig();
         const initialCount = this.normalizeNonNegativeInteger(mapConfig.initialMapItemCount);
         for (let index = 0; index < initialCount; index += 1) {
@@ -890,7 +1259,7 @@ export class GameManager extends Component {
     private trySpawnWorldDrops(deltaTime: number): boolean {
         const interval = this.getConfiguredWorldDropInterval();
         const amount = this.getConfiguredWorldDropAmount();
-        if (!this.worldDropEnabled || interval <= 0 || amount <= 0) {
+        if (!this.shouldEnableRandomDrop() || interval <= 0 || amount <= 0) {
             runtimeProgress.worldDropProgressSeconds = 0;
             return false;
         }
@@ -933,6 +1302,56 @@ export class GameManager extends Component {
         return this.coinSpawner.spawnCoin(item.prefab, request);
     }
 
+    private disablePreviewRuntimeComponents(previewNode: Node): void {
+        const stack: Node[] = [previewNode];
+        while (stack.length > 0) {
+            const node = stack.pop();
+            if (!node) {
+                continue;
+            }
+
+            node.getComponents(RigidBody).forEach((body) => {
+                body.enabled = false;
+            });
+            node.getComponents(Collider).forEach((collider) => {
+                collider.enabled = false;
+            });
+            node.getComponents(CoinBehaviour).forEach((behaviour) => {
+                behaviour.enabled = false;
+            });
+
+            stack.push(...node.children);
+        }
+    }
+
+    private applyPreviewVisualStyle(previewNode: Node, previewAlpha: number): void {
+        const alpha = Math.max(0, Math.min(1, this.normalizeNonNegativeNumber(previewAlpha, 0.45)));
+        const previewColor = new Color(255, 255, 255, Math.round(alpha * 255));
+        const stack: Node[] = [previewNode];
+
+        while (stack.length > 0) {
+            const node = stack.pop();
+            if (!node) {
+                continue;
+            }
+
+            node.getComponents(MeshRenderer).forEach((renderer) => {
+                const materialCount = Math.max(1, renderer.materials.length);
+                for (let index = 0; index < materialCount; index += 1) {
+                    try {
+                        const material = renderer.getMaterialInstance(index);
+                        material?.setProperty('mainColor', previewColor);
+                        material?.setProperty('albedo', previewColor);
+                    } catch {
+                        // Some item materials do not expose color properties; the preview still works without tinting.
+                    }
+                }
+            });
+
+            stack.push(...node.children);
+        }
+    }
+
     private pickRandomMapPoolItem(): ResolvedCatalogItem | null {
         const dropPool = this.getResolvedCatalog().filter(
             (item) => item.allowDropOnCurrentMap && !!item.prefab && item.weight > 0,
@@ -957,8 +1376,60 @@ export class GameManager extends Component {
         return dropPool[dropPool.length - 1] ?? null;
     }
 
+    private resolveActiveSpawnItem(): SpawnItemResolveResult {
+        if (this.shouldUseBusinessOrderDeck()) {
+            return this.resolveBusinessOrderDeckSpawnItem();
+        }
+
+        if (this.shouldUseLegacyCurrentItem()) {
+            return {
+                item: this.getCurrentSpawnItem(),
+                statusText: '当前没有可投放物品',
+            };
+        }
+
+        return {
+            item: null,
+            statusText: '当前模式没有可用投放来源',
+        };
+    }
+
+    private resolveBusinessOrderDeckSpawnItem(): SpawnItemResolveResult {
+        const preparedItem = this.businessModeController?.getPreparedNextItem() ?? null;
+        if (!preparedItem) {
+            return {
+                item: null,
+                statusText: this.businessModeController?.getNoAvailableOrderStatus() ?? '没有可用订购单',
+            };
+        }
+
+        const catalogItem = this.findResolvedCatalogItemById(preparedItem.itemId);
+        if (!catalogItem) {
+            const statusText = `订购单物品未配置：${preparedItem.displayName}`;
+            this.businessModeController?.showSpawnMessage(`下次投放：${preparedItem.displayName} 未配置`);
+            return {
+                item: null,
+                statusText,
+            };
+        }
+
+        if (!catalogItem.prefab) {
+            const statusText = `${catalogItem.itemName} 缺少 Prefab`;
+            this.businessModeController?.showSpawnMessage(`下次投放：${catalogItem.itemName} 缺少 Prefab`);
+            return {
+                item: null,
+                statusText,
+            };
+        }
+
+        return {
+            item: catalogItem,
+            statusText: '',
+        };
+    }
+
     private syncStateFromResources(): void {
-        if (!this.getCurrentSpawnItem()) {
+        if (!this.hasConfiguredSpawnSource()) {
             this._state = RoundState.Ready;
             return;
         }
@@ -980,12 +1451,22 @@ export class GameManager extends Component {
             : null;
         const unlockedItems = resolvedCatalog.filter((item) => item.isSpawnUnlocked).map((item) => item.itemName);
         const pocketSummary = resolvedCatalog.map((item) => `${item.itemName} ${item.ownedCount}`).join(' / ');
-        const worldDropSummary = this.worldDropEnabled
+        const worldDropSummary = this.shouldEnableRandomDrop()
             ? `每 ${this.getConfiguredWorldDropInterval()} 秒 ${this.getConfiguredWorldDropAmount()} 个`
             : '关闭';
 
         if (this.scoreLabel) {
             this.scoreLabel.string = `资源：${runtimeProgress.currentCoins}/${runtimeProgress.maxCoins} | 回复：${this.getConfiguredResourceRegenAmount()} / ${this.getConfiguredResourceRegenInterval()}秒`;
+        }
+
+        if (this.modeResourceLabel) {
+            this.modeResourceLabel.string = this.shouldUseBusinessOrderDeck()
+                ? `当天剩余进货：${runtimeProgress.remainingStock}`
+                : `资源：${runtimeProgress.currentCoins}`;
+        }
+
+        if (this.modeDayLabel) {
+            this.modeDayLabel.string = `第${runtimeProgress.currentBusinessDay}天`;
         }
 
         if (this.dropCountLabel) {
@@ -1141,35 +1622,62 @@ export class GameManager extends Component {
     }
 
     private getConfiguredInitialCoins(): number {
-        return this.normalizeNonNegativeInteger(this.startCoins);
+        return this.normalizeNonNegativeInteger(this.getActiveModeConfig()?.initialResource ?? this.startCoins);
+    }
+
+    private getConfiguredDailyStockLimit(): number {
+        const modeConfig = this.getActiveModeConfig();
+        return this.normalizeNonNegativeInteger(modeConfig?.dailyStockLimit ?? modeConfig?.initialResource ?? this.startCoins);
     }
 
     private getConfiguredMaxCoins(): number {
-        return this.normalizeNonNegativeInteger(this.maxCoins);
+        return this.normalizeNonNegativeInteger(this.getActiveModeConfig()?.resourceRecoverLimit ?? this.maxCoins);
     }
 
     private getConfiguredResourceRegenInterval(): number {
-        return this.normalizeNonNegativeNumber(this.resourceRegenInterval, 1);
+        return this.normalizeNonNegativeNumber(
+            this.getActiveModeConfig()?.resourceRecoverInterval ?? this.resourceRegenInterval,
+            1,
+        );
     }
 
     private getConfiguredResourceRegenAmount(): number {
-        return this.normalizeNonNegativeInteger(this.resourceRegenAmount, 1);
+        return this.normalizeNonNegativeInteger(
+            this.getActiveModeConfig()?.resourceRecoverAmount ?? this.resourceRegenAmount,
+            1,
+        );
     }
 
     private getConfiguredWorldDropInterval(): number {
-        return this.normalizeNonNegativeNumber(this.worldDropInterval, 5);
+        return this.normalizeNonNegativeNumber(
+            this.getActiveModeConfig()?.randomDropInterval ?? this.worldDropInterval,
+            5,
+        );
     }
 
     private getConfiguredWorldDropAmount(): number {
-        return this.normalizeNonNegativeInteger(this.worldDropAmount, 1);
+        return this.normalizeNonNegativeInteger(
+            this.getActiveModeConfig()?.randomDropAmount ?? this.worldDropAmount,
+            1,
+        );
     }
 
     private getConfiguredAutoSpawnInterval(): number {
-        return Math.max(MIN_AUTO_SPAWN_INTERVAL, this.normalizeNonNegativeNumber(this.autoSpawnInterval, 0.5));
+        const interval = this.getActiveModeConfig()?.autoSpawnInterval ?? this.autoSpawnInterval;
+        return Math.max(MIN_AUTO_SPAWN_INTERVAL, this.normalizeNonNegativeNumber(interval, 0.5));
+    }
+
+    private getConfiguredAutoSpawnX(): number {
+        return this.normalizeFiniteNumber(this.getActiveModeConfig()?.autoSpawnX ?? this.autoSpawnX, 0);
+    }
+
+    private getConfiguredAutoSpawnZ(): number {
+        return this.normalizeFiniteNumber(this.getActiveModeConfig()?.autoSpawnZ ?? this.autoSpawnZ, -0.2);
     }
 
     private getConfiguredSpawnCost(): number {
-        return Math.max(1, this.normalizeNonNegativeInteger(this.spawnCostPerCoin, 1));
+        const spawnCost = this.getActiveModeConfig()?.manualSpawnCost ?? this.spawnCostPerCoin;
+        return Math.max(1, this.normalizeNonNegativeInteger(spawnCost, 1));
     }
 
     private normalizeItemId(value: string, index: number): string {

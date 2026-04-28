@@ -38,6 +38,7 @@
   },
   "builder-options": {
     "configID": "de2868",
-    "services": []
+    "services": [],
+    "__version__": "3.0.9"
   }
 }

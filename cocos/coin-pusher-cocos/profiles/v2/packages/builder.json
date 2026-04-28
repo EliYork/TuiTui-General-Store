@@ -133,6 +133,10 @@
             {
               "url": "db://assets/scenes/Prototype01.scene",
               "uuid": "3b9415ed-9ba2-4f07-bb11-4767e37357f8"
+            },
+            {
+              "url": "db://assets/scenes/MainMenu.scene",
+              "uuid": "9615adc2-df9b-4189-85cf-95ac940f9b0b"
             }
           ],
           "wasmCompressionMode": false,
@@ -160,6 +164,16 @@
     "buildPath": "project://build",
     "outputName": "android",
     "mainBundleCompressionType": "merge_dep",
-    "platform": "android"
+    "platform": "android",
+    "scenes": [
+      {
+        "url": "db://assets/scenes/Prototype01.scene",
+        "uuid": "3b9415ed-9ba2-4f07-bb11-4767e37357f8"
+      },
+      {
+        "url": "db://assets/scenes/MainMenu.scene",
+        "uuid": "9615adc2-df9b-4189-85cf-95ac940f9b0b"
+      }
+    ]
   }
 }
