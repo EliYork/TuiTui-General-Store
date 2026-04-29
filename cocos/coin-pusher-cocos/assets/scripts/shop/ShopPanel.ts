@@ -373,8 +373,16 @@ export class ShopPanel extends Component {
         const visibleSize = view.getVisibleSize();
         const transform = this.node.getComponent(UITransform) ?? this.node.parent?.getComponent(UITransform) ?? null;
         const size = transform?.contentSize;
-        const width = Math.max(640, visibleSize.width, size?.width ?? FALLBACK_WIDTH);
-        const height = Math.max(480, visibleSize.height, size?.height ?? FALLBACK_HEIGHT);
+        const visibleWidth = isPositiveFinite(visibleSize.width) ? visibleSize.width : 0;
+        const visibleHeight = isPositiveFinite(visibleSize.height) ? visibleSize.height : 0;
+        const nodeWidth = isPositiveFinite(size?.width ?? 0) ? size!.width : FALLBACK_WIDTH;
+        const nodeHeight = isPositiveFinite(size?.height ?? 0) ? size!.height : FALLBACK_HEIGHT;
+        const width = Math.max(640, visibleWidth, nodeWidth);
+        const height = Math.max(480, visibleHeight, nodeHeight);
         return { width, height };
     }
+}
+
+function isPositiveFinite(value: number): boolean {
+    return Number.isFinite(value) && value > 0;
 }

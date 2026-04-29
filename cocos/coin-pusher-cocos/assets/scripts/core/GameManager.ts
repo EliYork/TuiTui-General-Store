@@ -465,9 +465,19 @@ export class GameManager extends Component {
     private _dayResultPhysicsFrozen = false;
 
     protected start(): void {
+        try {
+            this.startGameManager();
+        } catch (error) {
+            warn('[GameManager] 启动经营/图鉴玩法场景失败。已阻止异常继续中断首帧渲染。', error);
+            this.setSafeStartupStatus('玩法场景启动异常，请查看 Android 日志');
+        }
+    }
+
+    private startGameManager(): void {
         PhysicsSystem.instance.enable = true;
         this.autoSpawnEnabled = false;
         this._autoSpawnTimer = 0;
+        this.applyModeUiVisibility();
         this.refreshModeStartGate();
         this.bindRestartButton();
         this.bindModeResourceLabel();
@@ -508,6 +518,18 @@ export class GameManager extends Component {
             this.seedInitialMapItems();
         }
         this.setStatus(`当前地图：${this.getCurrentMapConfig().mapName}`);
+    }
+
+    private setSafeStartupStatus(statusText: string): void {
+        this._statusText = statusText;
+
+        if (this.statusLabel) {
+            this.statusLabel.string = statusText;
+        }
+
+        if (this.modeResourceLabel) {
+            this.modeResourceLabel.string = statusText;
+        }
     }
 
     protected onDisable(): void {
@@ -1251,6 +1273,23 @@ export class GameManager extends Component {
     private getActiveModeId(): string {
         const modeConfig = this.getActiveModeConfig();
         return modeConfig?.modeId || modeConfig?.modeDisplayName || 'legacy';
+    }
+
+    private applyModeUiVisibility(): void {
+        const activeModeId = this.getActiveModeId();
+        const isCollectionMode = activeModeId === 'collection';
+        const businessUiNode = find('Canvas/UIRoot/经营模式界面');
+        const collectionUiNode = find('Canvas/UIRoot/图鉴模式界面');
+
+        if (businessUiNode) {
+            businessUiNode.active = !isCollectionMode;
+        }
+
+        if (collectionUiNode) {
+            collectionUiNode.active = isCollectionMode;
+        }
+
+        log(`[GameManager] 当前玩法模式：${activeModeId}`);
     }
 
     private shouldAllowManualSpawn(): boolean {
