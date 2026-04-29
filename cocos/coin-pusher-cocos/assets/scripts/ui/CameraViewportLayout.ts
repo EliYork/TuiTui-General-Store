@@ -10,13 +10,13 @@ export class CameraViewportLayout extends Component {
     @property({
         type: Camera,
         displayName: '目标相机',
-        tooltip: '需要被裁切渲染区域的 3D 相机。为空时会自动使用当前节点上的 Camera 组件，推荐直接挂在 Main Camera 节点上。',
+        tooltip: '需要渲染到右侧游戏区域的 3D 相机。为空时会自动使用当前节点上的 Camera 组件。',
     })
     public targetCamera: Camera | null = null;
 
     @property({
         displayName: '左侧面板比例',
-        tooltip: '左侧经营信息栏占屏幕宽度的比例。0.35 表示左侧占 35%，右侧 3D 主场景占 65%；调大会让左侧更宽、右侧更窄。',
+        tooltip: '左侧 HUD 占屏幕宽度的比例。3D 相机会从这个比例之后开始渲染；背景清屏相机负责先清理完整屏幕。',
     })
     public leftPanelRatio = 0.35;
 
@@ -28,7 +28,7 @@ export class CameraViewportLayout extends Component {
         this.applyViewport();
     }
 
-    private applyViewport(): void {
+    public applyViewport(): void {
         const camera = this.targetCamera ?? this.getComponent(Camera);
         if (!camera) {
             warn('[CameraViewportLayout] targetCamera is not assigned and no Camera was found on this node.');
@@ -37,6 +37,10 @@ export class CameraViewportLayout extends Component {
 
         const leftRatio = clamp(this.leftPanelRatio, MIN_LEFT_PANEL_RATIO, MAX_LEFT_PANEL_RATIO);
         camera.rect = new Rect(leftRatio, 0, 1 - leftRatio, 1);
+
+        if (camera.clearFlags === Camera.ClearFlag.DONT_CLEAR) {
+            camera.clearFlags = Camera.ClearFlag.SOLID_COLOR;
+        }
     }
 }
 

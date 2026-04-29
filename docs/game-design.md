@@ -104,3 +104,17 @@
 ## 结论
 
 当前项目最重要的价值不再是“搭骨架”，而是“已经有一个可测试、可调优、可继续扩展的推币机原型”。后续设计工作的重点，应该从补齐基础模块，逐步转向强化手感、反馈和长期循环。
+
+### 其他
+
+版本号：
+C:\coin-pusher\cocos\coin-pusher-cocos\native\engine\android\app\build.gradle
+
+图标：
+C:\coin-pusher\cocos\coin-pusher-cocos\native\engine\android\res\mipmap-*\ic_launcher.png
+
+应用名 / 包名：
+build\android-001\proj\gradle.properties 由 Cocos 构建面板生成
+
+android studio生成apk位置
+C:\coin-pusher\cocos\coin-pusher-cocos\build\android-001\proj\build\CocosGame\outputs\apk\release

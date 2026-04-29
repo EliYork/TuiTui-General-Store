@@ -9,7 +9,9 @@ import {
     Label,
     Node,
     UITransform,
+    view,
 } from 'cc';
+import { getDesignSafeInsets } from '../ui/ScreenAdapter';
 import { ShopManager } from './ShopManager';
 import { DEFAULT_GAME_SCENE_NAME, NormalizedShopOrderConfig, SHOP_RUNTIME_STATE } from './ShopTypes';
 
@@ -154,9 +156,12 @@ export class ShopPanel extends Component {
         }
 
         const size = this.getRootSize();
-        const contentWidth = Math.min(size.width - 96, 1120);
-        const contentHeight = Math.min(size.height - 72, 640);
-        const cardWidth = Math.min(contentWidth - 120, 920);
+        const safeInsets = getDesignSafeInsets();
+        const horizontalPadding = Math.max(96, safeInsets.left + safeInsets.right + 48);
+        const verticalPadding = Math.max(72, safeInsets.top + safeInsets.bottom + 40);
+        const contentWidth = Math.max(560, Math.min(size.width - horizontalPadding, 1120));
+        const contentHeight = Math.max(460, Math.min(size.height - verticalPadding, 640));
+        const cardWidth = Math.max(480, Math.min(contentWidth - 120, 920));
         const leftX = -cardWidth * 0.5;
         const headerY = contentHeight * 0.5 - 72;
         const ordersTitleY = headerY - 92;
@@ -365,10 +370,11 @@ export class ShopPanel extends Component {
     }
 
     private getRootSize(): { width: number; height: number } {
+        const visibleSize = view.getVisibleSize();
         const transform = this.node.getComponent(UITransform) ?? this.node.parent?.getComponent(UITransform) ?? null;
         const size = transform?.contentSize;
-        const width = Math.max(640, size?.width ?? FALLBACK_WIDTH);
-        const height = Math.max(480, size?.height ?? FALLBACK_HEIGHT);
+        const width = Math.max(640, visibleSize.width, size?.width ?? FALLBACK_WIDTH);
+        const height = Math.max(480, visibleSize.height, size?.height ?? FALLBACK_HEIGHT);
         return { width, height };
     }
 }

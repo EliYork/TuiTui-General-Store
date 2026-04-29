@@ -82,6 +82,9 @@
       },
       {
         "__id__": 33
+      },
+      {
+        "__id__": 43
       }
     ],
     "_prefab": null,
@@ -185,7 +188,7 @@
     },
     "_depth": 1,
     "_stencil": 0,
-    "_clearFlags": 6,
+    "_clearFlags": 7,
     "_rect": {
       "__type__": "cc.Rect",
       "x": 0,
@@ -1529,5 +1532,20 @@
   {
     "__type__": "cc.PostSettingsInfo",
     "_toneMappingType": 0
+  },
+  {
+    "__type__": "0066cNbda1JUoWu1seSJrSj",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 2
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "designWidth": 1280,
+    "designHeight": 720,
+    "applySafeArea": true,
+    "_id": "screen_adapter_mainmenu"
   }
 ]
