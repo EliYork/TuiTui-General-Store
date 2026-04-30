@@ -86,8 +86,8 @@
         "progress": 1,
         "state": "success",
         "stage": "build",
-        "message": "2026-4-29 16:52:12 build -> make success in 13 s!",
-        "detailMessage": "[runCmd gradlew.bat] > Task :CocosGame:compileReleaseArtProfile UP-TO-DATE\r\r> Task :CocosGame:convertShrunkResourcesToBinaryRelease\r\r> Task :CocosGame:optimizeReleaseResources\r\r\r\r",
+        "message": "2026-4-30 21:07:57 build -> make success in 24 s!",
+        "detailMessage": "[runCmd gradlew.bat] \r\rBUILD SUCCESSFUL in 14s\r\r115 actionable tasks: 16 executed, 99 up-to-date\r\r\r\r",
         "options": {
           "name": "推推杂货店",
           "server": "",
@@ -161,7 +161,7 @@
             ]
           }
         },
-        "time": "2026-4-29 16:51:58",
+        "time": "2026-4-30 21:07:33",
         "dirty": false
       }
     }

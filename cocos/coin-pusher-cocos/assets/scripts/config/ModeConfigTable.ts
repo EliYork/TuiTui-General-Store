@@ -51,7 +51,7 @@ export class ModeConfigTable extends Component {
 
     public getActiveConfig(): ModeConfig | null {
         const normalizedModeId = this.activeModeId.trim();
-        const matchingConfig = this.configs.find((config) => config && config.modeId.trim() === normalizedModeId);
+        const matchingConfig = this.configs.find((config) => config && config.getModeId().trim() === normalizedModeId);
 
         if (matchingConfig) {
             return matchingConfig;
@@ -59,7 +59,7 @@ export class ModeConfigTable extends Component {
 
         const fallbackConfig = this.configs.find((config) => !!config) ?? null;
         if (fallbackConfig) {
-            warn(`[ModeConfigTable] 未找到模式参数：${normalizedModeId || '(empty)'}，已回退到 ${fallbackConfig.modeId || fallbackConfig.node.name}`);
+            warn(`[ModeConfigTable] 未找到模式参数：${normalizedModeId || '(empty)'}，已回退到 ${fallbackConfig.getModeId() || fallbackConfig.node.name}`);
             return fallbackConfig;
         }
 

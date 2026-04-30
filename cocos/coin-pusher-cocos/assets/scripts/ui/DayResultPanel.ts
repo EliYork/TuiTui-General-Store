@@ -121,8 +121,11 @@ export class DayResultPanel extends Component {
             `今日分数：${formatScore(score)} / ${formatScore(targetScore)}`,
             statusLine,
             '',
-            '────────────',
-            '暂无资金奖励',
+            '基础收益：',
+            result.reachedTarget ? formatRewardLine('营业目标达成', 5) : '暂无基础收益',
+            '',
+            '经营加成：',
+            '暂无触发加成',
             '────────────',
             formatTotalMoneyLine(earnedMoney),
         ].join('\n');
@@ -143,4 +146,12 @@ function formatTotalMoneyLine(amount: number): string {
     const totalLength = 24;
     const spaceCount = Math.max(4, totalLength - label.length - moneyText.length);
     return `${label}${' '.repeat(spaceCount)}${moneyText}`;
+}
+
+function formatRewardLine(label: string, amount: number): string {
+    const safeLabel = (label || '').trim() || '奖励';
+    const moneyText = `￥${formatScore(amount)}`;
+    const totalLength = 24;
+    const dotCount = Math.max(4, totalLength - safeLabel.length - moneyText.length);
+    return `${safeLabel} ${'·'.repeat(dotCount)} ${moneyText}`;
 }

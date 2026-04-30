@@ -98,7 +98,7 @@ export class ManualSpawnArea extends Component {
 
     @property({
         displayName: '长按投放间隔',
-        tooltip: '兼容旧配置用；当前模式优先读取 ModeConfig.manualSpawnHoldInterval。正常请在“模式配置表/具体模式参数”里修改。',
+        tooltip: '兼容旧配置用；当前模式优先读取 SpawnConfig.holdSpawnInterval。正常请在“模式配置表/投放参数”里修改。',
     })
     public holdInterval = 0.18;
 

@@ -13,7 +13,7 @@ import {
 } from 'cc';
 import { getDesignSafeInsets } from '../ui/ScreenAdapter';
 import { ShopManager } from './ShopManager';
-import { DEFAULT_GAME_SCENE_NAME, NormalizedShopOrderConfig, SHOP_RUNTIME_STATE } from './ShopTypes';
+import { DEFAULT_GAME_SCENE_NAME, NormalizedShopBusinessBonusConfig, NormalizedShopOrderConfig, SHOP_RUNTIME_STATE } from './ShopTypes';
 
 const { ccclass, property } = _decorator;
 
@@ -21,8 +21,7 @@ const FALLBACK_WIDTH = 1280;
 const FALLBACK_HEIGHT = 720;
 
 const COLOR_BACKGROUND = new Color(255, 235, 244, 255);
-const COLOR_HEADER = new Color(255, 211, 226, 255);
-const COLOR_PANEL = new Color(255, 248, 251, 255);
+const COLOR_HEADER = COLOR_BACKGROUND;
 const COLOR_CARD = new Color(255, 255, 255, 255);
 const COLOR_BUTTON = new Color(255, 196, 216, 255);
 const COLOR_BUTTON_PRESSED = new Color(248, 174, 202, 255);
@@ -39,7 +38,24 @@ interface ShopOrderRowBinding {
     titleLabel: Label;
     descriptionLabel: Label;
     priceLabel: Label;
+    buyButton: Button;
+    buyButtonNode: Node;
     buyButtonLabel: Label;
+    buttonWidth: number;
+    buttonHeight: number;
+}
+
+interface ShopBusinessBonusRowBinding {
+    bonusId: string;
+    rowNode: Node;
+    titleLabel: Label;
+    descriptionLabel: Label;
+    priceLabel: Label;
+    buyButton: Button;
+    buyButtonNode: Node;
+    buyButtonLabel: Label;
+    buttonWidth: number;
+    buttonHeight: number;
 }
 
 @ccclass('ShopPanel')
@@ -75,7 +91,9 @@ export class ShopPanel extends Component {
     private _moneyLabel: Label | null = null;
     private _messageLabel: Label | null = null;
     private _currentOrdersLabel: Label | null = null;
+    private _ownedBusinessBonusesLabel: Label | null = null;
     private readonly _orderRows: ShopOrderRowBinding[] = [];
+    private readonly _businessBonusRows: ShopBusinessBonusRowBinding[] = [];
     private _closeHandler: ShopPanelCloseHandler | null = null;
 
     protected onLoad(): void {
@@ -136,7 +154,9 @@ export class ShopPanel extends Component {
         }
 
         this.refreshOrderRows(manager.getShopOrders());
+        this.refreshBusinessBonusRows(manager.getShopBusinessBonuses());
         this.refreshPurchasedOrders();
+        this.refreshOwnedBusinessBonuses();
     }
 
     private onBuyButtonClicked(orderId: string): void {
@@ -144,6 +164,18 @@ export class ShopPanel extends Component {
             success: false,
             message: '商店管理器未绑定',
             order: null,
+        };
+
+        this.showMessage(result.message);
+        this.refresh();
+    }
+
+    private onBuyBusinessBonusButtonClicked(bonusId: string): void {
+        const result = this.shopManager?.buyBusinessBonus(bonusId) ?? {
+            success: false,
+            message: '商店管理器未绑定',
+            order: null,
+            businessBonus: null,
         };
 
         this.showMessage(result.message);
@@ -160,14 +192,19 @@ export class ShopPanel extends Component {
         const horizontalPadding = Math.max(96, safeInsets.left + safeInsets.right + 48);
         const verticalPadding = Math.max(72, safeInsets.top + safeInsets.bottom + 40);
         const contentWidth = Math.max(560, Math.min(size.width - horizontalPadding, 1120));
-        const contentHeight = Math.max(460, Math.min(size.height - verticalPadding, 640));
+        const contentHeight = Math.max(520, Math.min(size.height - verticalPadding, 660));
         const cardWidth = Math.max(480, Math.min(contentWidth - 120, 920));
+        const columnGap = 28;
+        const columnWidth = (cardWidth - columnGap) * 0.5;
+        const leftColumnX = -columnWidth * 0.5 - columnGap * 0.5;
+        const rightColumnX = columnWidth * 0.5 + columnGap * 0.5;
         const leftX = -cardWidth * 0.5;
-        const headerY = contentHeight * 0.5 - 72;
-        const ordersTitleY = headerY - 92;
-        const firstRowY = ordersTitleY - 66;
-        const rowGap = 88;
-        const orderSummaryY = firstRowY - rowGap * 3 - 28;
+        const headerY = contentHeight * 0.5 - 56;
+        const categoryTitleY = headerY - 58;
+        const firstRowY = categoryTitleY - 58;
+        const rowGap = 74;
+        const summaryY = -contentHeight * 0.5 + 76;
+        const summaryWidth = columnWidth;
 
         this._panelRoot = this.createNode('ShopPanelRoot', this.node, 0, 0, size.width, size.height);
         this._panelRoot.addComponent(BlockInputEvents);
@@ -178,7 +215,6 @@ export class ShopPanel extends Component {
         this.createLabel('ShopTitleLabel', header, '商店', 0, 4, 260, 48, 34, COLOR_TEXT);
 
         const content = this.createNode('ShopContent', this._panelRoot, 0, -12, contentWidth, contentHeight);
-        this.drawRect(content, contentWidth, contentHeight, COLOR_PANEL, 8, COLOR_LINE, 3);
 
         this._moneyLabel = this.createLabel('MoneyLabel', content, '当前资金：￥0', leftX + 140, headerY, 280, 34, 22, COLOR_TEXT, 0);
         this._messageLabel = this.createLabel('ShopMessageLabel', content, '', 0, headerY, 420, 34, 20, COLOR_HINT, 1);
@@ -186,21 +222,40 @@ export class ShopPanel extends Component {
         const closeButton = this.createButton('ShopCloseButton', content, '返回明日', cardWidth * 0.5 - 72, headerY + 2, 144, 48);
         closeButton.on(Node.EventType.TOUCH_END, this.close, this);
 
-        this.createLabel('ShopItemsTitleLabel', content, '订购单商品', leftX + 110, ordersTitleY, 220, 34, 22, COLOR_HINT, 0);
-        this.createShopOrderRows(content, cardWidth, firstRowY, rowGap);
+        this.createLabel('ShopOrdersTitleLabel', content, '进货单', leftColumnX - columnWidth * 0.5 + 80, categoryTitleY, 160, 30, 22, COLOR_HINT, 0);
+        const orderColumn = this.createNode('ShopOrderColumn', content, leftColumnX, 0, columnWidth, contentHeight - 120);
+        this.createShopOrderRows(orderColumn, columnWidth, firstRowY, rowGap);
 
-        this.createLabel('CurrentOrdersTitleLabel', content, '已购买订购单', leftX + 110, orderSummaryY + 72, 220, 34, 22, COLOR_HINT, 0);
-        const summaryPanel = this.createNode('CurrentOrdersPanel', content, 0, orderSummaryY, cardWidth, 118);
-        this.drawRect(summaryPanel, cardWidth, 118, COLOR_CARD, 8, COLOR_LINE, 1);
+        this.createLabel('ShopBusinessBonusTitleLabel', content, '经营加成', rightColumnX - columnWidth * 0.5 + 96, categoryTitleY, 180, 30, 22, COLOR_HINT, 0);
+        const businessBonusColumn = this.createNode('BusinessBonusColumn', content, rightColumnX, 0, columnWidth, contentHeight - 120);
+        this.createBusinessBonusRows(businessBonusColumn, columnWidth, firstRowY, rowGap);
+
+        this.createLabel('CurrentOrdersTitleLabel', content, '下一日进货单', leftColumnX, summaryY + 62, summaryWidth, 26, 18, COLOR_HINT, 0);
+        const summaryPanel = this.createNode('CurrentOrdersPanel', content, leftColumnX, summaryY, summaryWidth, 96);
         this._currentOrdersLabel = this.createLabel(
             'OrderListRoot',
             summaryPanel,
-            '已购买订购单：暂无\n购买后会在这里显示本次累计增加的权重',
+            '暂无\n购买进货单后显示累计权重',
             0,
             0,
-            cardWidth - 56,
-            92,
-            18,
+            summaryWidth - 36,
+            76,
+            16,
+            COLOR_TEXT,
+            0,
+        );
+
+        this.createLabel('OwnedBusinessBonusTitleLabel', content, '已拥有经营加成', rightColumnX, summaryY + 62, summaryWidth, 26, 18, COLOR_HINT, 0);
+        const ownedBonusPanel = this.createNode('OwnedBusinessBonusPanel', content, rightColumnX, summaryY, summaryWidth, 96);
+        this._ownedBusinessBonusesLabel = this.createLabel(
+            'OwnedBusinessBonusListRoot',
+            ownedBonusPanel,
+            '暂无',
+            0,
+            0,
+            summaryWidth - 36,
+            76,
+            16,
             COLOR_TEXT,
             0,
         );
@@ -211,15 +266,19 @@ export class ShopPanel extends Component {
 
         orders.forEach((order, index) => {
             const y = firstRowY - index * rowGap;
-            const rowNode = this.createNode(`ShopItemRoot_${order.id}`, parent, 0, y, rowWidth, 72);
-            this.drawRect(rowNode, rowWidth, 72, COLOR_CARD, 8, COLOR_LINE, 1);
+            const rowHeight = 64;
+            const buttonWidth = rowWidth < 600 ? 104 : 136;
+            const buttonHeight = 40;
+            const rowNode = this.createNode(`ShopOrderRoot_${order.id}`, parent, 0, y, rowWidth, rowHeight);
+            this.drawRect(rowNode, rowWidth, rowHeight, COLOR_CARD, 8, COLOR_LINE, 1);
 
-            const titleLabel = this.createLabel(`${order.id}_TitleLabel`, rowNode, order.title, -rowWidth * 0.5 + 148, 12, 240, 26, 22, COLOR_TEXT, 0);
-            const descriptionLabel = this.createLabel(`${order.id}_DescriptionLabel`, rowNode, order.description, -rowWidth * 0.5 + 278, -18, 500, 24, 15, COLOR_HINT, 0);
-            const priceLabel = this.createLabel(`${order.id}_PriceLabel`, rowNode, `￥${order.price}`, rowWidth * 0.5 - 245, 0, 120, 34, 24, COLOR_TEXT, 1);
-            const buyButton = this.createButton(`${order.id}_BuyButton`, rowNode, '购买', rowWidth * 0.5 - 88, 0, 136, 48);
-            const buyButtonLabel = buyButton.children[0]?.getComponent(Label) ?? titleLabel;
-            buyButton.on(Node.EventType.TOUCH_END, () => this.onBuyButtonClicked(order.id), this);
+            const titleLabel = this.createLabel(`${order.id}_TitleLabel`, rowNode, order.displayName, -rowWidth * 0.5 + 86, 12, 160, 24, 20, COLOR_TEXT, 0);
+            const descriptionLabel = this.createLabel(`${order.id}_DescriptionLabel`, rowNode, order.description, -rowWidth * 0.5 + 142, -17, rowWidth - 240, 24, 13, COLOR_HINT, 0);
+            const priceLabel = this.createLabel(`${order.id}_PriceLabel`, rowNode, `￥${order.price}`, rowWidth * 0.5 - buttonWidth - 42, 2, 70, 30, 21, COLOR_TEXT, 1);
+            const buyButtonNode = this.createButton(`${order.id}_BuyButton`, rowNode, '购买', rowWidth * 0.5 - buttonWidth * 0.5 - 16, 0, buttonWidth, buttonHeight);
+            const buyButton = buyButtonNode.getComponent(Button) ?? buyButtonNode.addComponent(Button);
+            const buyButtonLabel = buyButtonNode.children[0]?.getComponent(Label) ?? titleLabel;
+            buyButtonNode.on(Node.EventType.TOUCH_END, () => this.onBuyButtonClicked(order.id), this);
 
             this._orderRows.push({
                 orderId: order.id,
@@ -227,7 +286,45 @@ export class ShopPanel extends Component {
                 titleLabel,
                 descriptionLabel,
                 priceLabel,
+                buyButton,
+                buyButtonNode,
                 buyButtonLabel,
+                buttonWidth,
+                buttonHeight,
+            });
+        });
+    }
+
+    private createBusinessBonusRows(parent: Node, rowWidth: number, firstRowY: number, rowGap: number): void {
+        const bonuses = this.shopManager?.getShopBusinessBonuses() ?? [];
+
+        bonuses.forEach((bonus, index) => {
+            const y = firstRowY - index * rowGap;
+            const rowHeight = 68;
+            const buttonWidth = rowWidth < 600 ? 104 : 136;
+            const buttonHeight = 40;
+            const rowNode = this.createNode(`BusinessBonusRoot_${bonus.id}`, parent, 0, y, rowWidth, rowHeight);
+            this.drawRect(rowNode, rowWidth, rowHeight, COLOR_CARD, 8, COLOR_LINE, 1);
+
+            const titleLabel = this.createLabel(`${bonus.id}_TitleLabel`, rowNode, bonus.displayName, -rowWidth * 0.5 + 84, 14, 154, 24, 20, COLOR_TEXT, 0);
+            const descriptionLabel = this.createLabel(`${bonus.id}_DescriptionLabel`, rowNode, bonus.description, -rowWidth * 0.5 + 142, -15, rowWidth - 240, 34, 13, COLOR_HINT, 0);
+            const priceLabel = this.createLabel(`${bonus.id}_PriceLabel`, rowNode, `￥${bonus.price}`, rowWidth * 0.5 - buttonWidth - 42, 2, 70, 30, 21, COLOR_TEXT, 1);
+            const buyButtonNode = this.createButton(`${bonus.id}_BuyButton`, rowNode, '购买', rowWidth * 0.5 - buttonWidth * 0.5 - 16, 0, buttonWidth, buttonHeight);
+            const buyButton = buyButtonNode.getComponent(Button) ?? buyButtonNode.addComponent(Button);
+            const buyButtonLabel = buyButtonNode.children[0]?.getComponent(Label) ?? titleLabel;
+            buyButtonNode.on(Node.EventType.TOUCH_END, () => this.onBuyBusinessBonusButtonClicked(bonus.id), this);
+
+            this._businessBonusRows.push({
+                bonusId: bonus.id,
+                rowNode,
+                titleLabel,
+                descriptionLabel,
+                priceLabel,
+                buyButton,
+                buyButtonNode,
+                buyButtonLabel,
+                buttonWidth,
+                buttonHeight,
             });
         });
     }
@@ -242,10 +339,35 @@ export class ShopPanel extends Component {
             }
 
             row.orderId = order.id;
-            row.titleLabel.string = order.title;
+            row.titleLabel.string = order.displayName;
             row.descriptionLabel.string = order.description;
             row.priceLabel.string = `￥${order.price}`;
-            row.buyButtonLabel.string = '购买';
+            const purchased = this.shopManager?.isStockOrderPurchased(order.id) ?? false;
+            row.buyButton.interactable = !purchased;
+            row.buyButtonLabel.string = purchased ? '已购买' : '购买';
+            row.buyButtonNode.setScale(1, 1, 1);
+            this.redrawButton(row.buyButtonNode, row.buttonWidth, row.buttonHeight, purchased ? COLOR_LINE : COLOR_BUTTON);
+        });
+    }
+
+    private refreshBusinessBonusRows(bonuses: NormalizedShopBusinessBonusConfig[]): void {
+        this._businessBonusRows.forEach((row, index) => {
+            const bonus = bonuses[index] ?? null;
+            row.rowNode.active = !!bonus;
+
+            if (!bonus) {
+                return;
+            }
+
+            const owned = this.shopManager?.hasOwnedBusinessBonus(bonus.id) ?? false;
+            row.bonusId = bonus.id;
+            row.titleLabel.string = bonus.displayName;
+            row.descriptionLabel.string = bonus.description;
+            row.priceLabel.string = `￥${bonus.price}`;
+            row.buyButton.interactable = !owned;
+            row.buyButtonLabel.string = owned ? '已拥有' : '购买';
+            row.buyButtonNode.setScale(1, 1, 1);
+            this.redrawButton(row.buyButtonNode, row.buttonWidth, row.buttonHeight, owned ? COLOR_LINE : COLOR_BUTTON);
         });
     }
 
@@ -257,12 +379,26 @@ export class ShopPanel extends Component {
 
         const activeOrders = purchasedOrders.filter((order) => order.weight > 0);
         if (activeOrders.length <= 0) {
-            this._currentOrdersLabel.string = '已购买订购单：暂无\n购买后会在这里显示本次累计增加的权重';
+            this._currentOrdersLabel.string = '暂无\n购买进货单后显示累计权重';
             return;
         }
 
-        const lines = activeOrders.map((order) => `- ${order.title.replace(/订单$/, '')}：权重 +${order.weight}`);
-        this._currentOrdersLabel.string = `已购买订购单：\n${lines.join('\n')}`;
+        const lines = activeOrders.map((order) => `- ${order.title.replace(/(?:进货单|订购单|订单)$/, '')}：权重 +${order.weight}`);
+        this._currentOrdersLabel.string = lines.join('\n');
+    }
+
+    private refreshOwnedBusinessBonuses(): void {
+        if (!this._ownedBusinessBonusesLabel) {
+            return;
+        }
+
+        const ownedBonuses = this.shopManager?.getOwnedBusinessBonuses() ?? [];
+        if (ownedBonuses.length <= 0) {
+            this._ownedBusinessBonusesLabel.string = '暂无';
+            return;
+        }
+
+        this._ownedBusinessBonusesLabel.string = ownedBonuses.map((bonus) => `- ${bonus.displayName}`).join('\n');
     }
 
     private createButton(name: string, parent: Node, text: string, x: number, y: number, width: number, height: number): Node {
@@ -280,6 +416,11 @@ export class ShopPanel extends Component {
     }
 
     private setButtonPressed(buttonNode: Node, width: number, height: number, pressed: boolean): void {
+        const button = buttonNode.getComponent(Button);
+        if (button && !button.interactable) {
+            return;
+        }
+
         buttonNode.setScale(pressed ? 0.98 : 1, pressed ? 0.98 : 1, 1);
         const graphics = buttonNode.getComponent(Graphics);
         if (!graphics) {
@@ -287,7 +428,17 @@ export class ShopPanel extends Component {
         }
 
         graphics.clear();
-        graphics.fillColor = pressed ? COLOR_BUTTON_PRESSED : COLOR_BUTTON;
+        this.redrawButton(buttonNode, width, height, pressed ? COLOR_BUTTON_PRESSED : COLOR_BUTTON);
+    }
+
+    private redrawButton(buttonNode: Node, width: number, height: number, fillColor: Color): void {
+        const graphics = buttonNode.getComponent(Graphics);
+        if (!graphics) {
+            return;
+        }
+
+        graphics.clear();
+        graphics.fillColor = fillColor;
         graphics.roundRect(-width * 0.5, -height * 0.5, width, height, 8);
         graphics.fill();
         graphics.lineWidth = 1;

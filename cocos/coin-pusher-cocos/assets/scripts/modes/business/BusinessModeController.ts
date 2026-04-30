@@ -1,5 +1,24 @@
-import { _decorator, Component, Label, Node, warn } from 'cc';
-import { SHOP_RUNTIME_STATE, addShopOrderWeight, getShopOrderWeight } from '../../shop/ShopTypes';
+import { _decorator, Component, Label, Node, find, warn } from 'cc';
+import {
+    BUSINESS_REWARD_ITEM_COUNT_AT_LEAST,
+    BUSINESS_REWARD_SCORE_AT_LEAST,
+    BUSINESS_REWARD_TARGET_REACHED,
+    BusinessModeConfig,
+    NormalizedBusinessBaseRewardRule,
+    NormalizedBusinessItemScoreConfig,
+    createDefaultNormalizedBaseRewardRules,
+    createDefaultNormalizedItemScoreConfigs,
+} from '../../business/BusinessModeConfig';
+import { ShopConfig, createDefaultNormalizedBusinessBonuses } from '../../shop/ShopConfig';
+import {
+    NormalizedShopBusinessBonusConfig,
+    SHOP_RUNTIME_STATE,
+    addShopOrderWeight,
+    getShopRuntimeBusinessBonuses,
+    getOwnedBusinessBonusSnapshots,
+    getShopOrderWeight,
+    setShopRuntimeCatalog,
+} from '../../shop/ShopTypes';
 
 const { ccclass, property } = _decorator;
 
@@ -20,6 +39,8 @@ interface BusinessDayRewardSnapshot {
     displayName: string;
     rewardMoney: number;
     achieved: boolean;
+    category: 'base' | 'businessBonus';
+    businessBonusId?: string;
 }
 
 export interface BusinessItemValueSnapshot {
@@ -44,48 +65,6 @@ export interface BusinessDayResult {
     rewardLines: BusinessDayRewardSnapshot[];
     earnedMoney: number;
     detailText: string;
-}
-
-const REWARD_RULE_TARGET_REACHED = 'TargetReached';
-const REWARD_RULE_ITEM_COUNT_AT_LEAST = 'ItemCountAtLeast';
-
-@ccclass('BusinessDayRewardRule')
-class BusinessDayRewardRule {
-    @property({
-        displayName: '奖励类型',
-        tooltip: '奖励条件类型。TargetReached 表示达成当日目标；ItemCountAtLeast 表示指定物品当天获得数量达到阈值。',
-    })
-    public ruleType = REWARD_RULE_TARGET_REACHED;
-
-    @property({
-        displayName: '奖励显示名',
-        tooltip: '结算账单中显示的奖励条件名称，例如“目标达成”或“苹果个数大于10”。留空时会使用默认名称。',
-    })
-    public displayName = '';
-
-    @property({
-        displayName: '奖励资金',
-        tooltip: '该奖励条件满足时获得的资金数量。只填写数字，结算面板会显示为 ￥数字。',
-    })
-    public rewardMoney = 0;
-
-    @property({
-        displayName: '物品 ID',
-        tooltip: '奖励类型为 ItemCountAtLeast 时生效。填写要统计的物品 ID，例如 apple。',
-    })
-    public itemId = '';
-
-    @property({
-        displayName: '数量阈值',
-        tooltip: '奖励类型为 ItemCountAtLeast 时生效。当天该物品获得数量达到或超过这个值时发放奖励。',
-    })
-    public threshold = 0;
-
-    @property({
-        displayName: '需要达标',
-        tooltip: '开启后，只有当日分数达标时才会发放这条奖励。关闭后，即使未达标也会在结算账单中按条件计算。',
-    })
-    public requirePassed = false;
 }
 
 @ccclass('BusinessPurchaseOrderConfig')
@@ -143,11 +122,18 @@ export class BusinessModeController extends Component {
     public defaultLemonOrderCount = 0;
 
     @property({
-        type: [BusinessDayRewardRule],
-        displayName: '本日资金奖励规则',
-        tooltip: '本日结算时逐条检查的资金奖励条件。留空时使用默认规则：目标达成 +￥5，苹果数量达到 10 +￥1。',
+        type: BusinessModeConfig,
+        displayName: '经营模式配置',
+        tooltip: '读取每日目标、物品计分和本日基础收益规则。推荐绑定 GameRoot/模式配置表/经营模式参数 节点上的 BusinessModeConfig 组件。',
     })
-    public rewardRules: BusinessDayRewardRule[] = [];
+    public businessConfig: BusinessModeConfig | null = null;
+
+    @property({
+        type: ShopConfig,
+        displayName: '商店配置',
+        tooltip: '用于读取已拥有经营加成对应的商品模板。推荐绑定 GameRoot/ShopConfig 节点上的 ShopConfig 组件。',
+    })
+    public shopConfig: ShopConfig | null = null;
 
     @property({
         type: Label,
@@ -166,7 +152,7 @@ export class BusinessModeController extends Component {
     @property({
         type: Label,
         displayName: '当前获得汇总 Label',
-        tooltip: '用一段多行文本显示本日当前获得分数和各订购单商品的小计，例如“苹果：1 x 2 = 2”。优先使用这个 Label，便于以后扩展更多商品。',
+        tooltip: '用一段多行文本显示本日当前获得分数和各进货单商品的小计，例如“苹果：1 x 2 = 2”。优先使用这个 Label，便于以后扩展更多商品。',
     })
     public obtainedSummaryLabel: Label | null = null;
 
@@ -253,7 +239,15 @@ export class BusinessModeController extends Component {
     private _latestSettlementClaimed = false;
 
     protected onLoad(): void {
+        this.bindBusinessConfig();
+        this.bindShopConfig();
+        if (!SHOP_RUNTIME_STATE.businessMoneyInitialized) {
+            SHOP_RUNTIME_STATE.currentMoney = this.getConfiguredInitialMoney();
+            SHOP_RUNTIME_STATE.businessMoneyInitialized = true;
+        }
         this.money = SHOP_RUNTIME_STATE.currentMoney;
+        this.dailyTargetScore = this.calculateDailyTargetScore(this.currentDay, 0, 0);
+        this.applyBusinessItemScoreConfigs();
         this.prepareNextItem();
     }
 
@@ -302,6 +296,7 @@ export class BusinessModeController extends Component {
         this._latestSettlement = null;
         this._latestSettlementClaimed = false;
         this.clearObtainedCounts();
+        this.applyBusinessItemScoreConfigs();
         this.prepareNextItem();
         this.refreshUi();
     }
@@ -309,6 +304,7 @@ export class BusinessModeController extends Component {
     public syncDailyTarget(day: number, baseTargetScore: number, targetScoreIncrease: number): void {
         this.currentDay = normalizePositiveInteger(day, 1);
         this.dailyTargetScore = this.calculateDailyTargetScore(this.currentDay, baseTargetScore, targetScoreIncrease);
+        this.applyBusinessItemScoreConfigs();
         this.refreshUi();
     }
 
@@ -330,12 +326,20 @@ export class BusinessModeController extends Component {
             this._itemValues[itemId] = normalizeNonNegativeNumber(item.value);
         }
 
+        this.applyBusinessItemScoreConfigs();
         this.refreshUi();
     }
 
     public settleCurrentDay(): BusinessDayResult {
+        if (this._latestSettlement) {
+            return this._latestSettlement;
+        }
+
         const obtainedItems = this.getObtainedItemSnapshots();
-        const rewardLines = this.calculateRewardLines(obtainedItems);
+        const rewardLines = [
+            ...this.calculateBaseRewardLines(obtainedItems),
+            ...this.calculateBusinessBonusRewardLines(obtainedItems),
+        ];
         const earnedMoney = rewardLines.reduce((sum, line) => sum + (line.achieved ? line.rewardMoney : 0), 0);
         const result: BusinessDayResult = {
             day: this.currentDay,
@@ -372,6 +376,7 @@ export class BusinessModeController extends Component {
         this._latestSettlement = null;
         this._latestSettlementClaimed = false;
         this.clearObtainedCounts();
+        this.applyBusinessItemScoreConfigs();
         this.prepareNextItem();
         this.refreshUi();
         return result;
@@ -379,7 +384,7 @@ export class BusinessModeController extends Component {
 
     public claimSettledMoney(): number {
         const settlement = this._latestSettlement;
-        if (!settlement || !settlement.reachedTarget || this._latestSettlementClaimed) {
+        if (!settlement || this._latestSettlementClaimed) {
             return 0;
         }
 
@@ -421,18 +426,34 @@ export class BusinessModeController extends Component {
         this.recordDrop(itemId, 1);
     }
 
+    public addDebugScore(amount: number): number {
+        const scoreDelta = normalizeNonNegativeNumber(amount);
+        if (scoreDelta <= 0) {
+            return this.dailyScore;
+        }
+
+        this.dailyScore += scoreDelta;
+        this._latestSettlement = null;
+        this._latestSettlementClaimed = false;
+        this.todayEarnedMoney = 0;
+        this.refreshUi();
+        return this.dailyScore;
+    }
+
     public recordDrop(itemId: string, scoreValue: number, displayName = ''): void {
         const normalizedItemId = (itemId || '').trim();
         if (!normalizedItemId) {
             return;
         }
 
+        const resolvedScoreValue = this.resolveBusinessItemScoreValue(normalizedItemId, scoreValue);
+        const resolvedDisplayName = this.resolveBusinessItemDisplayName(normalizedItemId, displayName);
         this._obtainedCounts[normalizedItemId] = this.getObtainedCount(normalizedItemId) + 1;
-        this._obtainedItemValues[normalizedItemId] = normalizeNonNegativeNumber(scoreValue);
-        this._obtainedItemNames[normalizedItemId] = this.resolveDisplayName(normalizedItemId, displayName);
-        this._itemValues[normalizedItemId] = normalizeNonNegativeNumber(scoreValue);
-        this._itemDisplayNames[normalizedItemId] = this.resolveDisplayName(normalizedItemId, displayName);
-        this.dailyScore += normalizeNonNegativeNumber(scoreValue);
+        this._obtainedItemValues[normalizedItemId] = resolvedScoreValue;
+        this._obtainedItemNames[normalizedItemId] = resolvedDisplayName;
+        this._itemValues[normalizedItemId] = resolvedScoreValue;
+        this._itemDisplayNames[normalizedItemId] = resolvedDisplayName;
+        this.dailyScore += resolvedScoreValue;
         this._latestSettlement = null;
         this._latestSettlementClaimed = false;
         this.todayEarnedMoney = 0;
@@ -445,7 +466,7 @@ export class BusinessModeController extends Component {
     }
 
     public getNoAvailableOrderStatus(): string {
-        return '没有可用订购单';
+        return '没有可用进货单';
     }
 
     public getCurrentMoney(): number {
@@ -460,6 +481,15 @@ export class BusinessModeController extends Component {
 
     public getTodayObtainedCount(itemId: string): number {
         return this.getObtainedCount(itemId);
+    }
+
+    public syncShopConfigToRuntime(): void {
+        this.bindShopConfig();
+        if (!this.shopConfig) {
+            return;
+        }
+
+        setShopRuntimeCatalog(this.shopConfig.getStockOrders(), this.shopConfig.getBusinessBonuses());
     }
 
     public addOrderDeckWeight(itemId: string, displayName: string, count: number): number {
@@ -517,7 +547,7 @@ export class BusinessModeController extends Component {
         const activeOrders = this.getActiveOrders();
         const totalWeight = activeOrders.reduce((sum, order) => sum + order.count, 0);
         if (totalWeight <= 0) {
-            this.orderDeckLabel.string = '当前订购单：\n无可用订购单';
+            this.orderDeckLabel.string = '当前进货单：\n无可用进货单';
             return;
         }
 
@@ -525,7 +555,7 @@ export class BusinessModeController extends Component {
             const percentage = Math.round((order.count / totalWeight) * 100);
             return `${order.displayName} x${order.count}（${percentage}%）`;
         });
-        this.orderDeckLabel.string = `当前订购单：\n${orderLines.join('\n')}`;
+        this.orderDeckLabel.string = `当前进货单：\n${orderLines.join('\n')}`;
     }
 
     private refreshCurrentSpawnLabel(): void {
@@ -614,8 +644,13 @@ export class BusinessModeController extends Component {
 
     private getObtainedItemSnapshots(): BusinessObtainedItemSnapshot[] {
         const orderRanks = new Map<string, number>();
+        this.getHudItemScoreConfigs().forEach((config, index) => {
+            orderRanks.set(config.itemId, index);
+        });
         this.getEffectiveOrders().forEach((order, index) => {
-            orderRanks.set(order.itemId, index);
+            if (!orderRanks.has(order.itemId)) {
+                orderRanks.set(order.itemId, orderRanks.size + index);
+            }
         });
 
         return Object.keys(this._obtainedCounts)
@@ -642,95 +677,160 @@ export class BusinessModeController extends Component {
     }
 
     private buildCurrentScoreItemDetailText(): string {
-        const activeOrders = this.getActiveOrders();
-        if (activeOrders.length <= 0) {
-            return '暂无订购单商品';
+        const hudItems = this.getHudItemScoreConfigs();
+        if (hudItems.length <= 0) {
+            return '暂无经营物品';
         }
 
-        return activeOrders.map((order) => {
-            const count = this.getObtainedCount(order.itemId);
-            const value = this.getItemValue(order.itemId);
+        return hudItems.map((item) => {
+            const count = this.getObtainedCount(item.itemId);
+            const value = this.getItemValue(item.itemId);
             const subtotal = count * value;
-            return `${order.displayName}：${count} x ${formatScore(value)} = ${formatScore(subtotal)}`;
+            return `${item.displayName}：${count} x ${formatScore(value)} = ${formatScore(subtotal)}`;
         }).join('\n');
     }
 
-    private calculateRewardLines(obtainedItems: BusinessObtainedItemSnapshot[]): BusinessDayRewardSnapshot[] {
+    public getOwnedBusinessBonuses(): NormalizedShopBusinessBonusConfig[] {
+        return getOwnedBusinessBonusSnapshots(this.getBusinessBonusCatalog());
+    }
+
+    private calculateBaseRewardLines(obtainedItems: BusinessObtainedItemSnapshot[]): BusinessDayRewardSnapshot[] {
         const reachedTarget = this.dailyScore >= this.dailyTargetScore;
-        return this.getEffectiveRewardRules().map((rule) => {
-            const normalizedRuleType = (rule.ruleType || '').trim();
-            const displayName = (rule.displayName || '').trim() || this.getDefaultRewardDisplayName(rule);
+        return this.getConfiguredBaseRewardRules().map((rule) => {
+            const displayName = (rule.displayName || '').trim() || rule.id || '未命名基础收益';
             const rewardMoney = normalizeNonNegativeInteger(rule.rewardMoney);
-            const achieved = this.isRewardRuleAchieved(normalizedRuleType, rule, reachedTarget, obtainedItems);
+            const achieved = this.isBaseRewardRuleAchieved(rule, reachedTarget, obtainedItems);
 
             return {
                 displayName,
                 rewardMoney,
                 achieved,
+                category: 'base' as const,
             };
         });
     }
 
-    private isRewardRuleAchieved(
-        ruleType: string,
-        rule: BusinessDayRewardRule,
+    private calculateBusinessBonusRewardLines(obtainedItems: BusinessObtainedItemSnapshot[]): BusinessDayRewardSnapshot[] {
+        return getOwnedBusinessBonusSnapshots(this.getBusinessBonusCatalog()).map((bonus) => {
+            const requiredCount = normalizeNonNegativeInteger(bonus.requiredCount);
+            const rewardMoney = normalizeNonNegativeInteger(bonus.rewardMoney);
+            const obtainedCount = this.getObtainedCountFromSnapshots(obtainedItems, bonus.itemId);
+
+            return {
+                displayName: bonus.displayName,
+                rewardMoney,
+                achieved: obtainedCount >= requiredCount,
+                category: 'businessBonus' as const,
+                businessBonusId: bonus.id,
+            };
+        });
+    }
+
+    private isBaseRewardRuleAchieved(
+        rule: NormalizedBusinessBaseRewardRule,
         reachedTarget: boolean,
         obtainedItems: BusinessObtainedItemSnapshot[],
     ): boolean {
-        if (rule.requirePassed && !reachedTarget) {
+        if (rule.requireTargetReached && !reachedTarget) {
             return false;
         }
 
-        if (ruleType === REWARD_RULE_TARGET_REACHED) {
+        const ruleType = (rule.ruleType || '').trim();
+        if (ruleType === BUSINESS_REWARD_TARGET_REACHED) {
             return reachedTarget;
         }
 
-        if (ruleType === REWARD_RULE_ITEM_COUNT_AT_LEAST) {
+        if (ruleType === BUSINESS_REWARD_ITEM_COUNT_AT_LEAST) {
             const itemId = (rule.itemId || '').trim();
-            const threshold = normalizeNonNegativeInteger(rule.threshold);
+            const threshold = normalizeNonNegativeInteger(rule.requiredCount);
             const item = obtainedItems.find((obtainedItem) => obtainedItem.itemId === itemId);
             return !!item && item.count >= threshold;
         }
 
-        warn(`[BusinessModeController] 未识别的本日资金奖励类型：${ruleType || '空'}`);
+        if (ruleType === BUSINESS_REWARD_SCORE_AT_LEAST) {
+            return this.dailyScore >= normalizeNonNegativeNumber(rule.requiredScore);
+        }
+
+        warn(`[BusinessModeController] 未识别的本日基础收益规则类型：${ruleType || '空'}`);
         return false;
     }
 
-    private getEffectiveRewardRules(): BusinessDayRewardRule[] {
-        const configuredRules = this.rewardRules.filter((rule) => !!rule);
-        if (configuredRules.length > 0) {
-            return configuredRules;
-        }
-
-        const targetReachedRule = new BusinessDayRewardRule();
-        targetReachedRule.ruleType = REWARD_RULE_TARGET_REACHED;
-        targetReachedRule.displayName = '目标达成';
-        targetReachedRule.rewardMoney = 5;
-        targetReachedRule.requirePassed = true;
-
-        const appleCountRule = new BusinessDayRewardRule();
-        appleCountRule.ruleType = REWARD_RULE_ITEM_COUNT_AT_LEAST;
-        appleCountRule.displayName = '苹果个数大于10';
-        appleCountRule.itemId = 'apple';
-        appleCountRule.threshold = 10;
-        appleCountRule.rewardMoney = 1;
-        appleCountRule.requirePassed = false;
-
-        return [targetReachedRule, appleCountRule];
+    private getConfiguredInitialMoney(): number {
+        return this.businessConfig?.getInitialMoney() ?? 0;
     }
 
-    private getDefaultRewardDisplayName(rule: BusinessDayRewardRule): string {
-        const ruleType = (rule.ruleType || '').trim();
-        if (ruleType === REWARD_RULE_TARGET_REACHED) {
-            return '目标达成';
+    private getConfiguredItemScoreConfigs(): NormalizedBusinessItemScoreConfig[] {
+        return this.businessConfig?.getItemScoreConfigs() ?? createDefaultNormalizedItemScoreConfigs();
+    }
+
+    private getHudItemScoreConfigs(): NormalizedBusinessItemScoreConfig[] {
+        return this.getConfiguredItemScoreConfigs().filter((config) => config.showInHud);
+    }
+
+    private getConfiguredBaseRewardRules(): NormalizedBusinessBaseRewardRule[] {
+        return this.businessConfig?.getBaseRewardRules() ?? createDefaultNormalizedBaseRewardRules();
+    }
+
+    private applyBusinessItemScoreConfigs(): void {
+        this.getConfiguredItemScoreConfigs().forEach((config) => {
+            this._itemDisplayNames[config.itemId] = config.displayName;
+            this._itemValues[config.itemId] = normalizeNonNegativeNumber(config.scoreValue);
+        });
+    }
+
+    private getBusinessItemScoreConfig(itemId: string): NormalizedBusinessItemScoreConfig | null {
+        const normalizedItemId = (itemId || '').trim();
+        if (!normalizedItemId) {
+            return null;
         }
 
-        if (ruleType === REWARD_RULE_ITEM_COUNT_AT_LEAST) {
-            const itemName = this.resolveDisplayName(rule.itemId, '');
-            return `${itemName}数量达到${normalizeNonNegativeInteger(rule.threshold)}`;
+        return this.getConfiguredItemScoreConfigs().find((config) => config.itemId === normalizedItemId) ?? null;
+    }
+
+    private resolveBusinessItemScoreValue(itemId: string, fallbackScoreValue: number): number {
+        const configuredItem = this.getBusinessItemScoreConfig(itemId);
+        return configuredItem
+            ? normalizeNonNegativeNumber(configuredItem.scoreValue)
+            : normalizeNonNegativeNumber(fallbackScoreValue);
+    }
+
+    private resolveBusinessItemDisplayName(itemId: string, fallbackDisplayName: string): string {
+        const configuredItem = this.getBusinessItemScoreConfig(itemId);
+        return configuredItem?.displayName || this.resolveDisplayName(itemId, fallbackDisplayName);
+    }
+
+    private getBusinessBonusCatalog(): NormalizedShopBusinessBonusConfig[] {
+        return this.shopConfig?.getBusinessBonuses()
+            ?? getShopRuntimeBusinessBonuses()
+            ?? createDefaultNormalizedBusinessBonuses();
+    }
+
+    private bindBusinessConfig(): void {
+        if (this.businessConfig) {
+            return;
         }
 
-        return '未命名奖励';
+        this.businessConfig = find('GameRoot/模式配置表/经营模式参数')?.getComponent(BusinessModeConfig)
+            ?? null;
+
+        if (!this.businessConfig) {
+            warn('[BusinessModeController] 未绑定 BusinessModeConfig，将使用经营模式安全默认值。');
+        }
+    }
+
+    private bindShopConfig(): void {
+        if (this.shopConfig) {
+            return;
+        }
+
+        this.shopConfig = find('GameRoot/ShopConfig')?.getComponent(ShopConfig)
+            ?? find('GameRoot/经营配置表')?.getComponent(ShopConfig)
+            ?? find('Canvas/UIRoot/经营模式界面/ShopConfig')?.getComponent(ShopConfig)
+            ?? null;
+
+        if (!this.shopConfig) {
+            warn('[BusinessModeController] 未绑定 ShopConfig，经营加成结算将使用默认商店配置。');
+        }
     }
 
     private buildSettlementDetailText(result: BusinessDayResult): string {
@@ -738,10 +838,12 @@ export class BusinessModeController extends Component {
             ? result.obtainedItems.map((item) => `${item.displayName}：${item.count} x ${formatScore(item.value)}分`)
             : ['今日没有获得商品'];
         const statusLine = result.reachedTarget ? '本日达标！' : '本日未达标';
-        const achievedRewardLines = result.rewardLines
-            .filter((line) => line.achieved && line.rewardMoney > 0)
+        const baseRewardLines = result.rewardLines
+            .filter((line) => line.category === 'base' && line.achieved && line.rewardMoney > 0)
             .map((line) => formatRewardLine(line.displayName, line.rewardMoney));
-        const rewardLines = achievedRewardLines.length > 0 ? achievedRewardLines : ['暂无资金奖励'];
+        const businessBonusLines = result.rewardLines
+            .filter((line) => line.category === 'businessBonus' && line.achieved && line.rewardMoney > 0)
+            .map((line) => formatRewardLine(line.displayName, line.rewardMoney));
 
         return [
             ...obtainedLines,
@@ -749,11 +851,23 @@ export class BusinessModeController extends Component {
             `今日分数：${formatScore(result.score)} / ${formatScore(result.targetScore)}`,
             statusLine,
             '',
-            '────────────',
-            ...rewardLines,
+            '基础收益：',
+            ...(baseRewardLines.length > 0 ? baseRewardLines : ['暂无基础收益']),
+            '',
+            '经营加成：',
+            ...(businessBonusLines.length > 0 ? businessBonusLines : ['暂无触发加成']),
             '────────────',
             formatTotalMoneyLine(result.earnedMoney),
         ].join('\n');
+    }
+
+    private getObtainedCountFromSnapshots(obtainedItems: BusinessObtainedItemSnapshot[], itemId: string): number {
+        const normalizedItemId = (itemId || '').trim();
+        if (!normalizedItemId) {
+            return 0;
+        }
+
+        return obtainedItems.find((item) => item.itemId === normalizedItemId)?.count ?? 0;
     }
 
     private resolveDisplayName(itemId: string, fallbackDisplayName: string): string {
@@ -787,6 +901,10 @@ export class BusinessModeController extends Component {
     }
 
     private calculateDailyTargetScore(day: number, baseTargetScore: number, targetScoreIncrease: number): number {
+        if (this.businessConfig) {
+            return this.businessConfig.getDailyTargetScore(day);
+        }
+
         const normalizedDay = normalizePositiveInteger(day, 1);
         const normalizedBaseScore = normalizeNonNegativeNumber(baseTargetScore);
         const normalizedIncrease = normalizeNonNegativeNumber(targetScoreIncrease);

@@ -1,13 +1,48 @@
-import { _decorator } from 'cc';
+export interface ShopOrderConfigSource {
+    id?: string;
+    displayName?: string;
+    title?: string;
+    itemId?: string;
+    price?: number;
+    weightBonus?: number;
+    weightDelta?: number;
+    canRepeat?: boolean;
+    description?: string;
+}
 
-const { ccclass, property } = _decorator;
+export interface ShopBusinessBonusConfigSource {
+    id?: string;
+    displayName?: string;
+    title?: string;
+    itemId?: string;
+    price?: number;
+    requiredCount?: number;
+    rewardMoney?: number;
+    canRepeat?: boolean;
+    description?: string;
+}
 
 export interface NormalizedShopOrderConfig {
     id: string;
+    displayName: string;
     title: string;
     itemId: string;
     price: number;
+    weightBonus: number;
     weightDelta: number;
+    canRepeat: boolean;
+    description: string;
+}
+
+export interface NormalizedShopBusinessBonusConfig {
+    id: string;
+    displayName: string;
+    title: string;
+    itemId: string;
+    price: number;
+    requiredCount: number;
+    rewardMoney: number;
+    canRepeat: boolean;
     description: string;
 }
 
@@ -22,12 +57,17 @@ export interface ShopBuyResult {
     success: boolean;
     message: string;
     order: NormalizedShopOrderConfig | null;
+    businessBonus?: NormalizedShopBusinessBonusConfig | null;
 }
 
 export interface ShopRuntimeState {
     currentMoney: number;
+    businessMoneyInitialized: boolean;
+    stockOrderConfigs: NormalizedShopOrderConfig[] | null;
+    businessBonusConfigs: NormalizedShopBusinessBonusConfig[] | null;
     orderWeights: Record<string, number>;
     orderDisplayNames: Record<string, string>;
+    ownedBusinessBonusIds: string[];
     returnSceneName: string;
     pendingEnterNextBusinessDay: boolean;
 }
@@ -37,82 +77,108 @@ export const DEFAULT_GAME_SCENE_NAME = 'Prototype01';
 
 export const SHOP_RUNTIME_STATE: ShopRuntimeState = {
     currentMoney: 0,
+    businessMoneyInitialized: false,
+    stockOrderConfigs: null,
+    businessBonusConfigs: null,
     orderWeights: Object.create(null),
     orderDisplayNames: Object.create(null),
+    ownedBusinessBonusIds: [],
     returnSceneName: DEFAULT_GAME_SCENE_NAME,
     pendingEnterNextBusinessDay: false,
 };
 
-@ccclass('ShopOrderConfig')
-export class ShopOrderConfig {
-    @property({
-        displayName: '订单 ID',
-        tooltip: '商店订单的唯一 ID，例如 apple_order。后续调数值时请保持唯一，避免购买按钮找错配置。',
-    })
-    public id = '';
-
-    @property({
-        displayName: '订单标题',
-        tooltip: '玩家在商店里看到的订单名称，例如苹果订单、香蕉订单、柠檬订单。',
-    })
-    public title = '';
-
-    @property({
-        displayName: '物品 ID',
-        tooltip: '该订购单会增加哪个物品在订购单牌组中的权重，例如 apple、banana、lemon。',
-    })
-    public itemId = '';
-
-    @property({
-        displayName: '价格',
-        tooltip: '购买该订购单需要消耗的资金。数值越高，玩家越晚买得起。',
-    })
-    public price = 0;
-
-    @property({
-        displayName: '权重增加',
-        tooltip: '购买后给对应订购单增加的权重。第一版默认 +1，数值越高越容易刷到该物品。',
-    })
-    public weightDelta = 1;
-
-    @property({
-        displayName: '订单描述',
-        tooltip: '商店卡片上的说明。留空时会自动生成“购买后某某订购单权重 +1”。',
-    })
-    public description = '';
+export function setShopRuntimeCatalog(
+    stockOrders: NormalizedShopOrderConfig[],
+    businessBonuses: NormalizedShopBusinessBonusConfig[],
+): void {
+    SHOP_RUNTIME_STATE.stockOrderConfigs = stockOrders.map(cloneShopOrderConfig);
+    SHOP_RUNTIME_STATE.businessBonusConfigs = businessBonuses.map(cloneBusinessBonusConfig);
 }
 
-export const DEFAULT_SHOP_ORDER_CONFIGS: NormalizedShopOrderConfig[] = [
-    createDefaultOrder('apple_order', '苹果订单', 'apple', 3),
-    createDefaultOrder('banana_order', '香蕉订单', 'banana', 5),
-    createDefaultOrder('lemon_order', '柠檬订单', 'lemon', 10),
-];
+export function getShopRuntimeStockOrders(): NormalizedShopOrderConfig[] | null {
+    return SHOP_RUNTIME_STATE.stockOrderConfigs?.map(cloneShopOrderConfig) ?? null;
+}
 
-export function normalizeShopOrderConfig(source: ShopOrderConfig | NormalizedShopOrderConfig, index: number): NormalizedShopOrderConfig {
-    const fallback = DEFAULT_SHOP_ORDER_CONFIGS[index] ?? DEFAULT_SHOP_ORDER_CONFIGS[DEFAULT_SHOP_ORDER_CONFIGS.length - 1];
-    const id = normalizeText(source.id, fallback?.id ?? `shop_order_${index + 1}`);
-    const title = normalizeText(source.title, fallback?.title ?? id);
-    const itemId = normalizeText(source.itemId, fallback?.itemId ?? '');
-    const price = normalizeNonNegativeInteger(source.price, fallback?.price ?? 0);
-    const weightDelta = Math.max(1, normalizeNonNegativeInteger(source.weightDelta, fallback?.weightDelta ?? 1));
+export function getShopRuntimeBusinessBonuses(): NormalizedShopBusinessBonusConfig[] | null {
+    return SHOP_RUNTIME_STATE.businessBonusConfigs?.map(cloneBusinessBonusConfig) ?? null;
+}
+
+export function normalizeShopOrderConfig(source: ShopOrderConfigSource, index: number): NormalizedShopOrderConfig {
+    const id = normalizeText(source.id, `stock_order_${index + 1}`);
+    const displayName = normalizeText(source.displayName ?? source.title, id);
+    const itemId = normalizeText(source.itemId, '');
+    const price = normalizeNonNegativeInteger(source.price ?? 0);
+    const weightBonus = Math.max(1, normalizeNonNegativeInteger(source.weightBonus ?? source.weightDelta ?? 1, 1));
+    const canRepeat = source.canRepeat ?? true;
     const description = normalizeText(
         source.description,
-        buildShopOrderDescription(title, weightDelta),
+        buildShopOrderDescription(displayName, weightBonus),
     );
 
     return {
         id,
-        title,
+        displayName,
+        title: displayName,
         itemId,
         price,
-        weightDelta,
+        weightBonus,
+        weightDelta: weightBonus,
+        canRepeat,
         description,
     };
 }
 
-export function buildShopOrderDescription(title: string, weightDelta: number): string {
-    const itemName = title.replace(/订单$/, '') || '物品';
-    return `购买后${itemName}订购单权重 +${Math.max(1, normalizeNonNegativeInteger(weightDelta, 1))}`;
+function cloneShopOrderConfig(config: NormalizedShopOrderConfig): NormalizedShopOrderConfig {
+    return { ...config };
+}
+
+function cloneBusinessBonusConfig(config: NormalizedShopBusinessBonusConfig): NormalizedShopBusinessBonusConfig {
+    return { ...config };
+}
+
+export function normalizeShopBusinessBonusConfig(
+    source: ShopBusinessBonusConfigSource,
+    index: number,
+): NormalizedShopBusinessBonusConfig {
+    const id = normalizeText(source.id, `business_bonus_${index + 1}`);
+    const displayName = normalizeText(source.displayName ?? source.title, id);
+    const itemId = normalizeText(source.itemId, '');
+    const price = normalizeNonNegativeInteger(source.price ?? 0);
+    const requiredCount = normalizeNonNegativeInteger(source.requiredCount ?? 0);
+    const rewardMoney = normalizeNonNegativeInteger(source.rewardMoney ?? 0);
+    const canRepeat = source.canRepeat ?? false;
+    const description = normalizeText(
+        source.description,
+        buildBusinessBonusDescription(displayName, requiredCount, rewardMoney),
+    );
+
+    return {
+        id,
+        displayName,
+        title: displayName,
+        itemId,
+        price,
+        requiredCount,
+        rewardMoney,
+        canRepeat,
+        description,
+    };
+}
+
+export function buildShopOrderDescription(displayName: string, weightBonus: number): string {
+    const itemName = displayName.replace(/(?:进货单|订购单|订单)$/, '') || '物品';
+    const normalizedWeight = Math.max(1, normalizeNonNegativeInteger(weightBonus, 1));
+    return normalizedWeight > 1
+        ? `下一日${itemName}出现权重提高（权重 +${normalizedWeight}）`
+        : `下一日${itemName}出现权重提高`;
+}
+
+export function buildBusinessBonusDescription(displayName: string, requiredCount: number, rewardMoney: number): string {
+    const itemName = displayName
+        .replace(/热销$/, '')
+        .replace(/热卖$/, '')
+        .replace(/人气$/, '') || '对应商品';
+    return `永久生效：每日${itemName}数量 ≥ ${normalizeNonNegativeInteger(requiredCount)} 时，结算额外 +￥${normalizeNonNegativeInteger(rewardMoney)}`;
 }
 
 export function addShopOrderWeight(itemId: string, displayName: string, count: number): number {
@@ -136,19 +202,35 @@ export function getShopOrderWeight(itemId: string): number {
     return normalizeNonNegativeInteger(SHOP_RUNTIME_STATE.orderWeights[normalizedItemId] ?? 0);
 }
 
-function createDefaultOrder(id: string, title: string, itemId: string, price: number): NormalizedShopOrderConfig {
-    const weightDelta = 1;
-    return {
-        id,
-        title,
-        itemId,
-        price,
-        weightDelta,
-        description: buildShopOrderDescription(title, weightDelta),
-    };
+export function addOwnedBusinessBonus(bonus: string | { id: string }): boolean {
+    const normalizedId = (typeof bonus === 'string' ? bonus : bonus.id || '').trim();
+    if (!normalizedId || hasOwnedBusinessBonus(normalizedId)) {
+        return false;
+    }
+
+    SHOP_RUNTIME_STATE.ownedBusinessBonusIds.push(normalizedId);
+    return true;
 }
 
-function normalizeText(value: string, fallback: string): string {
+export function hasOwnedBusinessBonus(bonusId: string): boolean {
+    const normalizedId = (bonusId || '').trim();
+    return normalizedId.length > 0 && SHOP_RUNTIME_STATE.ownedBusinessBonusIds.indexOf(normalizedId) >= 0;
+}
+
+export function getOwnedBusinessBonusIds(): string[] {
+    return [...SHOP_RUNTIME_STATE.ownedBusinessBonusIds];
+}
+
+export function getOwnedBusinessBonusSnapshots(
+    catalog: NormalizedShopBusinessBonusConfig[] = [],
+): NormalizedShopBusinessBonusConfig[] {
+    return SHOP_RUNTIME_STATE.ownedBusinessBonusIds
+        .map((bonusId) => catalog.find((bonus) => bonus.id === bonusId) ?? null)
+        .filter((bonus): bonus is NormalizedShopBusinessBonusConfig => !!bonus)
+        .map((bonus) => ({ ...bonus }));
+}
+
+function normalizeText(value: string | undefined, fallback: string): string {
     const trimmed = (value || '').trim();
     return trimmed.length > 0 ? trimmed : fallback;
 }

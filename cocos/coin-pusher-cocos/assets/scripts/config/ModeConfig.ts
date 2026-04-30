@@ -1,156 +1,145 @@
 import { _decorator, Component } from 'cc';
+import { BusinessModeConfig } from '../business/BusinessModeConfig';
+import { CollectionModeConfig } from './CollectionModeConfig';
+import { ModeBaseConfig } from './ModeBaseConfig';
+import { SpawnConfig } from './SpawnConfig';
 
 const { ccclass, property } = _decorator;
 
 @ccclass('ModeConfig')
 export class ModeConfig extends Component {
     @property({
-        displayName: '模式 ID',
-        tooltip: '模式唯一标识，例如 business / collection。模式配置表会用这个 ID 查找当前启用的模式参数。'
+        type: ModeBaseConfig,
+        displayName: '基础模式参数',
+        tooltip: '模式身份和模式开关，例如模式 ID、显示名、是否使用经营进货单。',
     })
-    public modeId = 'business';
+    public baseConfig: ModeBaseConfig | null = null;
 
     @property({
-        displayName: '模式显示名',
-        tooltip: '模式的中文显示名，仅用于编辑器辨认和调试提示，不参与逻辑判断。'
+        type: SpawnConfig,
+        displayName: '投放参数',
+        tooltip: '手动投放、长按投放、自动投放、随机掉落、资源回复和每日投放额度配置。',
     })
-    public modeDisplayName = '经营模式';
+    public spawnConfig: SpawnConfig | null = null;
 
     @property({
-        displayName: '允许手动投放',
-        tooltip: '是否允许玩家通过点击或长按进行手动投放。关闭后玩家输入不会生成物品。'
+        type: BusinessModeConfig,
+        displayName: '经营模式参数',
+        tooltip: '经营模式目标、资金、物品计分和基础收益规则。商店商品仍在 ShopConfig 中配置。',
     })
-    public allowManualSpawn = true;
+    public businessConfig: BusinessModeConfig | null = null;
 
     @property({
-        displayName: '使用经营订购单',
-        tooltip: '手动投放时是否使用经营模式订购单牌组的张数作为权重抽取物品。经营模式应开启。'
+        type: CollectionModeConfig,
+        displayName: '图鉴模式参数',
+        tooltip: '图鉴模式专属参数入口。当前仅保存图鉴模式的身份信息。',
     })
-    public useBusinessOrderDeck = true;
+    public collectionConfig: CollectionModeConfig | null = null;
 
-    @property({
-        displayName: '使用旧当前投放物',
-        tooltip: '手动投放时是否使用旧的当前投放物/图鉴模式投放逻辑。图鉴模式可开启，经营模式应关闭。'
-    })
-    public useLegacyCurrentItem = false;
+    public getModeId(): string {
+        return this.baseConfig?.getModeId()
+            ?? normalizeText(this.collectionConfig?.modeId, 'business');
+    }
 
-    @property({
-        displayName: '投放消耗旧资源',
-        tooltip: '手动投放是否消耗旧资源。经营模式第一版建议关闭，避免被旧图鉴资源系统卡住；图鉴模式可开启以保持旧行为。'
-    })
-    public consumeResourceOnManualSpawn = false;
+    public getDisplayName(): string {
+        return this.baseConfig?.getDisplayName()
+            ?? normalizeText(this.collectionConfig?.displayName, this.getModeId());
+    }
 
-    @property({
-        displayName: '启用随机掉落',
-        tooltip: '是否启用旧的定时随机掉落逻辑。关闭后不会按世界掉落间隔自动生成水果。'
-    })
-    public enableRandomDrop = false;
+    public getRequiresStartButton(): boolean {
+        return this.baseConfig?.requiresStartButton ?? false;
+    }
 
-    @property({
-        displayName: '启用自动投放',
-        tooltip: '是否启用旧的自动投放逻辑。关闭后自动投放按钮和自动投放计时都不会驱动生成。'
-    })
-    public enableAutoSpawn = false;
+    public getUseBusinessOrders(): boolean {
+        return this.baseConfig?.useBusinessOrders ?? false;
+    }
 
-    @property({
-        displayName: '需要开始按钮',
-        tooltip: '是否需要点击开始/经营/测试按钮后才允许投放。经营模式第一版关闭，进入场景即可投放。'
-    })
-    public requireStartButton = false;
+    public getUseLegacyCurrentSpawnItem(): boolean {
+        return this.baseConfig?.useLegacyCurrentSpawnItem ?? true;
+    }
 
-    @property({
-        displayName: '初始资源',
-        tooltip: '进入该模式时的初始资源数量。经营模式中也作为第 1 天的进货次数；第 2 天起改用“当天进货次数”。'
-    })
-    public initialResource = 300;
+    public getSpendLegacyResourceOnSpawn(): boolean {
+        return this.baseConfig?.spendLegacyResourceOnSpawn ?? true;
+    }
 
-    @property({
-        displayName: '当天进货次数',
-        tooltip: '经营模式第 2 天及之后每天可主动进货/投放的重置次数。第 1 天优先使用“初始资源”。每次成功主动投放后减少 1。',
-    })
-    public dailyStockLimit = 300;
+    public getAllowManualSpawn(): boolean {
+        return this.spawnConfig?.allowManualSpawn ?? true;
+    }
 
-    @property({
-        displayName: '第 1 天目标分数',
-        tooltip: '经营模式第 1 天需要达到的目标分数。数值越高，玩家当天需要让更多或更高价值的物品掉落结算。'
-    })
-    public baseDailyTargetScore = 20;
+    public getInitialSpawnResource(): number {
+        return this.spawnConfig?.initialSpawnResource ?? 300;
+    }
 
-    @property({
-        displayName: '每日目标分数增长',
-        tooltip: '经营模式每天目标分数的递增值。第 N 天目标 = 第 1 天目标分数 + (N - 1) * 每日目标分数增长。'
-    })
-    public dailyTargetScoreIncrease = 10;
+    public getDailySpawnQuota(): number {
+        return this.spawnConfig?.dailySpawnQuota ?? this.getInitialSpawnResource();
+    }
 
-    @property({
-        displayName: '资源回复上限',
-        tooltip: '资源自然回复的上限。当前资源达到该值后不再继续自动回复。'
-    })
-    public resourceRecoverLimit = 300;
+    public getManualSpawnCost(): number {
+        return this.spawnConfig?.manualSpawnCost ?? 1;
+    }
 
-    @property({
-        displayName: '资源回复间隔',
-        tooltip: '资源自然回复间隔，单位秒。数值越小回复越频繁，数值越大回复越慢。'
-    })
-    public resourceRecoverInterval = 5;
+    public getOverrideManualSpawnY(): boolean {
+        return this.spawnConfig?.overrideManualSpawnY ?? true;
+    }
 
-    @property({
-        displayName: '每次回复资源',
-        tooltip: '每次自然回复增加的资源数量。数值越大资源恢复越快。'
-    })
-    public resourceRecoverAmount = 1;
+    public getManualSpawnY(): number {
+        return this.spawnConfig?.manualSpawnY ?? 1;
+    }
 
-    @property({
-        displayName: '手动投放消耗',
-        tooltip: '玩家每次主动投放消耗的资源数量。若当前模式关闭“投放消耗旧资源”，该值不会生效。'
-    })
-    public manualSpawnCost = 1;
+    public getHoldSpawnInterval(): number {
+        return this.spawnConfig?.holdSpawnInterval ?? 0.05;
+    }
 
-    @property({
-        displayName: '覆盖手动投放 Y',
-        tooltip: '是否覆盖手动投放时生成位置的 Y 坐标。开启后使用下方“手动投放 Y”，关闭后使用投放器自身位置。'
-    })
-    public overrideManualSpawnY = true;
+    public getEnableAutoSpawn(): boolean {
+        return this.spawnConfig?.enableAutoSpawn ?? false;
+    }
 
-    @property({
-        displayName: '手动投放 Y',
-        tooltip: '手动投放时使用的 Y 坐标，仅在开启“覆盖手动投放 Y”时生效。数值越大生成位置越高。'
-    })
-    public manualSpawnY = 1;
+    public getAutoSpawnInterval(): number {
+        return this.spawnConfig?.autoSpawnInterval ?? 0.5;
+    }
 
-    @property({
-        displayName: '长按投放间隔',
-        tooltip: '玩家长按手动投放区域时，连续投放之间的间隔，单位秒。数值越小投放越快；建议不要低于 0.02，避免生成过密。'
-    })
-    public manualSpawnHoldInterval = 0.05;
+    public getAutoSpawnX(): number {
+        return this.spawnConfig?.autoSpawnX ?? 0;
+    }
 
-    @property({
-        displayName: '自动投放间隔',
-        tooltip: '自动投放间隔，单位秒。仅在当前模式开启“启用自动投放”时生效。数值越小投放越频繁。'
-    })
-    public autoSpawnInterval = 0.5;
+    public getAutoSpawnZ(): number {
+        return this.spawnConfig?.autoSpawnZ ?? -0.2;
+    }
 
-    @property({
-        displayName: '自动投放 X',
-        tooltip: '自动投放时使用的 X 坐标。0 表示从中间投放，负数偏左，正数偏右。'
-    })
-    public autoSpawnX = 0;
+    public getEnableRandomDrop(): boolean {
+        return this.spawnConfig?.enableRandomDrop ?? false;
+    }
 
-    @property({
-        displayName: '自动投放 Z',
-        tooltip: '自动投放时使用的 Z 坐标，决定自动投放落点的前后位置。仅在启用自动投放时生效。'
-    })
-    public autoSpawnZ = -0.2;
+    public getRandomDropInterval(): number {
+        return this.spawnConfig?.randomDropInterval ?? 5;
+    }
 
-    @property({
-        displayName: '随机掉落间隔',
-        tooltip: '旧随机掉落间隔，单位秒。仅在当前模式开启“启用随机掉落”时生效。'
-    })
-    public randomDropInterval = 5;
+    public getRandomDropBatchCount(): number {
+        return this.spawnConfig?.randomDropBatchCount ?? 1;
+    }
 
-    @property({
-        displayName: '每批随机掉落数量',
-        tooltip: '旧随机掉落每次触发生成的物品数量。仅在当前模式开启“启用随机掉落”时生效。'
-    })
-    public randomDropAmount = 1;
+    public getResourceRegenCap(): number {
+        return this.spawnConfig?.resourceRegenCap ?? 300;
+    }
+
+    public getResourceRegenInterval(): number {
+        return this.spawnConfig?.resourceRegenInterval ?? 5;
+    }
+
+    public getResourceRegenAmount(): number {
+        return this.spawnConfig?.resourceRegenAmount ?? 1;
+    }
+
+    public getFirstDayTargetScore(): number {
+        return this.businessConfig?.getFirstDayTargetScore() ?? 20;
+    }
+
+    public getDailyTargetScoreGrowth(): number {
+        return this.businessConfig?.getDailyTargetScoreGrowth() ?? 0;
+    }
+}
+
+function normalizeText(value: string | undefined, fallback: string): string {
+    const trimmed = (value || '').trim();
+    return trimmed.length > 0 ? trimmed : fallback;
 }
