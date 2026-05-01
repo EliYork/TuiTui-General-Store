@@ -77,14 +77,6 @@ npm run watch
 
 这套原型主要用于参考早期 2D/2.5D 推币逻辑；当前 Cocos 工程不会自动从 `src/` 同步代码。
 
-## 文档
-
-- [游戏设计](docs/game-design.md)
-- [技术计划](docs/tech-plan.md)
-- [任务看板](docs/task-board.md)
-- [Cocos 参数说明](docs/cocos-parameters.md)
-- [音频资源说明](docs/audio-assets.md)
-
 ## 维护约定
 
 - 新玩法优先新增独立脚本，避免把所有逻辑塞进 `GameManager`。
