@@ -1,6 +1,7 @@
 import { _decorator, Component, find, warn } from 'cc';
 import { BusinessModeController } from '../modes/business/BusinessModeController';
 import { ShopConfig, createDefaultNormalizedBusinessBonuses, createDefaultNormalizedStockOrders } from './ShopConfig';
+import { BusinessRunLogger } from '../business/BusinessRunLogger';
 import {
     NormalizedShopBusinessBonusConfig,
     NormalizedShopOrderConfig,
@@ -100,6 +101,17 @@ export class ShopManager extends Component {
         const newWeight = this.businessModeController
             ? this.businessModeController.addOrderDeckWeight(order.itemId, displayName, order.weightBonus)
             : addShopOrderWeight(order.itemId, displayName, order.weightBonus);
+        this.addRuntimeOrderDeckSnapshotWeight(order.itemId, displayName, order.weightBonus);
+        BusinessRunLogger.recordPurchase({
+            day: SHOP_RUNTIME_STATE.currentBusinessDay,
+            itemName: order.displayName,
+            itemType: '进货单',
+            price: order.price,
+            moneyBefore: currentMoney,
+            moneyAfter: this.getCurrentMoney(),
+            orderDeck: this.getOrderDeckSnapshots(),
+            ownedBusinessBonuses: this.getOwnedBusinessBonuses(),
+        });
 
         return {
             success: true,
@@ -140,6 +152,16 @@ export class ShopManager extends Component {
 
         this.setCurrentMoney(currentMoney - bonus.price);
         addOwnedBusinessBonus(bonus.id);
+        BusinessRunLogger.recordPurchase({
+            day: SHOP_RUNTIME_STATE.currentBusinessDay,
+            itemName: bonus.displayName,
+            itemType: '经营加成',
+            price: bonus.price,
+            moneyBefore: currentMoney,
+            moneyAfter: this.getCurrentMoney(),
+            orderDeck: this.getOrderDeckSnapshots(),
+            ownedBusinessBonuses: this.getOwnedBusinessBonuses(),
+        });
 
         return {
             success: true,
@@ -150,11 +172,19 @@ export class ShopManager extends Component {
     }
 
     public getOrderDeckSnapshots(): ShopOrderDeckSnapshot[] {
+        if (this.businessModeController) {
+            return this.businessModeController.getOrderDeckSnapshots();
+        }
+
+        if (SHOP_RUNTIME_STATE.orderDeckSnapshots.length > 0) {
+            return SHOP_RUNTIME_STATE.orderDeckSnapshots.map((snapshot) => ({ ...snapshot }));
+        }
+
         return this.getShopOrders().map((order) => ({
             id: order.id,
             title: order.displayName,
             itemId: order.itemId,
-            weight: this.businessModeController?.getOrderDeckWeight(order.itemId) ?? getShopOrderWeight(order.itemId),
+            weight: getShopOrderWeight(order.itemId),
         }));
     }
 
@@ -176,6 +206,32 @@ export class ShopManager extends Component {
         this.currentMoney = normalizedMoney;
         SHOP_RUNTIME_STATE.currentMoney = normalizedMoney;
         this.businessModeController?.setCurrentMoney(normalizedMoney);
+    }
+
+    private addRuntimeOrderDeckSnapshotWeight(itemId: string, displayName: string, count: number): void {
+        if (this.businessModeController) {
+            SHOP_RUNTIME_STATE.orderDeckSnapshots = this.businessModeController.getOrderDeckSnapshots();
+            return;
+        }
+
+        const normalizedItemId = (itemId || '').trim();
+        if (!normalizedItemId) {
+            return;
+        }
+
+        const existing = SHOP_RUNTIME_STATE.orderDeckSnapshots.find((snapshot) => snapshot.itemId === normalizedItemId);
+        if (existing) {
+            existing.weight = normalizeNonNegativeInteger(existing.weight + count);
+            existing.title = existing.title || displayName || normalizedItemId;
+            return;
+        }
+
+        SHOP_RUNTIME_STATE.orderDeckSnapshots.push({
+            id: normalizedItemId,
+            title: displayName || normalizedItemId,
+            itemId: normalizedItemId,
+            weight: normalizeNonNegativeInteger(count),
+        });
     }
 
     private bindBusinessModeController(): void {

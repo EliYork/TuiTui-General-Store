@@ -12,6 +12,7 @@ import {
 import { ShopConfig, createDefaultNormalizedBusinessBonuses } from '../../shop/ShopConfig';
 import {
     NormalizedShopBusinessBonusConfig,
+    ShopOrderDeckSnapshot,
     SHOP_RUNTIME_STATE,
     addShopOrderWeight,
     getShopRuntimeBusinessBonuses,
@@ -335,17 +336,18 @@ export class BusinessModeController extends Component {
             return this._latestSettlement;
         }
 
+        const reachedTarget = this.dailyScore >= this.dailyTargetScore;
         const obtainedItems = this.getObtainedItemSnapshots();
-        const rewardLines = [
+        const rewardLines = reachedTarget ? [
             ...this.calculateBaseRewardLines(obtainedItems),
             ...this.calculateBusinessBonusRewardLines(obtainedItems),
-        ];
+        ] : [];
         const earnedMoney = rewardLines.reduce((sum, line) => sum + (line.achieved ? line.rewardMoney : 0), 0);
         const result: BusinessDayResult = {
             day: this.currentDay,
             score: this.dailyScore,
             targetScore: this.dailyTargetScore,
-            reachedTarget: this.dailyScore >= this.dailyTargetScore,
+            reachedTarget,
             obtainedItems,
             rewardLines,
             earnedMoney,
@@ -384,7 +386,7 @@ export class BusinessModeController extends Component {
 
     public claimSettledMoney(): number {
         const settlement = this._latestSettlement;
-        if (!settlement || this._latestSettlementClaimed) {
+        if (!settlement || this._latestSettlementClaimed || !settlement.reachedTarget) {
             return 0;
         }
 
@@ -473,6 +475,22 @@ export class BusinessModeController extends Component {
         return normalizeNonNegativeInteger(this.money);
     }
 
+    public getCurrentDay(): number {
+        return normalizePositiveInteger(this.currentDay, 1);
+    }
+
+    public getDailyTargetScore(): number {
+        return normalizeNonNegativeNumber(this.dailyTargetScore);
+    }
+
+    public getDailyScore(): number {
+        return normalizeNonNegativeNumber(this.dailyScore);
+    }
+
+    public isDailyTargetReached(): boolean {
+        return this.getDailyScore() >= this.getDailyTargetScore();
+    }
+
     public setCurrentMoney(value: number): void {
         this.money = normalizeNonNegativeInteger(value);
         SHOP_RUNTIME_STATE.currentMoney = this.money;
@@ -481,6 +499,21 @@ export class BusinessModeController extends Component {
 
     public getTodayObtainedCount(itemId: string): number {
         return this.getObtainedCount(itemId);
+    }
+
+    public getOrderDeckSnapshots(): ShopOrderDeckSnapshot[] {
+        return this.getEffectiveOrders()
+            .filter((order) => order.itemId.length > 0 && order.count > 0)
+            .map((order) => ({
+                id: order.itemId,
+                title: order.displayName,
+                itemId: order.itemId,
+                weight: order.count,
+            }));
+    }
+
+    public getOwnedBusinessBonusSnapshots(): NormalizedShopBusinessBonusConfig[] {
+        return getOwnedBusinessBonusSnapshots(this.getBusinessBonusCatalog());
     }
 
     public syncShopConfigToRuntime(): void {

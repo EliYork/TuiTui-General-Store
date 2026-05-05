@@ -39,6 +39,11 @@ import {
 import { AudioService, GameSoundId, playGameSound } from './AudioService';
 import { DayResultPanel } from '../ui/DayResultPanel';
 import { addShopOrderWeight, SHOP_RUNTIME_STATE, SHOP_SCENE_NAME } from '../shop/ShopTypes';
+import {
+    BusinessDiaryDaySnapshot,
+    BusinessDiaryItemCountSnapshot,
+    BusinessRunLogger,
+} from '../business/BusinessRunLogger';
 
 const { ccclass, property } = _decorator;
 const SHARED_SCENE_NAME = 'Prototype01';
@@ -407,6 +412,7 @@ export class GameManager extends Component {
     private _restartLocked = false;
     private _modeStartAccepted = false;
     private _businessDayReadyForTomorrow = false;
+    private _businessDaySettlementCompleted = false;
     private _dayResultPhysicsFrozen = false;
     private readonly _pausedPusherStates = new Map<PusherController, boolean>();
     private _debugButtonNode: Node | null = null;
@@ -425,6 +431,7 @@ export class GameManager extends Component {
         PhysicsSystem.instance.enable = true;
         this.autoSpawnEnabled = false;
         this._autoSpawnTimer = 0;
+        this._businessDaySettlementCompleted = false;
         this.applyModeUiVisibility();
         this.refreshModeStartGate();
         this.bindRestartButton();
@@ -445,12 +452,14 @@ export class GameManager extends Component {
         this.ensureRuntimeProgress();
         this.syncBusinessItemValues();
         this.startBusinessDayState();
+        this.initializeBusinessDiaryIfNeeded();
         this.buildDebugUi();
 
         if (SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay) {
             SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay = false;
-            this.enterNextBusinessDay();
+            this.enterNextBusinessDay(true);
             this.restoreBoardItemsAfterSceneTransition();
+            this.recordBusinessDayStart();
             return;
         }
 
@@ -466,6 +475,7 @@ export class GameManager extends Component {
         if (this.shouldEnableRandomDrop()) {
             this.seedInitialMapItems();
         }
+        this.recordBusinessDayStart();
         this.setStatus(`当前地图：${this.getCurrentMapConfig().mapName}`);
     }
 
@@ -924,6 +934,9 @@ export class GameManager extends Component {
 
         this._sessionSpawnedCoinCount += 1;
         if (shouldUseBusinessDeck) {
+            BusinessRunLogger.recordSpawn(runtimeProgress.currentBusinessDay, currentSpawnItem.itemId, currentSpawnItem.itemName, 'manual');
+        }
+        if (shouldUseBusinessDeck) {
             runtimeProgress.remainingStock = Math.max(0, runtimeProgress.remainingStock - 1);
             this.businessModeController?.consumePreparedNextItemAndPrepareAnother();
         }
@@ -1054,9 +1067,29 @@ export class GameManager extends Component {
             return;
         }
 
+        if (this._businessDaySettlementCompleted) {
+            this.setStatus('今天已经结算啦。');
+            return;
+        }
+
+        if (!this.isCurrentBusinessDayReachedTarget()) {
+            this.setStatus('还没达标，再推一点吧！');
+            return;
+        }
+
         this.playSound('button-click');
         const dayResult = this.businessModeController?.settleCurrentDay() ?? this.buildFallbackBusinessDayResult();
         const resultText = dayResult.reachedTarget ? '本日达标！' : '本日未达标';
+
+        if (!dayResult.reachedTarget) {
+            this._businessDayReadyForTomorrow = false;
+            this.refreshBusinessEndDayButtonLabel();
+            this.setStatus('还没达标，再推一点吧！');
+            return;
+        }
+
+        this._businessDaySettlementCompleted = true;
+        this.recordBusinessDayFinished(dayResult);
 
         if (this.dayResultPanel) {
             this._businessDayReadyForTomorrow = false;
@@ -1067,19 +1100,12 @@ export class GameManager extends Component {
             return;
         }
 
-        if (!dayResult.reachedTarget) {
-            this._businessDayReadyForTomorrow = false;
-            this.refreshBusinessEndDayButtonLabel();
-            this.setStatus(`${resultText} ${formatScore(dayResult.score)} / ${formatScore(dayResult.targetScore)}`);
-            return;
-        }
-
         this._businessDayReadyForTomorrow = true;
         this.refreshBusinessEndDayButtonLabel();
         this.setStatus(`${resultText} 今日分数 ${formatScore(dayResult.score)} / ${formatScore(dayResult.targetScore)}，可进入明日`);
     }
 
-    private enterNextBusinessDay(): void {
+    private enterNextBusinessDay(deferStartLog = false): void {
         const claimedMoney = this.businessModeController?.claimSettledMoney() ?? 0;
         const nextBusinessDay = runtimeProgress.currentBusinessDay + 1;
         runtimeProgress.currentBusinessDay = nextBusinessDay;
@@ -1092,6 +1118,7 @@ export class GameManager extends Component {
         runtimeProgress.worldDropProgressSeconds = 0;
 
         this._businessDayReadyForTomorrow = false;
+        this._businessDaySettlementCompleted = false;
         this.stopAutoSpawn();
         this.syncBusinessItemValues();
         this.businessModeController?.startCurrentDay(
@@ -1100,6 +1127,12 @@ export class GameManager extends Component {
             this.getConfiguredDailyTargetScoreIncrease(),
         );
         this.syncStateFromResources();
+        SHOP_RUNTIME_STATE.currentBusinessDay = runtimeProgress.currentBusinessDay;
+        SHOP_RUNTIME_STATE.orderDeckSnapshots = this.businessModeController?.getOrderDeckSnapshots() ?? [];
+        BusinessRunLogger.enterNextDay(this.buildBusinessDiaryDaySnapshot());
+        if (!deferStartLog) {
+            this.recordBusinessDayStart();
+        }
         this.refreshBusinessEndDayButtonLabel();
         this.setDayResultPhysicsFrozen(false);
         this.playSound('button-click');
@@ -1125,6 +1158,8 @@ export class GameManager extends Component {
         this.captureBoardItemsForSceneTransition();
         this.businessModeController?.syncShopConfigToRuntime();
         SHOP_RUNTIME_STATE.currentMoney = this.businessModeController?.getCurrentMoney() ?? SHOP_RUNTIME_STATE.currentMoney;
+        SHOP_RUNTIME_STATE.currentBusinessDay = runtimeProgress.currentBusinessDay;
+        SHOP_RUNTIME_STATE.orderDeckSnapshots = this.businessModeController?.getOrderDeckSnapshots() ?? [];
         SHOP_RUNTIME_STATE.returnSceneName = SHARED_SCENE_NAME;
         SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay = true;
         director.loadScene(SHOP_SCENE_NAME);
@@ -1236,6 +1271,9 @@ export class GameManager extends Component {
         runtimeProgress.lastDroppedItemId = collectedItem.itemId;
         runtimeProgress.currentCoins += collectedItem.value;
         this.businessModeController?.recordDrop(collectedItem.itemId, collectedItem.value, collectedItem.itemName);
+        if (this.shouldUseBusinessOrderDeck()) {
+            BusinessRunLogger.recordDrop(runtimeProgress.currentBusinessDay, collectedItem.itemId, collectedItem.itemName);
+        }
 
         let unlockedItemName = '';
         if (!progress.isSpawnUnlocked && progress.ownedCount >= collectedItem.unlockRequiredCount) {
@@ -1247,6 +1285,10 @@ export class GameManager extends Component {
         this.syncStateFromResources();
         item.onScored();
         this.playSound(unlockedItemName ? 'unlock' : 'item-drop');
+
+        if (this.tryAutoSettleReachedBusinessDay()) {
+            return;
+        }
 
         const rewardText = `资源 +${collectedItem.value}`;
         if (unlockedItemName) {
@@ -1276,15 +1318,18 @@ export class GameManager extends Component {
         this.resetRuntimeProgress();
         this.refreshModeStartGate();
         this._businessDayReadyForTomorrow = false;
+        this._businessDaySettlementCompleted = false;
         this.refreshBusinessEndDayButtonLabel();
         this.ensureRuntimeProgress();
         this.syncBusinessItemValues();
         this.startBusinessDayState();
+        this.createBusinessDiaryForCurrentDay();
         this._sessionSpawnedCoinCount = 0;
         this.syncStateFromResources();
         if (this.shouldEnableRandomDrop()) {
             this.seedInitialMapItems();
         }
+        this.recordBusinessDayStart();
         this.playSound('button-click');
         this.setStatus(`已重新开始，当前地图：${this.getCurrentMapConfig().mapName}`);
     }
@@ -1339,6 +1384,24 @@ export class GameManager extends Component {
         }
 
         this.businessEndDayButtonLabel.string = this._businessDayReadyForTomorrow ? '进入明日' : '结束本日';
+    }
+
+    private isCurrentBusinessDayReachedTarget(): boolean {
+        return this.businessModeController?.isDailyTargetReached() ?? false;
+    }
+
+    private tryAutoSettleReachedBusinessDay(): boolean {
+        if (!this.autoSpawnEnabled || !this.shouldUseBusinessOrderDeck()) {
+            return false;
+        }
+
+        if (this._businessDaySettlementCompleted || !this.isCurrentBusinessDayReachedTarget()) {
+            return false;
+        }
+
+        this.stopAutoSpawn('已达标，自动结算本日');
+        this.endCurrentBusinessDay();
+        return true;
     }
 
     private isDayResultPanelShowing(): boolean {
@@ -1515,6 +1578,122 @@ export class GameManager extends Component {
 
     private shouldRequireStartButton(): boolean {
         return this.getActiveModeConfig()?.getRequiresStartButton() ?? false;
+    }
+
+    private initializeBusinessDiaryIfNeeded(): void {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            return;
+        }
+
+        const shouldCreateRun = BusinessRunLogger.consumeNewRunRequest() || !BusinessRunLogger.hasCurrentRun();
+        if (shouldCreateRun) {
+            this.createBusinessDiaryForCurrentDay();
+        }
+    }
+
+    private createBusinessDiaryForCurrentDay(): void {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            return;
+        }
+
+        SHOP_RUNTIME_STATE.currentBusinessDay = runtimeProgress.currentBusinessDay;
+        SHOP_RUNTIME_STATE.orderDeckSnapshots = this.businessModeController?.getOrderDeckSnapshots() ?? [];
+        BusinessRunLogger.createNewRun(this.buildBusinessDiaryDaySnapshot());
+    }
+
+    private recordBusinessDayStart(): void {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            return;
+        }
+
+        SHOP_RUNTIME_STATE.currentBusinessDay = runtimeProgress.currentBusinessDay;
+        SHOP_RUNTIME_STATE.orderDeckSnapshots = this.businessModeController?.getOrderDeckSnapshots() ?? [];
+        BusinessRunLogger.startDay(this.buildBusinessDiaryDaySnapshot());
+    }
+
+    private recordBusinessDayFinished(dayResult: BusinessDayResult): void {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            return;
+        }
+
+        const currentMoney = this.businessModeController?.getCurrentMoney() ?? SHOP_RUNTIME_STATE.currentMoney;
+        const baseRewardMoney = dayResult.rewardLines
+            .filter((line) => line.category === 'base' && line.achieved)
+            .reduce((sum, line) => sum + line.rewardMoney, 0);
+        const businessBonusRewardMoney = dayResult.rewardLines
+            .filter((line) => line.category === 'businessBonus' && line.achieved)
+            .reduce((sum, line) => sum + line.rewardMoney, 0);
+
+        BusinessRunLogger.finishDay({
+            ...this.buildBusinessDiaryDaySnapshot(),
+            day: dayResult.day,
+            targetScore: dayResult.targetScore,
+            score: dayResult.score,
+            reachedTarget: dayResult.reachedTarget,
+            obtainedItems: dayResult.obtainedItems.map((item) => ({
+                itemId: item.itemId,
+                displayName: item.displayName,
+                count: item.count,
+            })),
+            baseRewardMoney,
+            businessBonusRewardMoney,
+            earnedMoney: dayResult.earnedMoney,
+            settledMoney: currentMoney + dayResult.earnedMoney,
+            boardCounts: this.getBoardItemCountSnapshots(),
+        });
+    }
+
+    private buildBusinessDiaryDaySnapshot(): BusinessDiaryDaySnapshot {
+        const currentResource = runtimeProgress.currentCoins;
+        const maxResource = runtimeProgress.maxCoins;
+        return {
+            day: runtimeProgress.currentBusinessDay,
+            targetScore: this.businessModeController?.getDailyTargetScore()
+                ?? this.getConfiguredBaseDailyTargetScore() + Math.max(0, runtimeProgress.currentBusinessDay - 1) * this.getConfiguredDailyTargetScoreIncrease(),
+            dailyTargetIncrease: this.getConfiguredDailyTargetScoreIncrease(),
+            currentMoney: this.businessModeController?.getCurrentMoney() ?? SHOP_RUNTIME_STATE.currentMoney,
+            remainingStock: runtimeProgress.remainingStock,
+            currentResource,
+            maxResource,
+            orderDeck: this.businessModeController?.getOrderDeckSnapshots() ?? [],
+            ownedBusinessBonuses: this.businessModeController?.getOwnedBusinessBonusSnapshots() ?? [],
+            boardCounts: this.getBoardItemCountSnapshots(),
+            sceneName: director.getScene()?.name ?? '未知',
+        };
+    }
+
+    private getBoardItemCountSnapshots(): BusinessDiaryItemCountSnapshot[] | null {
+        if (!this.coinSpawner) {
+            return null;
+        }
+
+        const parent = this.coinSpawner.coinRoot ?? this.coinSpawner.node;
+        const spawnPoint = this.coinSpawner.spawnPoint;
+        const counts = new Map<string, BusinessDiaryItemCountSnapshot>();
+        parent.children.forEach((child) => {
+            if (child === spawnPoint) {
+                return;
+            }
+
+            const item = child.getComponent(CoinBehaviour);
+            if (!item || item.hasScored || !item.itemId) {
+                return;
+            }
+
+            const existing = counts.get(item.itemId);
+            if (existing) {
+                existing.count += 1;
+                return;
+            }
+
+            counts.set(item.itemId, {
+                itemId: item.itemId,
+                displayName: item.itemTypeLabel,
+                count: 1,
+            });
+        });
+
+        return [...counts.values()];
     }
 
     private startBusinessDayState(): void {
@@ -1813,7 +1992,11 @@ export class GameManager extends Component {
             return false;
         }
 
-        return !!this.spawnCatalogItem(mapPoolItem, request);
+        const spawnedItem = this.spawnCatalogItem(mapPoolItem, request);
+        if (spawnedItem && this.shouldUseBusinessOrderDeck()) {
+            BusinessRunLogger.recordSpawn(runtimeProgress.currentBusinessDay, mapPoolItem.itemId, mapPoolItem.itemName, 'random');
+        }
+        return !!spawnedItem;
     }
 
     private spawnCatalogItem(item: ResolvedCatalogItem | null, request: CoinSpawnRequest | null = null): CoinBehaviour | null {

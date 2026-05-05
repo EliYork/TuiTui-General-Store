@@ -173,6 +173,42 @@
 - 后续注意：
   - `BusinessModeController` 仍为 `null`，购买进货单后权重写入 `SHOP_RUNTIME_STATE`，返回 `Prototype01` 后由 `BusinessModeController` 读取，需确认跨场景权重同步无异常。
 
+## 2026-05-05
+
+### 验收进货单跨场景权重同步
+
+- 修改内容：
+  - 无代码修改，本次为手动验收记录。
+- 涉及文件：
+  - `assets/scenes/ShopScene.scene`
+  - `assets/scripts/shop/ShopManager.ts`
+  - `assets/scripts/modes/business/BusinessModeController.ts`
+- 验收结果：
+  - 从 Prototype01 进入商店后购买进货单，资金正常扣除。
+  - 返回下一天后，对应进货单权重正常生效。
+  - ShopManager.businessModeController 保持为空时，现有 SHOP_RUNTIME_STATE 跨场景同步机制可正常工作。
+  - 结论：当前不需要为 ShopScene 添加 BusinessModeController。
+- 后续注意：
+  - 经营加成商品的跨场景拥有状态仍需实机验收确认。
+
+## 2026-05-05
+
+### 验收进货单跨场景权重同步
+
+- 修改内容：
+  - 无代码修改，本次为手动验收记录。
+- 涉及文件：
+  - `assets/scenes/ShopScene.scene`
+  - `assets/scripts/shop/ShopManager.ts`
+  - `assets/scripts/modes/business/BusinessModeController.ts`
+- 验收结果：
+  - 从 Prototype01 进入商店后购买进货单，资金正常扣除。
+  - 返回下一天后，对应进货单权重正常生效。
+  - ShopManager.businessModeController 保持为空时，现有 SHOP_RUNTIME_STATE 跨场景同步机制可正常工作。
+  - 结论：当前不需要为 ShopScene 添加 BusinessModeController。
+- 后续注意：
+  - 经营加成商品的跨场景拥有状态仍需实机验收确认。
+
 ---
 
 ## 当前状态总结

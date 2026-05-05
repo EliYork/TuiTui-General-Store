@@ -62,10 +62,11 @@
 │  │  ├─ modes/             模式控制
 │  │  │  └─ business/
 │  │  │     └─ BusinessModeController.ts  经营模式控制器
+│  │  ├─ business/          经营模式配置
+│  │  │  └─ BusinessModeConfig.ts  经营模式参数（每日目标、物品计分、收益规则）
 │  │  ├─ config/            模式配置
 │  │  │  ├─ ModeConfig.ts
 │  │  │  ├─ ModeConfigTable.ts
-│  │  │  ├─ BusinessModeConfig.ts
 │  │  │  ├─ CollectionModeConfig.ts
 │  │  │  ├─ ModeBaseConfig.ts
 │  │  │  └─ SpawnConfig.ts

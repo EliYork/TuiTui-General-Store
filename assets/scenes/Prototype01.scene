@@ -3182,7 +3182,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "自动投放：关",
+    "_string": "Auto：关",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 20,
@@ -3365,8 +3365,8 @@
     "stateLabel": {
       "__id__": 86
     },
-    "autoSpawnOnText": "自动投放：开",
-    "autoSpawnOffText": "自动投放：关",
+    "autoSpawnOnText": "Auto：开",
+    "autoSpawnOffText": "Auto：关",
     "_id": "abw+YYrZFFVqohkfRPUuFk"
   },
   {

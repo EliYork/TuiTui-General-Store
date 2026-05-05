@@ -23,13 +23,13 @@ export class SpawnButtonHold extends Component {
         displayName: '开启文案',
         tooltip: '自动投放开启时显示在按钮上的文字。建议保持中文，方便玩家理解当前状态。',
     })
-    public autoSpawnOnText = '自动投放：开';
+    public autoSpawnOnText = 'Auto：开';
 
     @property({
         displayName: '关闭文案',
         tooltip: '自动投放关闭时显示在按钮上的文字。Restart 或资源不足自动停止后会回到这个文案。',
     })
-    public autoSpawnOffText = '自动投放：关';
+    public autoSpawnOffText = 'Auto：关';
 
     private _resolvedLabel: Label | null = null;
     private _button: Button | null = null;

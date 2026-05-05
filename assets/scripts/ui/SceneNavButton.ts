@@ -1,5 +1,6 @@
 import { _decorator, Button, Color, Component, director, find, Graphics, Label, log, Node, UITransform, warn } from 'cc';
 import { setPendingModeId } from '../config/ModeConfigTable';
+import { BusinessRunLogger } from '../business/BusinessRunLogger';
 
 const { ccclass, property } = _decorator;
 
@@ -64,6 +65,9 @@ export class SceneNavButton extends Component {
         const modeId = this.targetModeId.trim();
         if (modeId) {
             setPendingModeId(modeId);
+        }
+        if (modeId === 'business') {
+            BusinessRunLogger.requestNewRunOnNextBusinessScene();
         }
 
         this.setDebugMessage(`Loading ${sceneName}...`);

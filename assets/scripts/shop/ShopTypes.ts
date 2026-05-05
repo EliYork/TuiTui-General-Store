@@ -62,11 +62,13 @@ export interface ShopBuyResult {
 
 export interface ShopRuntimeState {
     currentMoney: number;
+    currentBusinessDay: number;
     businessMoneyInitialized: boolean;
     stockOrderConfigs: NormalizedShopOrderConfig[] | null;
     businessBonusConfigs: NormalizedShopBusinessBonusConfig[] | null;
     orderWeights: Record<string, number>;
     orderDisplayNames: Record<string, string>;
+    orderDeckSnapshots: ShopOrderDeckSnapshot[];
     ownedBusinessBonusIds: string[];
     returnSceneName: string;
     pendingEnterNextBusinessDay: boolean;
@@ -77,11 +79,13 @@ export const DEFAULT_GAME_SCENE_NAME = 'Prototype01';
 
 export const SHOP_RUNTIME_STATE: ShopRuntimeState = {
     currentMoney: 0,
+    currentBusinessDay: 1,
     businessMoneyInitialized: false,
     stockOrderConfigs: null,
     businessBonusConfigs: null,
     orderWeights: Object.create(null),
     orderDisplayNames: Object.create(null),
+    orderDeckSnapshots: [],
     ownedBusinessBonusIds: [],
     returnSceneName: DEFAULT_GAME_SCENE_NAME,
     pendingEnterNextBusinessDay: false,
