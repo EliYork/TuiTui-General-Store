@@ -265,7 +265,11 @@
     "_parent": {
       "__id__": 5
     },
-    "_children": [],
+    "_children": [
+      {
+        "__id__": 25
+      }
+    ],
     "_active": true,
     "_components": [
       {
@@ -341,6 +345,9 @@
     "_enabled": true,
     "__prefab": null,
     "businessModeController": null,
+    "shopConfig": {
+      "__id__": 24
+    },
     "currentMoney": 0,
     "shopOrders": [],
     "_id": "shop_scene_manager"
@@ -652,5 +659,147 @@
     "designHeight": 720,
     "applySafeArea": true,
     "_id": "screen_adapter_shop_scene"
+  },
+  {
+    "__type__": "d1ac8xWZxdO0pGnorOPXkAB",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 25
+    },
+    "_enabled": true,
+    "__prefab": null,
+    "stockOrders": [
+      {
+        "__id__": 26
+      },
+      {
+        "__id__": 27
+      },
+      {
+        "__id__": 28
+      }
+    ],
+    "businessBonuses": [
+      {
+        "__id__": 29
+      },
+      {
+        "__id__": 30
+      },
+      {
+        "__id__": 31
+      }
+    ],
+    "_id": "shop_scene_config_component"
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "商店配置表",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "_parent": {
+      "__id__": 6
+    },
+    "_children": [],
+    "_active": true,
+    "_components": [
+      {
+        "__id__": 24
+      }
+    ],
+    "_prefab": null,
+    "_lpos": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_lrot": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_lscale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_mobility": 0,
+    "_layer": 33554432,
+    "_euler": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_id": "shop_scene_config_node"
+  },
+  {
+    "__type__": "StockOrderConfig",
+    "id": "apple_stock",
+    "itemId": "apple",
+    "displayName": "苹果进货单",
+    "description": "下一日苹果出现权重提高",
+    "price": 3,
+    "weightBonus": 1,
+    "canRepeat": true
+  },
+  {
+    "__type__": "StockOrderConfig",
+    "id": "banana_stock",
+    "itemId": "banana",
+    "displayName": "香蕉进货单",
+    "description": "下一日香蕉出现权重提高",
+    "price": 5,
+    "weightBonus": 1,
+    "canRepeat": true
+  },
+  {
+    "__type__": "StockOrderConfig",
+    "id": "lemon_stock",
+    "itemId": "lemon",
+    "displayName": "柠檬进货单",
+    "description": "下一日柠檬出现权重提高",
+    "price": 10,
+    "weightBonus": 1,
+    "canRepeat": true
+  },
+  {
+    "__type__": "BusinessBonusConfig",
+    "id": "apple_hot_sale",
+    "itemId": "apple",
+    "displayName": "苹果热销",
+    "description": "每日苹果数量 ≥ 10 时，结算额外 +￥1",
+    "price": 8,
+    "requiredCount": 10,
+    "rewardMoney": 1,
+    "canRepeat": false
+  },
+  {
+    "__type__": "BusinessBonusConfig",
+    "id": "banana_hot_sale",
+    "itemId": "banana",
+    "displayName": "香蕉热卖",
+    "description": "每日香蕉数量 ≥ 10 时，结算额外 +￥2",
+    "price": 10,
+    "requiredCount": 10,
+    "rewardMoney": 2,
+    "canRepeat": false
+  },
+  {
+    "__type__": "BusinessBonusConfig",
+    "id": "lemon_popular",
+    "itemId": "lemon",
+    "displayName": "柠檬人气",
+    "description": "每日柠檬数量 ≥ 8时，结算额外 +￥4",
+    "price": 15,
+    "requiredCount": 8,
+    "rewardMoney": 4,
+    "canRepeat": false
   }
 ]
