@@ -1,7 +1,9 @@
 # Cocos Creator generated caches and local editor artifacts
-/cocos/coin-pusher-cocos/temp/
-/cocos/coin-pusher-cocos/library/
-/cocos/coin-pusher-cocos/profiles/v2/packages/preview.json
-/cocos/coin-pusher-cocos/profiles/v2/packages/scene.json
-/cocos/coin-pusher-cocos/build/
+/temp/
+/library/
+/profiles/v2/packages/preview.json
+/profiles/v2/packages/scene.json
+/build/
+
+
 /.vs/

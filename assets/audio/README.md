@@ -1,26 +1,30 @@
-# 音效源文件目录
+# Cocos 音频资源
 
-这个目录用于暂存和管理项目音效源文件。当前 Cocos Creator 工程实际读取的音频资源在：
+这里存放 Cocos Creator 工程运行时使用的音效文件。资源导入后，需要在场景里的 `GameRoot/AudioManager` 节点上绑定到 `AudioService`。
 
-```text
-cocos/coin-pusher-cocos/assets/audio/
-```
+## 绑定位置
 
-推荐流程：
+1. 打开 `assets/scenes/Prototype01.scene`。
+2. 找到 `GameRoot/AudioManager`。
+3. 检查 `AudioService` 组件。
+4. 将本目录里的音频资源拖到对应属性上。
+5. 确认 `GameManager.audioService` 引用仍指向这个 `AudioService`。
 
-1. 先把未压缩或待处理的源文件放在这里。
-2. 裁剪、降噪、压缩并统一命名。
-3. 将最终使用的 `.mp3` 或 `.wav` 复制到 Cocos 工程的 `assets/audio/`。
-4. 回到 Cocos Creator，等待资源导入完成，再在 `AudioManager` 的 `AudioService` 上绑定对应 Clip。
+## 推荐资源表
 
-建议命名：
+| Inspector 属性 | 推荐文件名 | 用途 | 建议时长 |
+| --- | --- | --- | ---: |
+| `coinDropClip` | `coin-drop.mp3` | 投放、落币、轻触碰反馈 | 0.10-0.25 秒 |
+| `itemDropClip` | `item-drop.mp3` | 水果掉落或获得反馈 | 0.15-0.35 秒 |
+| `buttonClickClip` | `button-click.mp3` | UI 按钮点击 | 0.05-0.20 秒 |
+| `unlockClip` | `unlock.mp3` | 图鉴解锁、发现新物品 | 0.25-0.60 秒 |
+| `errorClip` | `error.mp3` | 资金不足、不可操作提示 | 0.10-0.25 秒 |
 
-| 用途 | 文件名 |
-| --- | --- |
-| 投放/硬币落下 | `coin-drop.mp3` |
-| 物品掉落/获得 | `item-drop.mp3` |
-| 按钮点击 | `button-click.mp3` |
-| 解锁/发现 | `unlock.mp3` |
-| 错误/资金不足 | `error.mp3` |
+当前目录里如果只有部分音效，未绑定的属性可以先留空；`AudioService` 会跳过空 Clip，不应影响玩法运行。
 
-音效应尽量短、干净、音量接近。移动端资源建议优先使用体积较小的 `.mp3`。
+## 制作建议
+
+- 使用短促、清晰、偏可爱的音色，避免过长混响。
+- 移动端推荐 `.mp3`，采样率 44.1kHz 或 48kHz。
+- 峰值音量建议留出约 3dB 到 6dB 余量，避免多个音效叠加时破音。
+- 新增音效后不要手写 `.meta`，让 Cocos Creator 自动导入生成。
