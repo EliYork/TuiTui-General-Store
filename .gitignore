@@ -1,9 +1,63 @@
-# Cocos Creator generated caches and local editor artifacts
+# =========================
+# Cocos Creator generated files
+# =========================
+
+# Editor cache
 /temp/
 /library/
+
+# Build outputs
+/build/
+/native/
+
+# Cocos preview/cache files
 /profiles/v2/packages/preview.json
 /profiles/v2/packages/scene.json
-/build/
 
 
+# =========================
+# Local IDE / editor files
+# =========================
+
+# Visual Studio / VS Code local files
 /.vs/
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+
+# =========================
+# Node / TypeScript
+# =========================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# =========================
+# OS files
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+# =========================
+# Logs
+# =========================
+
+*.log
+
+
+# =========================
+# Environment / secrets
+# =========================
+
+.env
+.env.*
+!.env.example
