@@ -153,6 +153,26 @@
   - `.gitignore`
 - 验收状态：文档已更新，结构清晰。
 
+## 2026-05-05
+
+### 修复商店场景 ShopConfig 绑定
+
+- 修改内容：
+  - 在 `ShopScene / Canvas / UIRoot / 商店场景根` 下新增节点"商店配置表"，添加 `ShopConfig` 组件。
+  - 将"商店场景根"上的 `ShopManager.shopConfig` 正式绑定到该 `ShopConfig` 组件。
+  - `ShopManager.businessModeController` 保持为 `null`，未添加 `BusinessModeController`。
+  - 商品配置保持不变：苹果进货单 ￥3、香蕉进货单 ￥5、柠檬进货单 ￥10，经营加成沿用当前序列化配置。
+  - 目的：避免 `ShopScene` 缺少 `ShopConfig` 时回退到脚本默认商品配置，让商店配置来源更明确。
+  - 静态 sanity check 通过：`ShopScene.scene` 合法 JSON，新增 `__id__` 引用有效，无重复 `_id`，`ShopConfig` 的 `__type__` 与 `.meta` UUID 一致，父子层级和组件 `node` 引用一致。
+- 涉及文件：
+  - `assets/scenes/ShopScene.scene`
+- 验收结果：
+  - 在 Cocos Creator 中打开 `ShopScene.scene`，确认"商店配置表"节点存在且挂载 `ShopConfig` 组件。
+  - 确认 `ShopManager` 的 `shopConfig` 属性已指向该组件。
+  - 从主玩法进入商店，确认商品列表显示正确（3 个进货单 + 3 个经营加成），价格和说明文案与 `ShopConfig` 配置一致。
+- 后续注意：
+  - `BusinessModeController` 仍为 `null`，购买进货单后权重写入 `SHOP_RUNTIME_STATE`，返回 `Prototype01` 后由 `BusinessModeController` 读取，需确认跨场景权重同步无异常。
+
 ---
 
 ## 当前状态总结
@@ -160,7 +180,7 @@
 根据当前代码状态整理：
 
 - **已实现/已接入**：推币机基础循环、经营模式闭环、商店系统、物品系统、图鉴面板、屏幕适配、音效系统、调试工具。
-- **待验证**：经营加成结算触发、跨场景状态保持、Android 构建测试、地图系统差异效果。
+- **待验证**：经营加成结算触发、跨场景权重同步（ShopScene 已绑定 ShopConfig，BusinessModeController 仍为 null）、Android 构建测试、地图系统差异效果。
 - **短期重点**：流程稳定性（P0）、信息准确性（P0）、体验打磨（P1）。
 
 ---
