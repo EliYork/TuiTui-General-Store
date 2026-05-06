@@ -23,12 +23,12 @@ const FALLBACK_HEIGHT = 720;
 const COLOR_BACKGROUND = new Color(255, 235, 244, 255);
 const COLOR_HEADER = COLOR_BACKGROUND;
 const COLOR_CARD = new Color(255, 255, 255, 255);
-const COLOR_BUTTON = new Color(255, 196, 216, 255);
-const COLOR_BUTTON_PRESSED = new Color(248, 174, 202, 255);
-const COLOR_BUTTON_TEXT = new Color(91, 45, 65, 255);
+const COLOR_BUTTON = new Color(255, 198, 216, 255);
+const COLOR_BUTTON_PRESSED = new Color(250, 184, 206, 255);
+const COLOR_BUTTON_TEXT = new Color(82, 42, 59, 255);
 const COLOR_TEXT = new Color(82, 42, 59, 255);
 const COLOR_HINT = new Color(142, 83, 106, 255);
-const COLOR_LINE = new Color(255, 207, 223, 255);
+const COLOR_LINE = new Color(207, 144, 166, 255);
 
 type ShopPanelCloseHandler = () => void;
 
@@ -403,7 +403,7 @@ export class ShopPanel extends Component {
 
     private createButton(name: string, parent: Node, text: string, x: number, y: number, width: number, height: number): Node {
         const buttonNode = this.createNode(name, parent, x, y, width, height);
-        this.drawRect(buttonNode, width, height, COLOR_BUTTON, 8, new Color(248, 177, 202, 255), 1);
+        this.drawRect(buttonNode, width, height, COLOR_BUTTON, 8, COLOR_LINE, 1);
         const button = buttonNode.addComponent(Button);
         button.interactable = true;
 
@@ -442,7 +442,7 @@ export class ShopPanel extends Component {
         graphics.roundRect(-width * 0.5, -height * 0.5, width, height, 8);
         graphics.fill();
         graphics.lineWidth = 1;
-        graphics.strokeColor = new Color(248, 177, 202, 255);
+        graphics.strokeColor = COLOR_LINE;
         graphics.roundRect(-width * 0.5, -height * 0.5, width, height, 8);
         graphics.stroke();
     }

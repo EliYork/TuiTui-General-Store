@@ -274,6 +274,7 @@ export class BusinessRunLogger {
     public static recordPurchase(payload: BusinessDiaryPurchasePayload): void {
         const run = this.ensureCurrentRun();
         if (!run) {
+            warn(`[BusinessRunLogger] 无法记录商店购买：当前经营日记不可用。商品=${payload.itemName} ￥${payload.price} day=${payload.day}`);
             return;
         }
 
@@ -464,6 +465,9 @@ export class BusinessRunLogger {
 
     private static getCurrentRun(): BusinessDiaryRunRecord | null {
         this.loadList();
+        if (!this._currentRunId) {
+            this._currentRunId = safeText(sys.localStorage.getItem(BUSINESS_RUN_LOG_CURRENT_ID_KEY), '');
+        }
         if (!this._currentRunId) {
             return null;
         }

@@ -72,6 +72,7 @@ export interface ShopRuntimeState {
     ownedBusinessBonusIds: string[];
     returnSceneName: string;
     pendingEnterNextBusinessDay: boolean;
+    businessAutoEndEnabled: boolean;
 }
 
 export const SHOP_SCENE_NAME = 'ShopScene';
@@ -89,6 +90,7 @@ export const SHOP_RUNTIME_STATE: ShopRuntimeState = {
     ownedBusinessBonusIds: [],
     returnSceneName: DEFAULT_GAME_SCENE_NAME,
     pendingEnterNextBusinessDay: false,
+    businessAutoEndEnabled: false,
 };
 
 export function resetShopRuntimeState(): void {
@@ -103,6 +105,7 @@ export function resetShopRuntimeState(): void {
     SHOP_RUNTIME_STATE.ownedBusinessBonusIds = [];
     SHOP_RUNTIME_STATE.returnSceneName = DEFAULT_GAME_SCENE_NAME;
     SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay = false;
+    SHOP_RUNTIME_STATE.businessAutoEndEnabled = false;
 }
 
 export function setShopRuntimeCatalog(

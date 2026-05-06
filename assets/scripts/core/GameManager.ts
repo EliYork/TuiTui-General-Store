@@ -57,8 +57,9 @@ const AUTO_SPAWN_INSUFFICIENT_RESOURCE_STATUS = '资源不足，自动投放已�
 const INSUFFICIENT_STOCK_STATUS = '今日进货次数不足';
 const DEBUG_UI_BACKGROUND_COLOR = new Color(72, 54, 64, 145);
 const DEBUG_UI_PANEL_COLOR = new Color(255, 238, 246, 220);
-const DEBUG_UI_BUTTON_COLOR = new Color(255, 196, 216, 245);
+const DEBUG_UI_BUTTON_COLOR = new Color(255, 198, 216, 255);
 const DEBUG_UI_TEXT_COLOR = new Color(82, 42, 59, 255);
+const DEBUG_UI_BUTTON_LINE_COLOR = new Color(207, 144, 166, 255);
 const DEFAULT_INITIAL_SPAWN_RESOURCE = 300;
 const DEFAULT_DAILY_SPAWN_QUOTA = 300;
 const DEFAULT_RESOURCE_REGEN_CAP = 300;
@@ -386,6 +387,20 @@ export class GameManager extends Component {
 
     @property({
         type: Label,
+        displayName: 'Auto 结束经营按钮文字',
+        tooltip: '经营模式底部 Auto 开关按钮上的文字 Label。开启后本日分数首次达标会自动触发一次正式结束经营；为 null 时会尝试从场景节点自动查找。',
+    })
+    public businessAutoEndButtonLabel: Label | null = null;
+
+    @property({
+        type: Node,
+        displayName: 'Auto 结束经营按钮',
+        tooltip: '经营模式底部的 Auto 开关按钮节点。用于运行时补充点击监听和按下缩放反馈，避免按钮调整大小后点击区域或事件绑定失效。',
+    })
+    public businessAutoEndButton: Node | null = null;
+
+    @property({
+        type: Label,
         displayName: '停滞检测倒计时 Label',
         tooltip: '绑定右上方用于显示“判定倒计时 / 无得分判定 / 本日已结算 / 经营失败”的 Label。优先使用场景中绑定的 Label，方便在 Cocos Creator 中手动调整位置、大小、字号和颜色；为空时才运行时创建兜底文本。',
     })
@@ -413,6 +428,7 @@ export class GameManager extends Component {
 
     public autoSpawnEnabled = false;
 
+    private _businessAutoEndEnabled = false;
     private _state = RoundState.Ready;
     private _sessionSpawnedCoinCount = 0;
     private _statusText = '准备运行数据';
@@ -420,6 +436,10 @@ export class GameManager extends Component {
     private readonly _manualSpawnPosition = new Vec3();
     private readonly _resolvedManualSpawnPosition = new Vec3();
     private _boundRestartButton: Node | null = null;
+    private _boundBusinessAutoEndButton: Node | null = null;
+    private _boundBusinessAutoEndLabelNode: Node | null = null;
+    private readonly _businessAutoEndButtonNormalScale = new Vec3(1, 1, 1);
+    private _lastBusinessAutoEndToggleMs = 0;
     private _restartLocked = false;
     private _modeStartAccepted = false;
     private _businessDayReadyForTomorrow = false;
@@ -458,10 +478,13 @@ export class GameManager extends Component {
         this.bindRestartButton();
         this.bindModeResourceLabel();
         this.bindModeDayLabel();
+        this.bindBusinessAutoEndButtonLabel();
+        this.bindBusinessAutoEndButton();
         this.bindDayResultPanel();
         this.dayResultPanel?.setMainButtonHandler((passed) => this.onDayResultPanelMainButtonClicked(passed));
         this.dayResultPanel?.hide();
         this.refreshBusinessEndDayButtonLabel();
+        this.refreshBusinessAutoEndButtonLabel();
 
         if (this.showColliderDebug) {
             PhysicsSystem.instance.debugDrawFlags =
@@ -471,6 +494,11 @@ export class GameManager extends Component {
         }
 
         const shouldEnterNextBusinessDayFromShop = SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay;
+        this._businessAutoEndEnabled = shouldEnterNextBusinessDayFromShop
+            ? SHOP_RUNTIME_STATE.businessAutoEndEnabled
+            : false;
+        SHOP_RUNTIME_STATE.businessAutoEndEnabled = this._businessAutoEndEnabled;
+        this.refreshBusinessAutoEndButtonLabel();
         const requestedNewBusinessRun = (this.shouldUseBusinessOrderDeck() || shouldEnterNextBusinessDayFromShop)
             && BusinessRunLogger.consumeNewRunRequest();
         const shouldCreateNewBusinessRun = requestedNewBusinessRun && !shouldEnterNextBusinessDayFromShop;
@@ -542,6 +570,11 @@ export class GameManager extends Component {
 
         const rootSize = this.getRuntimeUiSize(parent);
         this._debugButtonNode = this.createRuntimeButton('调试按钮', parent, 'Debug', rootSize.width * 0.5 - 78, -rootSize.height * 0.5 + 34, 120, 44);
+        this._debugButtonNode.getComponent(Graphics)?.clear();
+        const debugBtnLabel = this._debugButtonNode.children[0]?.getComponent(Label);
+        if (debugBtnLabel) {
+            debugBtnLabel.color = new Color(0, 0, 0, 0);
+        }
         this._debugButtonNode.on(Node.EventType.TOUCH_END, this.openDebugPanel, this);
 
         this._debugPanelRoot = this.createRuntimeNode('调试面板', parent, 0, 0, rootSize.width, rootSize.height);
@@ -556,7 +589,7 @@ export class GameManager extends Component {
         panel.on(Node.EventType.TOUCH_START, this.stopDebugPanelEvent, this);
         panel.on(Node.EventType.TOUCH_END, this.stopDebugPanelEvent, this);
         panel.on(Node.EventType.TOUCH_CANCEL, this.stopDebugPanelEvent, this);
-        this.drawRuntimeRect(panel, panelWidth, panelHeight, DEBUG_UI_PANEL_COLOR, 12, new Color(255, 207, 223, 255), 2);
+        this.drawRuntimeRect(panel, panelWidth, panelHeight, DEBUG_UI_PANEL_COLOR, 12, DEBUG_UI_BUTTON_LINE_COLOR, 2);
         this.createRuntimeLabel('调试标题文本', panel, '调试面板', 0, panelHeight * 0.5 - 44, 280, 40, 28);
 
         const closeButton = this.createRuntimeButton('关闭调试面板按钮', panel, '关闭', panelWidth * 0.5 - 78, panelHeight * 0.5 - 44, 112, 42);
@@ -743,7 +776,7 @@ export class GameManager extends Component {
 
     private createRuntimeButton(name: string, parent: Node, text: string, x: number, y: number, width: number, height: number): Node {
         const buttonNode = this.createRuntimeNode(name, parent, x, y, width, height);
-        this.drawRuntimeRect(buttonNode, width, height, DEBUG_UI_BUTTON_COLOR, 8, new Color(248, 177, 202, 255), 1);
+        this.drawRuntimeRect(buttonNode, width, height, DEBUG_UI_BUTTON_COLOR, 8, DEBUG_UI_BUTTON_LINE_COLOR, 1);
         buttonNode.addComponent(Button);
         this.createRuntimeLabel(`${name}文字`, buttonNode, text, 0, 0, width - 10, height - 4, 20);
         return buttonNode;
@@ -803,6 +836,7 @@ export class GameManager extends Component {
         this.setDayResultPhysicsFrozen(false);
         this.dayResultPanel?.setMainButtonHandler(null);
         this.unbindRestartButton();
+        this.unbindBusinessAutoEndButton();
     }
 
     protected update(deltaTime: number): void {
@@ -990,6 +1024,31 @@ export class GameManager extends Component {
 
     public isAutoSpawnEnabled(): boolean {
         return this.autoSpawnEnabled;
+    }
+
+    public toggleBusinessAutoEnd(): boolean {
+        const now = Date.now();
+        if (now - this._lastBusinessAutoEndToggleMs < 80) {
+            return this._businessAutoEndEnabled;
+        }
+
+        this._lastBusinessAutoEndToggleMs = now;
+        return this.setBusinessAutoEndEnabled(!this._businessAutoEndEnabled);
+    }
+
+    public setBusinessAutoEndEnabled(enabled: boolean): boolean {
+        this._businessAutoEndEnabled = enabled && this.shouldUseBusinessOrderDeck();
+        SHOP_RUNTIME_STATE.businessAutoEndEnabled = this._businessAutoEndEnabled;
+        this.refreshBusinessAutoEndButtonLabel();
+        this.setStatus(this._businessAutoEndEnabled ? 'Auto：达标后自动结束本日' : 'Auto：已关闭');
+        if (this._businessAutoEndEnabled) {
+            this.tryAutoSettleReachedBusinessDay();
+        }
+        return this._businessAutoEndEnabled;
+    }
+
+    public isBusinessAutoEndEnabled(): boolean {
+        return this._businessAutoEndEnabled;
     }
 
     private spawnCurrentSpawnItem(request: CoinSpawnRequest | null = null): boolean {
@@ -1280,6 +1339,7 @@ export class GameManager extends Component {
             this.recordBusinessDayStart();
         }
         this.refreshBusinessEndDayButtonLabel();
+        this.refreshBusinessAutoEndButtonLabel();
         this.setDayResultPhysicsFrozen(false);
         this.playSound('button-click');
         this.setStatus(claimedMoney > 0
@@ -1306,6 +1366,7 @@ export class GameManager extends Component {
         SHOP_RUNTIME_STATE.currentMoney = this.businessModeController?.getCurrentMoney() ?? SHOP_RUNTIME_STATE.currentMoney;
         SHOP_RUNTIME_STATE.currentBusinessDay = runtimeProgress.currentBusinessDay;
         SHOP_RUNTIME_STATE.orderDeckSnapshots = this.businessModeController?.getOrderDeckSnapshots() ?? [];
+        SHOP_RUNTIME_STATE.businessAutoEndEnabled = this._businessAutoEndEnabled;
         SHOP_RUNTIME_STATE.returnSceneName = SHARED_SCENE_NAME;
         SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay = true;
         director.loadScene(SHOP_SCENE_NAME);
@@ -1494,8 +1555,11 @@ export class GameManager extends Component {
         this._businessRunFailed = false;
         this._businessStagnationTriggered = false;
         this._modeStartAccepted = false;
+        this._businessAutoEndEnabled = false;
+        SHOP_RUNTIME_STATE.businessAutoEndEnabled = false;
         this.resetBusinessDayStagnationState();
         this.refreshBusinessEndDayButtonLabel();
+        this.refreshBusinessAutoEndButtonLabel();
         this.refreshBusinessStagnationStatusLabel();
 
         if (!createNewDiary) {
@@ -1561,6 +1625,107 @@ export class GameManager extends Component {
         this.dayResultPanel = dayResultPanelNode?.getComponent(DayResultPanel) ?? null;
     }
 
+    private bindBusinessAutoEndButtonLabel(): void {
+        if (this.businessAutoEndButtonLabel) {
+            return;
+        }
+
+        const autoEndLabelNode = find('Canvas/UIRoot/经营模式界面/左侧信息栏/底部操作区/Auto按钮/Label');
+        this.businessAutoEndButtonLabel = autoEndLabelNode?.getComponent(Label) ?? null;
+    }
+
+    private bindBusinessAutoEndButton(): void {
+        if (this._boundBusinessAutoEndButton) {
+            return;
+        }
+
+        const autoEndButtonNode = this.businessAutoEndButton ?? this.businessAutoEndButtonLabel?.node.parent ?? null;
+        if (!autoEndButtonNode) {
+            return;
+        }
+
+        this._boundBusinessAutoEndButton = autoEndButtonNode;
+        this._boundBusinessAutoEndButton.getScale(this._businessAutoEndButtonNormalScale);
+        if (Math.abs(this._businessAutoEndButtonNormalScale.z) < 0.0001) {
+            this._businessAutoEndButtonNormalScale.z = 1;
+            this._boundBusinessAutoEndButton.setScale(
+                this._businessAutoEndButtonNormalScale.x,
+                this._businessAutoEndButtonNormalScale.y,
+                this._businessAutoEndButtonNormalScale.z,
+            );
+        }
+        this._boundBusinessAutoEndButton.off(Node.EventType.TOUCH_START, this.onBusinessAutoEndButtonPressed, this);
+        this._boundBusinessAutoEndButton.off(Node.EventType.TOUCH_CANCEL, this.onBusinessAutoEndButtonCanceled, this);
+        this._boundBusinessAutoEndButton.off(Node.EventType.TOUCH_END, this.onBusinessAutoEndButtonTouched, this);
+        this._boundBusinessAutoEndButton.on(Node.EventType.TOUCH_START, this.onBusinessAutoEndButtonPressed, this);
+        this._boundBusinessAutoEndButton.on(Node.EventType.TOUCH_CANCEL, this.onBusinessAutoEndButtonCanceled, this);
+        this._boundBusinessAutoEndButton.on(Node.EventType.TOUCH_END, this.onBusinessAutoEndButtonTouched, this);
+
+        this._boundBusinessAutoEndLabelNode = this.businessAutoEndButtonLabel?.node ?? null;
+        if (this._boundBusinessAutoEndLabelNode && this._boundBusinessAutoEndLabelNode !== this._boundBusinessAutoEndButton) {
+            this._boundBusinessAutoEndLabelNode.off(Node.EventType.TOUCH_START, this.onBusinessAutoEndButtonPressed, this);
+            this._boundBusinessAutoEndLabelNode.off(Node.EventType.TOUCH_CANCEL, this.onBusinessAutoEndButtonCanceled, this);
+            this._boundBusinessAutoEndLabelNode.off(Node.EventType.TOUCH_END, this.onBusinessAutoEndButtonTouched, this);
+            this._boundBusinessAutoEndLabelNode.on(Node.EventType.TOUCH_START, this.onBusinessAutoEndButtonPressed, this);
+            this._boundBusinessAutoEndLabelNode.on(Node.EventType.TOUCH_CANCEL, this.onBusinessAutoEndButtonCanceled, this);
+            this._boundBusinessAutoEndLabelNode.on(Node.EventType.TOUCH_END, this.onBusinessAutoEndButtonTouched, this);
+        }
+    }
+
+    private unbindBusinessAutoEndButton(): void {
+        if (this._boundBusinessAutoEndButton) {
+            this._boundBusinessAutoEndButton.off(Node.EventType.TOUCH_START, this.onBusinessAutoEndButtonPressed, this);
+            this._boundBusinessAutoEndButton.off(Node.EventType.TOUCH_CANCEL, this.onBusinessAutoEndButtonCanceled, this);
+            this._boundBusinessAutoEndButton.off(Node.EventType.TOUCH_END, this.onBusinessAutoEndButtonTouched, this);
+            this._boundBusinessAutoEndButton = null;
+        }
+
+        if (this._boundBusinessAutoEndLabelNode) {
+            this._boundBusinessAutoEndLabelNode.off(Node.EventType.TOUCH_START, this.onBusinessAutoEndButtonPressed, this);
+            this._boundBusinessAutoEndLabelNode.off(Node.EventType.TOUCH_CANCEL, this.onBusinessAutoEndButtonCanceled, this);
+            this._boundBusinessAutoEndLabelNode.off(Node.EventType.TOUCH_END, this.onBusinessAutoEndButtonTouched, this);
+            this._boundBusinessAutoEndLabelNode = null;
+        }
+    }
+
+    private onBusinessAutoEndButtonPressed(event?: Event): void {
+        if (event) {
+            event.propagationStopped = true;
+        }
+
+        this.setBusinessAutoEndButtonPressed(true);
+    }
+
+    private onBusinessAutoEndButtonCanceled(event?: Event): void {
+        if (event) {
+            event.propagationStopped = true;
+        }
+
+        this.setBusinessAutoEndButtonPressed(false);
+    }
+
+    private onBusinessAutoEndButtonTouched(event?: Event): void {
+        if (event) {
+            event.propagationStopped = true;
+        }
+
+        this.setBusinessAutoEndButtonPressed(false);
+        this.toggleBusinessAutoEnd();
+    }
+
+    private setBusinessAutoEndButtonPressed(pressed: boolean): void {
+        if (!this._boundBusinessAutoEndButton) {
+            return;
+        }
+
+        const scale = pressed ? 0.92 : 1;
+        this._boundBusinessAutoEndButton.setScale(
+            this._businessAutoEndButtonNormalScale.x * scale,
+            this._businessAutoEndButtonNormalScale.y * scale,
+            this._businessAutoEndButtonNormalScale.z,
+        );
+    }
+
     private refreshBusinessEndDayButtonLabel(): void {
         if (!this.businessEndDayButtonLabel) {
             return;
@@ -1573,16 +1738,30 @@ export class GameManager extends Component {
         return this.businessModeController?.isDailyTargetReached() ?? false;
     }
 
+    private refreshBusinessAutoEndButtonLabel(): void {
+        if (!this.businessAutoEndButtonLabel) {
+            return;
+        }
+
+        this.businessAutoEndButtonLabel.string = this._businessAutoEndEnabled ? 'Auto：开' : 'Auto：关';
+    }
+
     private tryAutoSettleReachedBusinessDay(): boolean {
-        if (!this.autoSpawnEnabled || !this.shouldUseBusinessOrderDeck()) {
+        if (!this._businessAutoEndEnabled || !this.shouldUseBusinessOrderDeck()) {
             return false;
         }
 
-        if (this._businessDaySettlementCompleted || !this.isCurrentBusinessDayReachedTarget()) {
+        if (
+            this._businessRunFailed
+            || this._businessDayReadyForTomorrow
+            || this._businessDaySettlementCompleted
+            || this.isDayResultPanelShowing()
+            || !this.isCurrentBusinessDayReachedTarget()
+        ) {
             return false;
         }
 
-        this.stopAutoSpawn('已达标，自动结算本日');
+        this.setStatus('Auto：已达标，自动结束本日');
         this.endCurrentBusinessDay();
         return true;
     }
@@ -2698,7 +2877,7 @@ export class GameManager extends Component {
 
     private getBusinessStagnationFailureReason(): string {
         const timeoutSeconds = this.getConfiguredNoScoreTimeoutSeconds();
-        return `连续 ${formatCountdownSeconds(timeoutSeconds, this.getConfiguredCountdownDecimalPlaces())} 秒没有获得分数`;
+        return `连续 ${Number.isInteger(timeoutSeconds) ? timeoutSeconds : timeoutSeconds.toFixed(1)} 秒没有获得分数`;
     }
 
     private getConfiguredInitialCoins(): number {

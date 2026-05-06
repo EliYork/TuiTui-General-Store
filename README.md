@@ -145,3 +145,8 @@ Android 构建可通过 Cocos Creator 菜单 **项目 → 构建发布** 生成�
 - 玩家可见 UI 默认使用中文；TypeScript 类名、变量名和方法名保持英文。
 - 调整数值时优先集中到配置结构或 Inspector 参数，不把价格、权重、文案散落在多个脚本里。
 - 修改 Cocos 场景后，至少确认 JSON 合法、`__id__` 引用有效、自定义脚本组件类型与 `.meta` 匹配。
+
+## 项目文档
+
+- [开发记录](./DEVELOPMENT_LOG.md)
+- [开发路线图](./ROADMAP.md)

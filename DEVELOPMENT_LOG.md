@@ -244,6 +244,38 @@
   - 主菜单多条历史日记列表如已实现，需确认不会覆盖旧日记。
   - 回到菜单、Debug 重新开始、经营失败后是否完整重置整局状态。
 
+## 2026-05-07
+
+### 经营日记 v2、购买记录兜底与主菜单版本显示整理
+
+- 修改内容：
+  - 经营日记格式升级到 v2。
+  - 日记初始配置增加每日补货、初始进货单权重。
+  - 日记文案从"进货单"明确为"进货单权重"，更准确表达随机抽取权重。
+  - 经营失败记录已能独立写入：当日生成水果、手动投放、随机掉落、推下水果、剩余进货、当前分数、失败原因、当前资金、场上剩余。
+  - 经营失败不再伪装为"第 X 天结束经营"，不发放基础奖励或经营加成奖励。
+  - 修复 `BusinessRunLogger.recordPurchase()` 静默失败问题：当无法获取当前 run 时输出 warn，避免商店购买记录丢失。
+  - `getCurrentRun()` 增加从 localStorage 恢复 `_currentRunId` 的兜底，防止跨场景内存态丢失导致后续所有日记写入静默跳过。
+  - 失败原因秒数格式优化：`4.0 秒` 改为 `4 秒`，非整数如 `3.5 秒` 保持一位小数。
+  - 新增 `MainMenuVersionLabel.ts` 脚本，主菜单右下角显示版本号和日记格式号，数据来源于 `ProjectVersion.ts`。
+  - Debug 按钮视觉隐藏（清除背景 Graphics + Label 透明），保留 Button 组件和点击区域。
+- 涉及文件：
+  - `assets/scripts/business/BusinessRunLogger.ts`（recordPurchase warn、getCurrentRun localStorage 兜底）
+  - `assets/scripts/core/GameManager.ts`（失败原因秒数格式、Debug 按钮视觉隐藏）
+  - `assets/scripts/ui/MainMenuVersionLabel.ts`（新增）
+- 手动验收：
+  - 新一局经营日记显示 v2、本局信息和初始配置。
+  - 商店购买记录能出现在日记中。
+  - 第 4 天结算后资金、商店购买、进入下一天资金链路对得上。
+  - 经营失败写入独立失败记录，不发奖励、不进入下一天。
+  - 失败原因显示 `连续 4 秒没有获得分数`，不再出现 `4.0 秒`。
+  - Debug 按钮不可见但点击右下角原位置仍可打开调试面板。
+- 后续注意：
+  - 主菜单右下角版本号显示需在 Cocos Creator 中手动将 `MainMenuVersionLabel` 组件挂载到 Canvas 节点后验收。
+  - 如果 Console 出现 `[BusinessRunLogger] 无法记录商店购买` 警告，说明仍有 `_currentRunId` 丢失场景需要进一步排查。
+  - 继续观察第 8～9 天是否过于稳定卡关，再决定是否调整目标增长、每日补货或停滞检测时间。
+  - 当前局进行中时"清空全部日记"是否应保留当前 run，后续可优化。
+
 ---
 
 ## 当前状态总结

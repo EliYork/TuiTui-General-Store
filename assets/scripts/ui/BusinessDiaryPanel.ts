@@ -1,12 +1,17 @@
-import { _decorator, Button, Color, Component, Graphics, Label, Node, UITransform, log, sys, warn } from 'cc';
+import { _decorator, Button, Color, Component, EventMouse, EventTouch, Graphics, Label, Mask, Node, UITransform, log, sys, warn } from 'cc';
 import { BusinessDiaryRunRecord, BusinessRunLogger } from '../business/BusinessRunLogger';
+import { ensureMainMenuVersionLabel } from './MainMenuVersionLabel';
 
-const { ccclass } = _decorator;
+const { ccclass, property } = _decorator;
 
 const PANEL_WIDTH = 900;
 const PANEL_HEIGHT = 610;
 const CONTENT_WIDTH = 810;
 const CONTENT_HEIGHT = 410;
+const DETAIL_TEXT_WIDTH = CONTENT_WIDTH - 36;
+const DETAIL_VIEW_HEIGHT = CONTENT_HEIGHT - 32;
+const DETAIL_FONT_SIZE = 18;
+const DETAIL_LINE_HEIGHT = 28;
 const LIST_PAGE_SIZE = 5;
 
 const COLOR_BUTTON = new Color(255, 198, 216, 255);
@@ -46,18 +51,29 @@ interface BrowserClipboardHost {
 
 @ccclass('BusinessDiaryPanel')
 export class BusinessDiaryPanel extends Component {
+    @property({
+        type: Node,
+        displayName: '经营日记入口按钮',
+        tooltip: '主菜单里用于打开经营日记面板的按钮节点。绑定场景节点后，可以直接在 Cocos Creator 里调整位置、大小和样式；为空时会运行时创建兜底按钮。',
+    })
+    public openButton: Node | null = null;
+
     private _openButton: Node | null = null;
     private _panelRoot: Node | null = null;
     private _listRoot: Node | null = null;
     private _detailRoot: Node | null = null;
     private _listContent: Node | null = null;
-    private _detailTextLabel: Label | null = null;
+    private _detailTextArea: Node | null = null;
+    private _detailTextNode: Node | null = null;
     private _hintLabel: Label | null = null;
     private _selectedRunId = '';
     private _listPage = 0;
+    private _detailScrollOffset = 0;
+    private _detailContentHeight = DETAIL_VIEW_HEIGHT;
 
     protected onLoad(): void {
         this.buildUi();
+        ensureMainMenuVersionLabel(this.node.parent ?? this.node);
         this.closePanel();
     }
 
@@ -68,12 +84,14 @@ export class BusinessDiaryPanel extends Component {
         this._listRoot = null;
         this._detailRoot = null;
         this._listContent = null;
-        this._detailTextLabel = null;
+        this._detailTextArea = null;
+        this._detailTextNode = null;
         this._hintLabel = null;
         this._selectedRunId = '';
     }
 
     public openPanel(): void {
+        this.bringPanelToFront();
         if (this._panelRoot) {
             this._panelRoot.active = true;
         }
@@ -94,8 +112,12 @@ export class BusinessDiaryPanel extends Component {
         }
 
         const layer = this.node.layer;
-        this._openButton = this.createButton('经营日记按钮', this.node, '经营日记', 0, -190, 320, 64);
-        this._openButton.layer = layer;
+        if (this.openButton) {
+            this._openButton = this.openButton;
+        } else {
+            this._openButton = this.createButton('经营日记按钮', this.node, '经营日记', 0, -190, 320, 64);
+            this._openButton.layer = layer;
+        }
         this._openButton.on(Node.EventType.TOUCH_END, this.openPanel, this);
 
         this._panelRoot = new Node('经营日记面板');
@@ -111,7 +133,7 @@ export class BusinessDiaryPanel extends Component {
         panelBg.setPosition(0, 0, 1);
         this.addTransform(panelBg, PANEL_WIDTH, PANEL_HEIGHT);
         this.drawRect(panelBg, PANEL_WIDTH, PANEL_HEIGHT, COLOR_PANEL, 10);
-        this.drawRect(panelBg, PANEL_WIDTH - 4, PANEL_HEIGHT - 4, new Color(0, 0, 0, 0), 8, COLOR_LINE);
+        this.drawRectBorder(panelBg, PANEL_WIDTH - 4, PANEL_HEIGHT - 4, 8, COLOR_LINE);
 
         this.createLabel('经营日记标题', panelBg, '经营日记', 0, PANEL_HEIGHT * 0.5 - 52, 36, PANEL_WIDTH - 96, 52, 1);
 
@@ -149,20 +171,19 @@ export class BusinessDiaryPanel extends Component {
         textArea.setPosition(0, 28, 1);
         this.addTransform(textArea, CONTENT_WIDTH, CONTENT_HEIGHT);
         this.drawRect(textArea, CONTENT_WIDTH, CONTENT_HEIGHT, COLOR_TEXT_AREA, 6, COLOR_LINE);
+        const mask = textArea.addComponent(Mask);
+        mask.type = Mask.Type.GRAPHICS_RECT;
+        textArea.on(Node.EventType.TOUCH_MOVE, this.onDetailTextTouchMove, this);
+        textArea.on(Node.EventType.MOUSE_WHEEL, this.onDetailTextMouseWheel, this);
+        this._detailTextArea = textArea;
 
         const textNode = new Node('经营日记详情文本');
         textNode.layer = layer;
         textArea.addChild(textNode);
-        textNode.setPosition(0, 0, 2);
-        this.addTransform(textNode, CONTENT_WIDTH - 36, CONTENT_HEIGHT - 32);
-        this._detailTextLabel = textNode.addComponent(Label);
-        this._detailTextLabel.fontSize = 19;
-        this._detailTextLabel.lineHeight = 26;
-        this._detailTextLabel.color = COLOR_TEXT;
-        this._detailTextLabel.horizontalAlign = 0;
-        this._detailTextLabel.verticalAlign = 0;
-        this._detailTextLabel.enableWrapText = true;
-        this._detailTextLabel.overflow = 1;
+        textNode.setPosition(-DETAIL_TEXT_WIDTH * 0.5, DETAIL_VIEW_HEIGHT * 0.5, 2);
+        this.addTransform(textNode, DETAIL_TEXT_WIDTH, DETAIL_VIEW_HEIGHT);
+        textNode.getComponent(UITransform)?.setAnchorPoint(0, 1);
+        this._detailTextNode = textNode;
 
         const copyButton = this.createButton('复制当前日记按钮', this._detailRoot, '复制', -258, -PANEL_HEIGHT * 0.5 + 42, 126, 46);
         copyButton.on(Node.EventType.TOUCH_END, this.copySelectedLog, this);
@@ -196,9 +217,8 @@ export class BusinessDiaryPanel extends Component {
         if (this._detailRoot) {
             this._detailRoot.active = true;
         }
-        if (this._detailTextLabel) {
-            this._detailTextLabel.string = BusinessRunLogger.getRunText(runId);
-        }
+        this.renderDetailText(BusinessRunLogger.getRunText(runId));
+        this.resetDetailTextScroll();
         this.setHint('');
     }
 
@@ -318,13 +338,117 @@ export class BusinessDiaryPanel extends Component {
 
         BusinessRunLogger.deleteRun(this._selectedRunId);
         this.showList();
-        this.setHint('已删除当前日记。');
     }
 
     private clearAllLogs(): void {
         BusinessRunLogger.clearAllLogs();
         this.refreshList();
-        this.setHint('已清空全部经营日记。');
+    }
+
+    private bringPanelToFront(): void {
+        const parent = this.node.parent;
+        if (!parent) {
+            return;
+        }
+
+        this.node.setSiblingIndex(Math.max(0, parent.children.length - 1));
+    }
+
+    private onDetailTextTouchMove(event: EventTouch): void {
+        const delta = event.getUIDelta();
+        this.scrollDetailTextBy(delta.y);
+    }
+
+    private onDetailTextMouseWheel(event: EventMouse): void {
+        this.scrollDetailTextBy(-event.getScrollY() * 0.45);
+    }
+
+    private resetDetailTextScroll(): void {
+        this._detailScrollOffset = 0;
+        this.applyDetailTextScroll();
+    }
+
+    private scrollDetailTextBy(delta: number): void {
+        const maxScroll = Math.max(0, this._detailContentHeight - DETAIL_VIEW_HEIGHT);
+        this._detailScrollOffset = Math.max(0, Math.min(maxScroll, this._detailScrollOffset + delta));
+        this.applyDetailTextScroll();
+    }
+
+    private applyDetailTextScroll(): void {
+        if (!this._detailTextNode) {
+            return;
+        }
+
+        this._detailTextNode.getComponent(UITransform)?.setContentSize(DETAIL_TEXT_WIDTH, this._detailContentHeight);
+        this._detailTextNode.setPosition(-DETAIL_TEXT_WIDTH * 0.5, DETAIL_VIEW_HEIGHT * 0.5 + this._detailScrollOffset, 2);
+    }
+
+    private renderDetailText(text: string): void {
+        if (!this._detailTextNode) {
+            return;
+        }
+
+        this._detailTextNode.children.slice().forEach((child) => {
+            child.removeFromParent();
+            child.destroy();
+        });
+
+        const lines = this.wrapDetailText(text);
+        this._detailContentHeight = Math.max(DETAIL_VIEW_HEIGHT, lines.length * DETAIL_LINE_HEIGHT + 16);
+        this._detailTextNode.getComponent(UITransform)?.setContentSize(DETAIL_TEXT_WIDTH, this._detailContentHeight);
+
+        lines.forEach((line, index) => {
+            const lineNode = new Node(`经营日记详情行${index + 1}`);
+            lineNode.layer = this._detailTextNode!.layer;
+            this._detailTextNode!.addChild(lineNode);
+            lineNode.setPosition(0, -index * DETAIL_LINE_HEIGHT, 1);
+            const transform = this.addTransform(lineNode, DETAIL_TEXT_WIDTH, DETAIL_LINE_HEIGHT);
+            transform.setAnchorPoint(0, 1);
+
+            const label = lineNode.addComponent(Label);
+            label.string = line.length > 0 ? line : ' ';
+            label.fontSize = DETAIL_FONT_SIZE;
+            label.lineHeight = DETAIL_LINE_HEIGHT;
+            label.fontFamily = 'Arial';
+            label.color = COLOR_TEXT;
+            label.horizontalAlign = 0;
+            label.verticalAlign = 1;
+            label.enableWrapText = false;
+            label.overflow = Label.Overflow.CLAMP;
+        });
+    }
+
+    private wrapDetailText(text: string): string[] {
+        const maxUnitsPerLine = Math.max(8, Math.floor(DETAIL_TEXT_WIDTH / (DETAIL_FONT_SIZE * 0.98)));
+        const result: string[] = [];
+        text.split('\n').forEach((rawLine) => {
+            if (rawLine.length === 0) {
+                result.push('');
+                return;
+            }
+
+            let current = '';
+            let currentUnits = 0;
+            for (const char of rawLine) {
+                const units = this.getDetailTextCharUnits(char);
+                if (current.length > 0 && currentUnits + units > maxUnitsPerLine) {
+                    result.push(current);
+                    current = char;
+                    currentUnits = units;
+                } else {
+                    current += char;
+                    currentUnits += units;
+                }
+            }
+
+            result.push(current);
+        });
+
+        return result.length > 0 ? result : [''];
+    }
+
+    private getDetailTextCharUnits(char: string): number {
+        return /[\x00-\x7F]/.test(char) ? 0.55 : 1;
     }
 
     private async copyText(text: string): Promise<boolean> {
@@ -493,5 +617,13 @@ export class BusinessDiaryPanel extends Component {
             graphics.roundRect(-width * 0.5, -height * 0.5, width, height, radius);
             graphics.stroke();
         }
+    }
+
+    private drawRectBorder(node: Node, width: number, height: number, radius: number, strokeColor: Color): void {
+        const graphics = node.getComponent(Graphics) ?? node.addComponent(Graphics);
+        graphics.strokeColor = strokeColor;
+        graphics.lineWidth = 2;
+        graphics.roundRect(-width * 0.5, -height * 0.5, width, height, radius);
+        graphics.stroke();
     }
 }
