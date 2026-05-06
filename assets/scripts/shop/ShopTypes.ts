@@ -91,6 +91,20 @@ export const SHOP_RUNTIME_STATE: ShopRuntimeState = {
     pendingEnterNextBusinessDay: false,
 };
 
+export function resetShopRuntimeState(): void {
+    SHOP_RUNTIME_STATE.currentMoney = 0;
+    SHOP_RUNTIME_STATE.currentBusinessDay = 1;
+    SHOP_RUNTIME_STATE.businessMoneyInitialized = false;
+    SHOP_RUNTIME_STATE.stockOrderConfigs = null;
+    SHOP_RUNTIME_STATE.businessBonusConfigs = null;
+    SHOP_RUNTIME_STATE.orderWeights = Object.create(null);
+    SHOP_RUNTIME_STATE.orderDisplayNames = Object.create(null);
+    SHOP_RUNTIME_STATE.orderDeckSnapshots = [];
+    SHOP_RUNTIME_STATE.ownedBusinessBonusIds = [];
+    SHOP_RUNTIME_STATE.returnSceneName = DEFAULT_GAME_SCENE_NAME;
+    SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay = false;
+}
+
 export function setShopRuntimeCatalog(
     stockOrders: NormalizedShopOrderConfig[],
     businessBonuses: NormalizedShopBusinessBonusConfig[],

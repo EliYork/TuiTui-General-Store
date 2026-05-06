@@ -243,7 +243,9 @@ export class BusinessModeController extends Component {
         this.bindBusinessConfig();
         this.bindShopConfig();
         if (!SHOP_RUNTIME_STATE.businessMoneyInitialized) {
-            SHOP_RUNTIME_STATE.currentMoney = this.getConfiguredInitialMoney();
+            SHOP_RUNTIME_STATE.currentMoney = SHOP_RUNTIME_STATE.currentMoney > 0
+                ? SHOP_RUNTIME_STATE.currentMoney
+                : this.getConfiguredInitialMoney();
             SHOP_RUNTIME_STATE.businessMoneyInitialized = true;
         }
         this.money = SHOP_RUNTIME_STATE.currentMoney;
@@ -393,6 +395,7 @@ export class BusinessModeController extends Component {
         const claimedMoney = normalizeNonNegativeInteger(settlement.earnedMoney);
         this.money += claimedMoney;
         SHOP_RUNTIME_STATE.currentMoney = this.money;
+        SHOP_RUNTIME_STATE.businessMoneyInitialized = true;
         this.todayEarnedMoney = 0;
         this._latestSettlementClaimed = true;
         this.refreshUi();
@@ -494,7 +497,19 @@ export class BusinessModeController extends Component {
     public setCurrentMoney(value: number): void {
         this.money = normalizeNonNegativeInteger(value);
         SHOP_RUNTIME_STATE.currentMoney = this.money;
+        SHOP_RUNTIME_STATE.businessMoneyInitialized = true;
         this.refreshUi();
+    }
+
+    public resetRunMoneyToInitial(): number {
+        this.money = this.getConfiguredInitialMoney();
+        SHOP_RUNTIME_STATE.currentMoney = this.money;
+        SHOP_RUNTIME_STATE.businessMoneyInitialized = true;
+        this.todayEarnedMoney = 0;
+        this._latestSettlement = null;
+        this._latestSettlementClaimed = false;
+        this.refreshUi();
+        return this.money;
     }
 
     public getTodayObtainedCount(itemId: string): number {

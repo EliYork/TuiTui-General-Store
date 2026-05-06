@@ -1,4 +1,8 @@
 import { _decorator, Component } from 'cc';
+import {
+    NormalizedBusinessStallDetectionConfig,
+    StallDetectionConfig,
+} from '../modes/business/StallDetectionConfig';
 
 const { ccclass, property } = _decorator;
 
@@ -135,6 +139,13 @@ export class BusinessModeConfig extends Component {
     public initialMoney = 0;
 
     @property({
+        type: StallDetectionConfig,
+        displayName: '停滞检测配置',
+        tooltip: '经营模式每日停滞检测和右上角倒计时的参数配置。展开后可调整缓冲时间、无得分判定时间和显示规则。',
+    })
+    public stallDetectionConfig: StallDetectionConfig = new StallDetectionConfig();
+
+    @property({
         type: [BusinessItemScoreConfig],
         displayName: '经营物品计分配置列表',
         tooltip: '经营模式每种物品的显示名、分数单价和 HUD 显示开关。这里不配置 prefab 或掉落权重。',
@@ -165,6 +176,10 @@ export class BusinessModeConfig extends Component {
 
     public getInitialMoney(): number {
         return normalizeNonNegativeInteger(this.initialMoney, 0);
+    }
+
+    public getStallDetectionConfig(): NormalizedBusinessStallDetectionConfig {
+        return this.stallDetectionConfig?.getNormalizedConfig() ?? new StallDetectionConfig().getNormalizedConfig();
     }
 
     public getItemScoreConfigs(): NormalizedBusinessItemScoreConfig[] {

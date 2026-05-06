@@ -1,6 +1,7 @@
 import { _decorator, Button, Color, Component, director, find, Graphics, Label, log, Node, UITransform, warn } from 'cc';
 import { setPendingModeId } from '../config/ModeConfigTable';
 import { BusinessRunLogger } from '../business/BusinessRunLogger';
+import { GameManager } from '../core/GameManager';
 
 const { ccclass, property } = _decorator;
 
@@ -68,6 +69,9 @@ export class SceneNavButton extends Component {
         }
         if (modeId === 'business') {
             BusinessRunLogger.requestNewRunOnNextBusinessScene();
+        }
+        if (sceneName === 'MainMenu') {
+            find('GameRoot/GameManager')?.getComponent(GameManager)?.prepareBusinessRunResetForMainMenu();
         }
 
         this.setDebugMessage(`Loading ${sceneName}...`);

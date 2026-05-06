@@ -3,6 +3,10 @@ import { BusinessModeConfig } from '../business/BusinessModeConfig';
 import { CollectionModeConfig } from './CollectionModeConfig';
 import { ModeBaseConfig } from './ModeBaseConfig';
 import { SpawnConfig } from './SpawnConfig';
+import {
+    createDefaultNormalizedStallDetectionConfig,
+    NormalizedBusinessStallDetectionConfig,
+} from '../modes/business/StallDetectionConfig';
 
 const { ccclass, property } = _decorator;
 
@@ -136,6 +140,10 @@ export class ModeConfig extends Component {
 
     public getDailyTargetScoreGrowth(): number {
         return this.businessConfig?.getDailyTargetScoreGrowth() ?? 0;
+    }
+
+    public getStallDetectionConfig(): NormalizedBusinessStallDetectionConfig {
+        return this.businessConfig?.getStallDetectionConfig() ?? createDefaultNormalizedStallDetectionConfig();
     }
 }
 

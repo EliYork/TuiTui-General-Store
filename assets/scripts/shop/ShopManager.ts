@@ -205,6 +205,7 @@ export class ShopManager extends Component {
         const normalizedMoney = normalizeNonNegativeInteger(value);
         this.currentMoney = normalizedMoney;
         SHOP_RUNTIME_STATE.currentMoney = normalizedMoney;
+        SHOP_RUNTIME_STATE.businessMoneyInitialized = true;
         this.businessModeController?.setCurrentMoney(normalizedMoney);
     }
 
@@ -264,9 +265,11 @@ export class ShopManager extends Component {
             const businessMoney = this.businessModeController.getCurrentMoney();
             this.currentMoney = businessMoney;
             SHOP_RUNTIME_STATE.currentMoney = businessMoney;
+            SHOP_RUNTIME_STATE.businessMoneyInitialized = true;
             return;
         }
 
         this.currentMoney = normalizeNonNegativeInteger(SHOP_RUNTIME_STATE.currentMoney);
+        SHOP_RUNTIME_STATE.businessMoneyInitialized = true;
     }
 }

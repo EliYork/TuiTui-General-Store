@@ -38,12 +38,16 @@ import {
 } from '../modes/business/BusinessModeController';
 import { AudioService, GameSoundId, playGameSound } from './AudioService';
 import { DayResultPanel } from '../ui/DayResultPanel';
-import { addShopOrderWeight, SHOP_RUNTIME_STATE, SHOP_SCENE_NAME } from '../shop/ShopTypes';
+import { addShopOrderWeight, resetShopRuntimeState, SHOP_RUNTIME_STATE, SHOP_SCENE_NAME } from '../shop/ShopTypes';
 import {
     BusinessDiaryDaySnapshot,
     BusinessDiaryItemCountSnapshot,
     BusinessRunLogger,
 } from '../business/BusinessRunLogger';
+import {
+    createDefaultNormalizedStallDetectionConfig,
+    NormalizedBusinessStallDetectionConfig,
+} from '../modes/business/StallDetectionConfig';
 
 const { ccclass, property } = _decorator;
 const SHARED_SCENE_NAME = 'Prototype01';
@@ -381,6 +385,13 @@ export class GameManager extends Component {
     public businessEndDayButtonLabel: Label | null = null;
 
     @property({
+        type: Label,
+        displayName: '停滞检测倒计时 Label',
+        tooltip: '绑定右上方用于显示“判定倒计时 / 无得分判定 / 本日已结算 / 经营失败”的 Label。优先使用场景中绑定的 Label，方便在 Cocos Creator 中手动调整位置、大小、字号和颜色；为空时才运行时创建兜底文本。',
+    })
+    public countdownLabel: Label | null = null;
+
+    @property({
         type: DayResultPanel,
         displayName: '本日结算面板',
         tooltip: '经营模式结束本日后弹出的独立结算面板。显示是否达标、今日分数、目标分数，并处理继续本日或进入商店按钮。'
@@ -413,10 +424,20 @@ export class GameManager extends Component {
     private _modeStartAccepted = false;
     private _businessDayReadyForTomorrow = false;
     private _businessDaySettlementCompleted = false;
+    private _businessDayElapsedSeconds = 0;
+    private _businessDayLastScoreSeconds = 0;
+    private _businessDayLastScore = 0;
+    private _businessStagnationEnabled = false;
+    private _businessDayHasSpawnedItem = false;
+    private _businessRunFailed = false;
+    private _businessStagnationTriggered = false;
     private _dayResultPhysicsFrozen = false;
     private readonly _pausedPusherStates = new Map<PusherController, boolean>();
     private _debugButtonNode: Node | null = null;
     private _debugPanelRoot: Node | null = null;
+    private _businessStagnationStatusNode: Node | null = null;
+    private _businessStagnationStatusLabel: Label | null = null;
+    private _businessFailurePanelRoot: Node | null = null;
 
     protected start(): void {
         try {
@@ -449,10 +470,27 @@ export class GameManager extends Component {
             PhysicsSystem.instance.debugDrawFlags = 0;
         }
 
+        const shouldEnterNextBusinessDayFromShop = SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay;
+        const requestedNewBusinessRun = (this.shouldUseBusinessOrderDeck() || shouldEnterNextBusinessDayFromShop)
+            && BusinessRunLogger.consumeNewRunRequest();
+        const shouldCreateNewBusinessRun = requestedNewBusinessRun && !shouldEnterNextBusinessDayFromShop;
+        if (shouldCreateNewBusinessRun) {
+            resetShopRuntimeState();
+            this.resetRuntimeProgress();
+            this._businessDayReadyForTomorrow = false;
+            this._businessDaySettlementCompleted = false;
+            this._businessRunFailed = false;
+            this._businessStagnationTriggered = false;
+            this._modeStartAccepted = false;
+        }
+
         this.ensureRuntimeProgress();
         this.syncBusinessItemValues();
         this.startBusinessDayState();
-        this.initializeBusinessDiaryIfNeeded();
+        this.initializeBusinessDiaryIfNeeded(shouldCreateNewBusinessRun);
+        this.buildBusinessStagnationStatusUi();
+        this.buildBusinessFailurePanel();
+        this.refreshBusinessStagnationStatusLabel();
         this.buildDebugUi();
 
         if (SHOP_RUNTIME_STATE.pendingEnterNextBusinessDay) {
@@ -578,8 +616,100 @@ export class GameManager extends Component {
         }
     }
 
+    private buildBusinessStagnationStatusUi(): void {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            return;
+        }
+
+        if (this.countdownLabel) {
+            this._businessStagnationStatusLabel = this.countdownLabel;
+            this._businessStagnationStatusNode = this.countdownLabel.node;
+            return;
+        }
+
+        if (this._businessStagnationStatusNode) {
+            return;
+        }
+
+        const parent = find('Canvas/UIRoot/经营模式界面') ?? find('Canvas/UIRoot') ?? this.node.parent;
+        if (!parent) {
+            warn('[GameManager] 未找到 UI 根节点，无法创建停滞判定状态。');
+            return;
+        }
+
+        const rootSize = this.getRuntimeUiSize(parent);
+        const width = 260;
+        const height = 42;
+        this._businessStagnationStatusNode = this.createRuntimeNode(
+            '停滞判定状态',
+            parent,
+            rootSize.width * 0.5 - width * 0.5 - 24,
+            rootSize.height * 0.5 - height * 0.5 - 20,
+            width,
+            height,
+        );
+        this.drawRuntimeRect(this._businessStagnationStatusNode, width, height, new Color(255, 247, 220, 235), 8, new Color(224, 169, 92, 255), 1);
+        this._businessStagnationStatusLabel = this.createRuntimeLabel(
+            '停滞判定状态文字',
+            this._businessStagnationStatusNode,
+            '判定倒计时：20.0s',
+            0,
+            0,
+            width - 18,
+            height - 6,
+            20,
+        );
+        this._businessStagnationStatusNode.setSiblingIndex(parent.children.length - 1);
+    }
+
+    private buildBusinessFailurePanel(): void {
+        if (this._businessFailurePanelRoot || !this.shouldUseBusinessOrderDeck()) {
+            return;
+        }
+
+        const parent = find('Canvas/UIRoot') ?? this.node.parent;
+        if (!parent) {
+            warn('[GameManager] 未找到 UI 根节点，无法创建经营失败面板。');
+            return;
+        }
+
+        const rootSize = this.getRuntimeUiSize(parent);
+        this._businessFailurePanelRoot = this.createRuntimeNode('经营失败面板', parent, 0, 0, rootSize.width, rootSize.height);
+        this._businessFailurePanelRoot.addComponent(BlockInputEvents);
+        this.drawRuntimeRect(this._businessFailurePanelRoot, rootSize.width, rootSize.height, new Color(32, 24, 28, 180), 0);
+        this._businessFailurePanelRoot.active = false;
+
+        const panelWidth = 520;
+        const panelHeight = 240;
+        const panel = this.createRuntimeNode('经营失败内容', this._businessFailurePanelRoot, 0, 0, panelWidth, panelHeight);
+        this.drawRuntimeRect(panel, panelWidth, panelHeight, new Color(255, 245, 235, 250), 10, new Color(214, 120, 96, 255), 2);
+        this.createRuntimeLabel('经营失败标题', panel, '经营失败', 0, 72, panelWidth - 40, 44, 30);
+        this.createRuntimeLabel('经营失败说明', panel, '长时间没有新的得分。', 0, 22, panelWidth - 60, 36, 22);
+        const backButton = this.createRuntimeButton('经营失败返回主菜单按钮', panel, '返回主菜单', 0, -68, 168, 48);
+        backButton.on(Node.EventType.TOUCH_END, this.returnToMainMenuAfterBusinessRunEnd, this);
+    }
+
+    private showBusinessFailurePanel(): void {
+        this.buildBusinessFailurePanel();
+        if (!this._businessFailurePanelRoot) {
+            return;
+        }
+
+        this._businessFailurePanelRoot.active = true;
+        this._businessFailurePanelRoot.setSiblingIndex(this._businessFailurePanelRoot.parent ? this._businessFailurePanelRoot.parent.children.length - 1 : 0);
+    }
+
+    private hideBusinessFailurePanel(): void {
+        if (this._businessFailurePanelRoot) {
+            this._businessFailurePanelRoot.active = false;
+        }
+    }
+
     private onDebugAddCurrentScoreTouched(): void {
         const nextScore = this.businessModeController?.addDebugScore(100) ?? 0;
+        if (nextScore > this._businessDayLastScore) {
+            this.markBusinessDayScored(nextScore);
+        }
         this.setStatus(`调试：当前分 +100，当前分 ${formatScore(nextScore)}`);
     }
 
@@ -696,6 +826,10 @@ export class GameManager extends Component {
         }
 
         if (this.updateAutoSpawn(deltaTime)) {
+            shouldRefreshUi = true;
+        }
+
+        if (this.updateBusinessStagnationDetection(deltaTime)) {
             shouldRefreshUi = true;
         }
 
@@ -934,6 +1068,7 @@ export class GameManager extends Component {
 
         this._sessionSpawnedCoinCount += 1;
         if (shouldUseBusinessDeck) {
+            this.markBusinessDaySpawnedItem();
             BusinessRunLogger.recordSpawn(runtimeProgress.currentBusinessDay, currentSpawnItem.itemId, currentSpawnItem.itemName, 'manual');
         }
         if (shouldUseBusinessDeck) {
@@ -1062,6 +1197,11 @@ export class GameManager extends Component {
             return;
         }
 
+        if (this._businessRunFailed) {
+            this.setStatus('经营失败，请返回主菜单。');
+            return;
+        }
+
         if (this._businessDayReadyForTomorrow) {
             this.enterNextBusinessDay();
             return;
@@ -1090,6 +1230,7 @@ export class GameManager extends Component {
 
         this._businessDaySettlementCompleted = true;
         this.recordBusinessDayFinished(dayResult);
+        this.refreshBusinessStagnationStatusLabel();
 
         if (this.dayResultPanel) {
             this._businessDayReadyForTomorrow = false;
@@ -1107,6 +1248,7 @@ export class GameManager extends Component {
 
     private enterNextBusinessDay(deferStartLog = false): void {
         const claimedMoney = this.businessModeController?.claimSettledMoney() ?? 0;
+        const moneyAfterClaim = this.businessModeController?.getCurrentMoney() ?? SHOP_RUNTIME_STATE.currentMoney;
         const nextBusinessDay = runtimeProgress.currentBusinessDay + 1;
         runtimeProgress.currentBusinessDay = nextBusinessDay;
 
@@ -1126,6 +1268,10 @@ export class GameManager extends Component {
             this.getConfiguredBaseDailyTargetScore(),
             this.getConfiguredDailyTargetScoreIncrease(),
         );
+        this.businessModeController?.setCurrentMoney(moneyAfterClaim);
+        SHOP_RUNTIME_STATE.currentMoney = moneyAfterClaim;
+        SHOP_RUNTIME_STATE.businessMoneyInitialized = true;
+        this.resetBusinessDayStagnationState();
         this.syncStateFromResources();
         SHOP_RUNTIME_STATE.currentBusinessDay = runtimeProgress.currentBusinessDay;
         SHOP_RUNTIME_STATE.orderDeckSnapshots = this.businessModeController?.getOrderDeckSnapshots() ?? [];
@@ -1270,7 +1416,12 @@ export class GameManager extends Component {
         progress.isDiscovered = true;
         runtimeProgress.lastDroppedItemId = collectedItem.itemId;
         runtimeProgress.currentCoins += collectedItem.value;
+        const previousBusinessScore = this.businessModeController?.getDailyScore() ?? 0;
         this.businessModeController?.recordDrop(collectedItem.itemId, collectedItem.value, collectedItem.itemName);
+        const nextBusinessScore = this.businessModeController?.getDailyScore() ?? previousBusinessScore;
+        if (nextBusinessScore > previousBusinessScore) {
+            this.markBusinessDayScored(nextBusinessScore);
+        }
         if (this.shouldUseBusinessOrderDeck()) {
             BusinessRunLogger.recordDrop(runtimeProgress.currentBusinessDay, collectedItem.itemId, collectedItem.itemName);
         }
@@ -1311,18 +1462,51 @@ export class GameManager extends Component {
             this._restartLocked = false;
         }, 0);
 
+        this.resetWholeBusinessRun(true);
+        this.playSound('button-click');
+        this.setStatus(`已重新开始，当前地图：${this.getCurrentMapConfig().mapName}`);
+    }
+
+    public prepareBusinessRunResetForMainMenu(): void {
+        this.resetWholeBusinessRun(false);
+    }
+
+    private returnToMainMenuAfterBusinessRunEnd(): void {
+        this.resetWholeBusinessRun(false);
+        director.loadScene('MainMenu');
+    }
+
+    private resetWholeBusinessRun(createNewDiary: boolean): void {
+        if (!createNewDiary) {
+            BusinessRunLogger.markCurrentRunAbandoned();
+        }
+
         this.stopAutoSpawn();
         this.coinSpawner?.clearSpawnedItems();
         this.dayResultPanel?.hide();
+        this.hideBusinessFailurePanel();
         this.setDayResultPhysicsFrozen(false);
+        resetShopRuntimeState();
         this.resetRuntimeProgress();
         this.refreshModeStartGate();
         this._businessDayReadyForTomorrow = false;
         this._businessDaySettlementCompleted = false;
+        this._businessRunFailed = false;
+        this._businessStagnationTriggered = false;
+        this._modeStartAccepted = false;
+        this.resetBusinessDayStagnationState();
         this.refreshBusinessEndDayButtonLabel();
+        this.refreshBusinessStagnationStatusLabel();
+
+        if (!createNewDiary) {
+            this.syncStateFromResources();
+            return;
+        }
+
         this.ensureRuntimeProgress();
         this.syncBusinessItemValues();
         this.startBusinessDayState();
+        this.businessModeController?.resetRunMoneyToInitial();
         this.createBusinessDiaryForCurrentDay();
         this._sessionSpawnedCoinCount = 0;
         this.syncStateFromResources();
@@ -1330,8 +1514,7 @@ export class GameManager extends Component {
             this.seedInitialMapItems();
         }
         this.recordBusinessDayStart();
-        this.playSound('button-click');
-        this.setStatus(`已重新开始，当前地图：${this.getCurrentMapConfig().mapName}`);
+        this.refreshBusinessStagnationStatusLabel();
     }
 
     private bindRestartButton(): void {
@@ -1402,6 +1585,163 @@ export class GameManager extends Component {
         this.stopAutoSpawn('已达标，自动结算本日');
         this.endCurrentBusinessDay();
         return true;
+    }
+
+    private resetBusinessDayStagnationState(): void {
+        this._businessDayElapsedSeconds = 0;
+        this._businessDayLastScoreSeconds = 0;
+        this._businessDayLastScore = this.businessModeController?.getDailyScore() ?? 0;
+        this._businessStagnationEnabled = false;
+        this._businessDayHasSpawnedItem = false;
+        this._businessStagnationTriggered = false;
+        this._businessRunFailed = false;
+        this.refreshBusinessStagnationStatusLabel();
+    }
+
+    private markBusinessDaySpawnedItem(): void {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            return;
+        }
+
+        const wasWaitingForFirstDaySpawn = this.getConfiguredStallRequiresFirstSpawn()
+            && !this._businessDayHasSpawnedItem
+            && this._businessDayElapsedSeconds >= this.getConfiguredStallGraceSeconds() - this.getConfiguredNoScoreTimeoutSeconds();
+        this._businessDayHasSpawnedItem = true;
+        if (wasWaitingForFirstDaySpawn) {
+            this._businessDayLastScoreSeconds = this._businessDayElapsedSeconds;
+        }
+        this.refreshBusinessStagnationStatusLabel();
+    }
+
+    private markBusinessDayScored(score: number): void {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            return;
+        }
+
+        this._businessDayLastScore = score;
+        this._businessDayLastScoreSeconds = this._businessDayElapsedSeconds;
+        this.refreshBusinessStagnationStatusLabel();
+    }
+
+    private updateBusinessStagnationDetection(deltaTime: number): boolean {
+        if (!this.shouldUseBusinessOrderDeck()) {
+            return false;
+        }
+
+        const config = this.getConfiguredStallDetectionConfig();
+        if (!config.enableStallDetection) {
+            this._businessStagnationEnabled = false;
+            this.refreshBusinessStagnationStatusLabel();
+            return false;
+        }
+
+        if (this._businessRunFailed || this._businessDaySettlementCompleted || this._businessDayReadyForTomorrow) {
+            this.refreshBusinessStagnationStatusLabel();
+            return false;
+        }
+
+        this._businessDayElapsedSeconds += Math.max(0, deltaTime);
+        const canEnableDetection = this._businessDayElapsedSeconds >= this.getConfiguredStallGraceSeconds()
+            && (!this.getConfiguredStallRequiresFirstSpawn() || this._businessDayHasSpawnedItem);
+        this._businessStagnationEnabled = canEnableDetection;
+
+        if (!canEnableDetection) {
+            this.refreshBusinessStagnationStatusLabel();
+            return true;
+        }
+
+        if (
+            !this._businessStagnationTriggered
+            && this._businessDayElapsedSeconds - this._businessDayLastScoreSeconds >= this.getConfiguredNoScoreTimeoutSeconds()
+        ) {
+            this._businessStagnationTriggered = true;
+            this.resolveBusinessStagnationJudgement();
+            return true;
+        }
+
+        this.refreshBusinessStagnationStatusLabel();
+        return true;
+    }
+
+    private resolveBusinessStagnationJudgement(): void {
+        if (this._businessDaySettlementCompleted || this._businessRunFailed) {
+            return;
+        }
+
+        if (this.isCurrentBusinessDayReachedTarget()) {
+            this.endCurrentBusinessDay();
+            return;
+        }
+
+        this.failCurrentBusinessRun(this.getBusinessStagnationFailureReason());
+    }
+
+    private failCurrentBusinessRun(reason: string): void {
+        if (this._businessRunFailed || this._businessDaySettlementCompleted) {
+            return;
+        }
+
+        this._businessRunFailed = true;
+        this._businessStagnationEnabled = false;
+        this._businessStagnationTriggered = true;
+        this._businessDayReadyForTomorrow = false;
+        this.stopAutoSpawn();
+        this.dayResultPanel?.hide();
+        this.setDayResultPhysicsFrozen(true);
+        const snapshot = this.buildBusinessDiaryDaySnapshot();
+        BusinessRunLogger.failDay({
+            ...snapshot,
+            score: this.businessModeController?.getDailyScore() ?? 0,
+            reason,
+            boardCounts: this.getBoardItemCountSnapshots(),
+        });
+        this.showBusinessFailurePanel();
+        this.refreshBusinessEndDayButtonLabel();
+        this.refreshBusinessStagnationStatusLabel();
+        this.setStatus('经营失败：长时间没有新的得分。');
+    }
+
+    private refreshBusinessStagnationStatusLabel(): void {
+        if (!this._businessStagnationStatusLabel) {
+            return;
+        }
+
+        const config = this.getConfiguredStallDetectionConfig();
+        this._businessStagnationStatusNode!.active = this.shouldUseBusinessOrderDeck() && config.showStallCountdown;
+        if (!this.shouldUseBusinessOrderDeck() || !config.showStallCountdown) {
+            return;
+        }
+
+        if (!config.enableStallDetection) {
+            this._businessStagnationStatusLabel.string = '停滞检测已关闭';
+            return;
+        }
+
+        if (this._businessRunFailed) {
+            this._businessStagnationStatusLabel.string = '经营失败';
+            return;
+        }
+
+        if (this._businessDaySettlementCompleted || this._businessDayReadyForTomorrow) {
+            this._businessStagnationStatusLabel.string = '本日已结算';
+            return;
+        }
+
+        const decimalPlaces = this.getConfiguredCountdownDecimalPlaces();
+        const graceRemaining = this.getConfiguredStallGraceSeconds() - this._businessDayElapsedSeconds;
+        if (graceRemaining > 0) {
+            this._businessStagnationStatusLabel.string = `判定倒计时：${formatCountdownSeconds(graceRemaining, decimalPlaces)}s`;
+            return;
+        }
+
+        if (this.getConfiguredStallRequiresFirstSpawn() && !this._businessDayHasSpawnedItem) {
+            this._businessStagnationStatusLabel.string = '等待首次投放';
+            return;
+        }
+
+        const idleRemaining = this.getConfiguredNoScoreTimeoutSeconds()
+            - (this._businessDayElapsedSeconds - this._businessDayLastScoreSeconds);
+        this._businessStagnationStatusLabel.string = `无得分判定：${formatCountdownSeconds(idleRemaining, decimalPlaces)}s`;
     }
 
     private isDayResultPanelShowing(): boolean {
@@ -1580,12 +1920,12 @@ export class GameManager extends Component {
         return this.getActiveModeConfig()?.getRequiresStartButton() ?? false;
     }
 
-    private initializeBusinessDiaryIfNeeded(): void {
+    private initializeBusinessDiaryIfNeeded(forceNewRun = false): void {
         if (!this.shouldUseBusinessOrderDeck()) {
             return;
         }
 
-        const shouldCreateRun = BusinessRunLogger.consumeNewRunRequest() || !BusinessRunLogger.hasCurrentRun();
+        const shouldCreateRun = forceNewRun || !BusinessRunLogger.hasCurrentRun();
         if (shouldCreateRun) {
             this.createBusinessDiaryForCurrentDay();
         }
@@ -1653,6 +1993,7 @@ export class GameManager extends Component {
             dailyTargetIncrease: this.getConfiguredDailyTargetScoreIncrease(),
             currentMoney: this.businessModeController?.getCurrentMoney() ?? SHOP_RUNTIME_STATE.currentMoney,
             remainingStock: runtimeProgress.remainingStock,
+            dailyRestock: this.getConfiguredDailyStockLimit(),
             currentResource,
             maxResource,
             orderDeck: this.businessModeController?.getOrderDeckSnapshots() ?? [],
@@ -1706,6 +2047,7 @@ export class GameManager extends Component {
             this.getConfiguredBaseDailyTargetScore(),
             this.getConfiguredDailyTargetScoreIncrease(),
         );
+        this.resetBusinessDayStagnationState();
     }
 
     private syncBusinessItemValues(): void {
@@ -2326,6 +2668,39 @@ export class GameManager extends Component {
         return currentSpawnItem;
     }
 
+    private getConfiguredStallDetectionConfig(): NormalizedBusinessStallDetectionConfig {
+        return this.getActiveModeConfig()?.getStallDetectionConfig() ?? createDefaultNormalizedStallDetectionConfig();
+    }
+
+    private getConfiguredStallGraceSeconds(): number {
+        const config = this.getConfiguredStallDetectionConfig();
+        const configuredSeconds = runtimeProgress.currentBusinessDay === 1
+            ? config.firstDayGraceSeconds
+            : config.laterDayGraceSeconds;
+        return this.normalizeNonNegativeNumber(configuredSeconds, 20);
+    }
+
+    private getConfiguredNoScoreTimeoutSeconds(): number {
+        return this.normalizeNonNegativeNumber(this.getConfiguredStallDetectionConfig().noScoreTimeoutSeconds, 3);
+    }
+
+    private getConfiguredStallRequiresFirstSpawn(): boolean {
+        const config = this.getConfiguredStallDetectionConfig();
+        return runtimeProgress.currentBusinessDay === 1
+            ? config.firstDayRequiresFirstSpawn
+            : config.laterDaysRequireFirstSpawn;
+    }
+
+    private getConfiguredCountdownDecimalPlaces(): number {
+        const decimalPlaces = this.getConfiguredStallDetectionConfig().countdownDecimalPlaces;
+        return Math.min(3, Math.max(0, this.normalizeNonNegativeInteger(decimalPlaces, 1)));
+    }
+
+    private getBusinessStagnationFailureReason(): string {
+        const timeoutSeconds = this.getConfiguredNoScoreTimeoutSeconds();
+        return `连续 ${formatCountdownSeconds(timeoutSeconds, this.getConfiguredCountdownDecimalPlaces())} 秒没有获得分数`;
+    }
+
     private getConfiguredInitialCoins(): number {
         return this.normalizeNonNegativeInteger(this.getActiveModeConfig()?.getInitialSpawnResource() ?? DEFAULT_INITIAL_SPAWN_RESOURCE);
     }
@@ -2489,4 +2864,13 @@ function formatScore(value: number): string {
     }
 
     return Number.isInteger(value) ? `${value}` : value.toFixed(1);
+}
+
+function formatCountdownSeconds(value: number, decimalPlaces = 1): string {
+    const normalizedDecimalPlaces = Math.min(3, Math.max(0, Math.round(decimalPlaces)));
+    if (!Number.isFinite(value)) {
+        return (0).toFixed(normalizedDecimalPlaces);
+    }
+
+    return Math.max(0, value).toFixed(normalizedDecimalPlaces);
 }
