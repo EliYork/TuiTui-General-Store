@@ -86,8 +86,8 @@
         "progress": 1,
         "state": "success",
         "stage": "build",
-        "message": "2026-4-30 21:07:57 build -> make success in 24 s!",
-        "detailMessage": "[runCmd gradlew.bat] \r\rBUILD SUCCESSFUL in 14s\r\r115 actionable tasks: 16 executed, 99 up-to-date\r\r\r\r",
+        "message": "2026-5-7 00:47:07 build -> make success in 2 min 47 s!",
+        "detailMessage": "[runCmd gradlew.bat] > Task :CocosGame:convertShrunkResourcesToBinaryRelease\r\r> Task :CocosGame:optimizeReleaseResources\r\r\r\r",
         "options": {
           "name": "推推杂货店",
           "server": "",
@@ -161,7 +161,91 @@
             ]
           }
         },
-        "time": "2026-4-30 21:07:33",
+        "time": "2026-5-7 00:44:20",
+        "dirty": false
+      },
+      "1778086301665": {
+        "type": "build",
+        "id": "1778086301665",
+        "progress": 1,
+        "state": "success",
+        "stage": "make",
+        "message": "2026-5-7 12:36:28 make package C:\\TuiTui-General-Store\\build\\windows success!",
+        "detailMessage": "asset-db-hook-engine-extends-afterRefresh (1ms)\r",
+        "options": {
+          "name": "coin-pusher-cocos",
+          "server": "",
+          "engineModulesConfigKey": "defaultConfig",
+          "platform": "windows",
+          "buildPath": "project://build",
+          "debug": false,
+          "buildMode": "normal",
+          "mangleProperties": false,
+          "md5Cache": false,
+          "skipCompressTexture": false,
+          "sourceMaps": false,
+          "overwriteProjectSettings": {
+            "macroConfig": {
+              "cleanupImageCache": "inherit-project-setting"
+            },
+            "includeModules": {
+              "physics": "inherit-project-setting",
+              "physics-2d": "inherit-project-setting",
+              "gfx-webgl2": "off"
+            }
+          },
+          "nativeCodeBundleMode": "wasm",
+          "polyfills": {
+            "asyncFunctions": false
+          },
+          "experimentalEraseModules": false,
+          "startSceneAssetBundle": false,
+          "bundleConfigs": [],
+          "inlineEnum": true,
+          "useBuiltinServer": false,
+          "md5CacheOptions": {
+            "excludes": [],
+            "includes": [],
+            "replaceOnly": [],
+            "handleTemplateMd5Link": true
+          },
+          "mainBundleIsRemote": false,
+          "mainBundleCompressionType": "merge_dep",
+          "useSplashScreen": true,
+          "bundleCommonChunk": false,
+          "packAutoAtlas": true,
+          "startScene": "9615adc2-df9b-4189-85cf-95ac940f9b0b",
+          "outputName": "windows",
+          "taskName": "windows",
+          "scenes": [
+            {
+              "url": "db://assets/scenes/MainMenu.scene",
+              "uuid": "9615adc2-df9b-4189-85cf-95ac940f9b0b"
+            },
+            {
+              "url": "db://assets/scenes/Prototype01.scene",
+              "uuid": "3b9415ed-9ba2-4f07-bb11-4767e37357f8"
+            },
+            {
+              "url": "db://assets/scenes/ShopScene.scene",
+              "uuid": "5fafb5f3-899d-42d6-bb81-48b780622a75"
+            }
+          ],
+          "wasmCompressionMode": false,
+          "binGroupConfig": {
+            "threshold": 16,
+            "enable": false
+          },
+          "packages": {},
+          "__version__": "1.3.9",
+          "logDest": "project://temp/builder/log/windows2026-5-7 00-51.log",
+          "buildStageGroup": {
+            "build": [
+              "make"
+            ]
+          }
+        },
+        "time": "2026-5-7 12:33:31",
         "dirty": false
       }
     }
@@ -172,12 +256,12 @@
       "enable": false
     },
     "polyfills": {
-      "asyncFunctions": false
+      "asyncFunctions": true
     },
     "buildPath": "project://build",
-    "outputName": "android-001",
+    "outputName": "windows",
     "mainBundleCompressionType": "merge_dep",
-    "platform": "android",
+    "platform": "windows",
     "scenes": [
       {
         "url": "db://assets/scenes/Prototype01.scene",
