@@ -10,9 +10,9 @@
 /build/
 /native/
 
-# Cocos preview/cache files
-/profiles/v2/packages/preview.json
-/profiles/v2/packages/scene.json
+# Cocos local build/profile package configs
+# These are machine/plugin/platform generated configs and should not be committed.
+/profiles/v2/packages/
 
 
 # =========================
